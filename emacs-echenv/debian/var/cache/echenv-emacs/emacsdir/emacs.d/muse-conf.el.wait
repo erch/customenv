@@ -1,0 +1,15 @@
+(eval-and-compile 
+  (add-to-list 'load-path (expand-file-name "muse/lisp"  site-lisp-dir)))
+
+(require 'muse-mode)     ; chargement du mode écriture
+
+(require 'muse-html)     ; chargement des styles de publication qu'on utilise
+;(require 'muse-latex)
+;(require 'muse-texinfo)
+;(require 'muse-docbook)
+
+(require 'muse-project)  ; publication par projecs
+
+(setq muse-project-alist
+      '(("journal" ("~/org-dir/journal" :default "index")
+         (:base "html" :path "~/public_html/orgdir/journal/"))))

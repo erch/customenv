@@ -1,0 +1,5 @@
+(eval-and-compile
+  (add-to-list 'load-path (expand-file-name "misc/" site-lisp-dir))
+  (require 'w3m-perldoc))
+(custom-set-variables
+ '(w3m-perldoc-command "c:\\cygwin\\bin\\bash.exe --login -c perldoc"))

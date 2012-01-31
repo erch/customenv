@@ -1,0 +1,53 @@
+#!/bin/bash
+#  -*- Shell-Script -*-
+#set -e
+
+. /usr/local/sbin/echenv-utils.sh
+. /usr/share/debconf/confmodule
+
+# get user and group from debconf
+db_get echenv/user
+GIT_USER_NAME=${RET}
+
+# get github user name from debconf
+db_get echenv/github.user
+T_USER=${RET}
+
+ENV_GROUP=echenv
+ROOT_DIR=/var/cache/echenv-privacy
+addtoprofiled /home/${T_USER} ${ROOT_DIR}/profiled/*.sh
+
+set -x
+# get password from debconf
+db_get secure/pass
+PASS=${RET}
+db_reset secure/pass
+TEMPLATE_DIR=/var/cache/echenv-privacy/templates
+SECURE_DIR=${TEMPLATE_DIR}/secure
+GPG_KEY=${SECURE_DIR}/gpgkeys.asc
+
+cd ${SECURE_DIR}
+gpg -d -o keys.tgz --passphrase $PASS keys.tgz.pgp
+tar xzf  keys.tgz
+
+if [ ! -e ${SSH_PRIVKEY} ] || [ ! -e ${SSH_PUBKEY} ] || [ ! -e ${GPG_KEY} ]; then
+    exit 1
+fi
+
+gpg --import ${GPG_KEY}
+
+SSH_DIR=/home/${T_USER}/.ssh
+if [ ! -e ${SSH_DIR} ] ; then
+    mkdir -p ${SSH_DIR}
+    chmod 700 ${SSH_DIR}
+fi
+cp ${SECURE_DIR}/*_dsa ${SECURE_DIR}/*_dsa.pub ${SSH_DIR}
+chmod 600 ${SSH_DIR}/*
+
+# configuring git : will be moved in another package  soon
+GITHUB_APITOKEN=`cat  ${SECURE_DIR}/github-apitoken.txt`
+sudo -u ${T_USER} /usr/bin/git config --global github.user ${GIT_USER_NAME}
+sudo -u ${T_USER} /usr/bin/git config --global github.token ${GITHUB_APITOKEN}
+sudo -u ${T_USER} /usr/bin/git config --global core.excludesfile ${TEMPLATE_DIR}/gitignore_global.template
+
+rm -rf ${ROOT_DIR}

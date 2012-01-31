@@ -1,0 +1,14 @@
+#!/bin/bash
+#  -*- Shell-Script -*-
+#set -e
+
+. /usr/local/sbin/echenv-utils.sh
+. /usr/share/debconf/confmodule
+
+# get user and group from debconf
+db_get echenv/user
+T_USER=${RET}
+ENV_GROUP=echenv
+ROOT_DIR=/var/cache/echenv-java
+addtoprofiled /home/${T_USER} ${ROOT_DIR}/profiled/*.sh
+rm -rf ${ROOT_DIR}

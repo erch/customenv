@@ -1,0 +1,7 @@
+Template: secure/pass
+Type: password
+Description: password for the secure file.
+
+Template: echenv/github.user
+Type: string
+Description: git hub user name

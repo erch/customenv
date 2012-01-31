@@ -1,0 +1,9 @@
+Package: echenv-java
+Version: 1.0.0
+Section: base
+Priority: optional
+Architecture: all
+Pre-Depends: python-software-properties
+Depends: echenv-setup,maven2,ant,ant-optional,groovy,groovy-doc,java-common,javahelper,jsvc,junit4,cobertura,tomcat6,tomcat6-admin,sun-java6-jdk,sun-java6-source
+Maintainer: Eric Chastan
+Description: Setup environment for java dev
