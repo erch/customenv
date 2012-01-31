@@ -1,3 +1,4 @@
+
 (eval-and-compile
   (add-to-list 'load-path (expand-file-name "org/lisp"  site-lisp-dir))
   (add-to-list 'load-path (expand-file-name "org/contrib/lisp" site-lisp-dir))
@@ -48,24 +49,26 @@
   (setq org-agenda-prefix-format "%t %s")
 
   ;; Managing org files
-  (setq org-directory (file-name-as-directory (expand-file-name "OrgaNew" my-home-dir)))
+  (setq org-directory (file-name-as-directory (getenv "ORGA_HOME")))
 
-  (defun get-journal-time (&optional wk time)
+  (defun get-journal-time (&optional time wkd)
     "Return the file name of the current journal file"
     (let* ((tl  (if (null time) (decode-time) (decode-time time)))
+	   (awkd (if (null wkd) 1 wkd))
 	   (sec (nth 0 tl))
 	   (min (nth 1 tl))
 	   (hour (nth 2 tl))
-	   (day 1)
+	   (day (nth 3 tl))
 	   (month (nth 4 tl))
 	   (year (nth 5 tl)))
-      (week-day-time-from-date 1 +1 (encode-time sec min hour day month year))))
+      (week-day-time-from-date awkd -1 (encode-time sec min hour day month year))))
 
-; (get-journal-time 1 (encode-time 0 0 0 10 5 2011))
-; (get-journal-time 1)
+; (decode-time (encode-time 0 0 0 1 12 2011))
+; (get-journal-time (encode-time 0 0 0 1 12 2011))
+; (get-journal-time)
 
-  (defun get-journal-file-name (&optional wk time)
-    (let* ((dt (get-journal-time 1))
+  (defun get-journal-file-name (&optional time)
+    (let* ((dt (get-journal-time))
 	   (year (nth 0 dt))
 	   (month (nth 1 dt)))
       (expand-file-name (format "Orga_Dairy-%4d-%02d.org" year month) org-directory)))
@@ -208,7 +211,7 @@
 				   :table-of-contents t
 				   :auto-postamble nil
 				   :inline-images t
-				   :exclude "\\(^OldProjects\\)\\|\\(^References\\)\\|\\(^\\.[^ ]+$\\)"
+				   :exclude "\\(^OldProjects\\)\\|\\(^ActiveProjects\\)\\|\\(^\\.[^ ]+$\\)"
 ;.emacs
 ;OldProjects
 ;References
@@ -224,8 +227,8 @@
 	     ("Tp" "All TODO Perso" tags-todo "Perso+CALL|Perso+ACTION")
 	     ("w" "Next actions Work" tags-todo "Work+CALL|Work+ACTION/!+NEXT_ACTION|+TODAY")
 	     ("p" "Next actions Perso" tags-todo "Perso+CALL|Perso+ACTION/!+NEXT_ACTION|+TODAY")
-	     ("W" "Non Actions Work" tags-todo "Work/!-ACTION-CALL")
-	     ("P" "Non Actions Perso" tags-todo "Perso/!-ACTION-CALL")
+	     ("W" "Non Actions Work" tags-todo "AGENDA+Work|WAITING_FOR+Work/!-DONE-CANCEL-SCHEDULED")
+	     ("P" "Non Actions Perso" tags-todo "AGENDA+Perso|WAITING_FOR+Perso/!-DONE-CANCEL-SCHEDULED")
 	     ("l" "Later" tags-todo "LATER+SOMEDAY_MAYBE")
 	     ("s" "Scheduled things" tags-todo "TODO=\"SCHEDULED\""
              )))
@@ -313,13 +316,14 @@
   (define-key global-map "\C-cg" 'gtd)
 
   ;(compile-if-newer-and-load (expand-file-name "yasnippet-conf.el" emacs-d-dir))
+; (nth (nth 1 (get-journal-time (encode-time 0 0 0 2 1 2012))) '("" "January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 
-  (let* ((mlist '("January" "February" "March" "Apri"l "May" "June" "July" "August" "September" "October" "November" "December"))
+  (let* ((mlist '("" "January" "February" "March" "Apri"l "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (month (nth (nth 1 (get-journal-time)) mlist))
 	 (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
 	 )
     (yas/define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil)) `text-mode))
   
   ; enabling fly mode
-  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
+  ;; (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 )
