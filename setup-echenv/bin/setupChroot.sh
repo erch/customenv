@@ -6,13 +6,13 @@ PRG="$0"
 # What's my name?
 read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
 
+chroot /var/chroot apt-get update
 chroot /var/chroot apt-get --yes install python-software-properties
 chroot /var/chroot apt-get --yes install debconf
 chroot /var/chroot apt-get --yes install vim
 
 IP=$(hostname -I)
 chroot /var/chroot add-apt-repository "deb http://${IP%% }:8090/ /" 
-chroot /var/chroot apt-get update
 chroot /var/chroot echo SET echenv/user ech | debconf-communicate
 
 . ${MY_DIR}/../../bin/packagingutils.sh

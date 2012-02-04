@@ -4,5 +4,5 @@
 DIST_CODENAME=$(lsb_release -c | cut -f2)
 
 #http://archive.canonical.com/ubuntu/ maverick/partner amd64 Packages
-add-apt-repository "deb http://archive.canonical.com/ ${DIST_CODENAME} partner"
+add-apt-repository "deb http://archive.canonical.com/ maverick partner"
 apt-get update
