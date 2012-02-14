@@ -1,3 +1,4 @@
+*.elc
 *.pgp
 privacy-echenv/debian/var/cache/echenv-privacy/templates/config.template
 privacy-echenv/debian/var/cache/echenv-privacy/templates/secure/

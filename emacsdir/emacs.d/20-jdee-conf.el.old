@@ -1,0 +1,229 @@
+;;---------------------------------------------------------------
+;;   JDEE Project file
+;;----------------------------------------------------------------
+(eval-and-compile
+  (setq bsh-root (expand-file-name "../../beanshell" site-lisp-dir))
+  (setq java-home (getenv "JAVA_HOME"))
+  (setq bsh-vm-args (list "-Dlog4j.defaultInitOverride=true" (concat "-Duser.home=" bsh-root)))
+  (setq bsh-startup-directory bsh-root)
+
+  (add-to-list 'load-path (expand-file-name "jdee/lisp" site-lisp-dir))
+  (add-to-list 'load-path (expand-file-name "elib" site-lisp-dir))
+  (setq jde-jdk-doc-url (concat "file://" (expand-file-name "docs/api" (getenv "JAVA_HOME"))))
+  (require 'jde))
+
+;;----------------------------------------------------------------
+;;; ECB initialisation for this project
+
+(defun prj-change-ecb-source-path(list)
+  (interactive)
+  (setq ecb-source-path  list)
+  (make-local-variable 'ecb-source-path)
+  (ecb-update-directories-buffer)
+  )
+
+;; -----------------------------------------------------------
+					; JDE initialisation for this project
+;;(eval-and-compile
+;;  (let* 
+(custom-set-variables 
+
+ '(jde-electric-return-p t)
+ '(jde-enable-abbrev-mode t)
+ '(jde-run-read-vm-args t)
+ '(jde-run-read-app-args t)
+ '(jde-compile-option-deprecation t)
+ '(jde-quote-classpath t)
+ '(jde-project-file-name "jdee.el")
+ '(jde-ant-home (expand-file-name "../../apache-ant-1.7.1" site-lisp-dir))
+ '(tempo-interactive t)
+ ;; strange behavior if set to t, set to nil untill finding the problem 
+ ;; because it seems that this could be useful !!
+ ;; '(tempo-insert-region nil)
+ '(jde-check-version-flag nil)
+ '(jde-auto-parse-max-buffer-size 5000)
+ '(jde-debugger (quote ("JDEbug")))
+ '(jde-bug-vm-includes-jpda-p t)
+ '(jde-ant-invocation-method (quote ("Ant Server")))
+ '(jde-ant-args "-emacs")
+ '(jde-ant-buildfile "build.xml")
+ )
+;; ---------------------------------------------
+;;     Template customization
+
+
+;; this is redefined in order to suppress the indent at the end of the
+;; template as it is defined in jde-gen.el. The call to indent blocks 
+;; emacs for a while because all the buffer is indented in this case.
+(jde-gen-define-abbrev-template 
+ "if" 
+ '( (if (jde-parse-comment-or-quoted-p)
+	'(l "if")
+      '(l '> "if" jde-gen-conditional-padding-1
+	  "(" jde-gen-conditional-padding-2 (p "if-clause: " clause)
+	  jde-gen-conditional-padding-2 ")"
+	  (if jde-gen-k&r 
+	      jde-gen-conditional-padding-3 
+	    '>'n)
+	  "{"'>'n''r>'n
+	  "}"
+	  (if jde-gen-comments 
+	      '(l " // end of if (" (s clause) ")"))
+	  '>'n'>)
+      )
+    ))
+
+;; generate a if cat debug enabled statement.
+(jde-gen-define-abbrev-template 
+ "ifd" 
+ '( (if (jde-parse-comment-or-quoted-p)
+        '(l "ifd")
+      '(l '> "if" jde-gen-conditional-padding-1 
+          "(" jde-gen-conditional-padding-2 (r "logger: " log) ".isDebugEnabled()"
+          jde-gen-conditional-padding-2 ")"
+          (if jde-gen-k&r 
+              jde-gen-conditional-padding-3 
+            '>'n)
+          "{"'>'n'>(s log) ".debug(\""'r"\");">'n
+          "}">
+          (if jde-gen-comments 
+              '(l " // end of if (" (s clause) ")"))
+          '>'n'>)
+      )
+    ))
+
+;; generate a if cat debug enabled statement.
+(jde-gen-define-abbrev-template 
+ "ifi" 
+ '( (if (jde-parse-comment-or-quoted-p)
+        '(l "ifi")
+      '(l '> "if" jde-gen-conditional-padding-1 
+          "(" jde-gen-conditional-padding-2 (r "logger: " log) ".isDebugEInfoEnabled()"
+          jde-gen-conditional-padding-2 ")"
+          (if jde-gen-k&r 
+              jde-gen-conditional-padding-3 
+            '>'n)
+          "{"'>'n'>(s log) ".info(\""'r"\");">'n
+          "}">
+          (if jde-gen-comments 
+              '(l " // end of if (" (s clause) ")"))
+          '>'n'>)
+      )
+    ))
+
+(jde-gen-define-abbrev-template 
+ "while"
+ '(
+   (if (jde-parse-comment-or-quoted-p)
+       '(l "while")
+     '(l '> "while" jde-gen-conditional-padding-1 
+	 "(" jde-gen-conditional-padding-2 (p "while-clause: " clause) 
+	 jde-gen-conditional-padding-2 ")"
+	 (if jde-gen-k&r 
+	     jde-gen-conditional-padding-3 
+	   '>'n)
+	 "{"'>'n'>'r'n
+	 "}"
+	 (if jde-gen-comments 
+	     '(l " // end of while (" (s clause) ")"))
+	 '>'n'>)
+     )
+   ))
+
+(jde-gen-define-abbrev-template
+ "try"
+ '(
+   (if (jde-parse-comment-or-quoted-p)
+       '(l "try")
+     '(l 
+       '> "try"
+       (if jde-gen-k&r  () 'n)
+       "{"'>'n'>'r'n
+       "}" '>
+       (if jde-gen-k&r 
+           jde-gen-conditional-padding-3 
+         'n)
+       "catch" jde-gen-conditional-padding-1 
+       "(" jde-gen-conditional-padding-2 (p "catch what: " clause) " e"
+       jde-gen-conditional-padding-2 ")" '>
+       (if jde-gen-k&r 
+           jde-gen-conditional-padding-3 
+         'n)
+       "{"'>'n'>'p'n
+       "}"
+       (if jde-gen-comments 
+           " // end of try-catch"
+	 '>'n'>)
+       )
+     )))
+
+(tempo-define-template 
+ "java-get-set-pair"
+ '(
+   '(l (end-of-line) '& 
+       ;; getting the variable type and name 
+       (P "Variable type: " type `noinsert)
+       (P "Variable name: " name  `noinsert)
+       ;; printing separation line
+       " /**************************** Property " (s name) " ****************************/"'>'n'>
+					; generation of the getter.
+					; commentary first
+       'n" /**"'>
+       'n"* Get the " (jde-gen-lookup-and-capitalize 'name) " value." '>
+       'n"* @return the " (jde-gen-lookup-and-capitalize 'name) " value." '>
+       'n"*/" '>
+					; methode signature
+       'n(jde-gen-method-signature "public"  (jde-gen-lookup-named 'type) (concat "get" (jde-gen-lookup-and-capitalize 'name)) nil) 
+					;we open the bracket according to k&r style or not
+       (if jde-gen-k&r () '(l '>'n))
+       "{"'>
+					;body
+       'n"return " (s name) ";"'>
+					;closing last bracket
+       'n "}"'>'n
+       ;;we continue with the setter
+					; commentary first
+       'n" /**"'>
+       'n"* Set the " (jde-gen-lookup-and-capitalize 'name) " value." '>
+       'n"* @param new" (jde-gen-lookup-and-capitalize 'name) " The new " (jde-gen-lookup-and-capitalize 'name) " value."'>
+       'n"*/" '>
+					; methode signature
+       'n(jde-gen-method-signature "public"  "void" (concat "set" (jde-gen-lookup-and-capitalize 'name)) (concat (jde-gen-lookup-named 'type) " new" (jde-gen-lookup-and-capitalize 'name)))
+					;we open the bracket according to k&r style or not
+       (if jde-gen-k&r () '(l '>'n))
+       "{"'>
+					;body
+       'n"this." (s name) " = new" (jde-gen-lookup-and-capitalize 'name)";"'>
+					;closing last bracket
+       'n"}"'>'n'n'>))
+ nil
+ "Insert variable get-set method pair.")
+
+(tempo-define-template 
+ "jde-javadoc-describe-field" 
+ '(
+   '(l "* describe " (jde-javadoc-code name) " here"'>
+       ))
+ nil
+ "template for commenting a variable definition")
+
+
+
+;; defadvice of this function because it's borring me that a line with
+;; only a * is inserted after each comment.
+(defadvice jde-javadoc-insert-empty-line (around ses-jde-javadoc-insert-empty-line activate)
+  "do nothing"
+  (message "advice of jde-javadoc-insert-empty-line called")
+  )
+
+                                       
+
+
+
+
+
+
+
+
+
+

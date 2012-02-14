@@ -1,0 +1,3 @@
+(setq exec-path (cons "c:/MyHome/dev/emacsdir/site-lisp/xref/xref" exec-path))
+(setq load-path (cons "c:/MyHome/dev/emacsdir/site-lisp/xref/xref/emacs" load-path))
+(load "xrefactory")

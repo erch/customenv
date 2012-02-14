@@ -1,0 +1,59 @@
+;; cedet
+(eval-and-compile
+  (load-library "byte-run")
+  (when (or (string= system-type "ms-dos") (string= system-type "windows-nt") (string= system-type "cygwin"))
+    (setq exec-path (append exec-path '("C:\\Program Files\\ctags"))))
+  (setq semantic-load-turn-useful-things-on t)
+  (add-to-list 'load-path (expand-file-name "cedet/common" site-lisp-dir))
+  (load-file (expand-file-name "cedet/common/cedet.el" site-lisp-dir))
+  
+(custom-set-variables
+ '(ecb-layout-name "left6" t)
+ '(ecb-tree-buffer-style 'image t)
+ '(directories-buffer-name "Directories" t)
+ '(sources-buffer-name "Files" t)
+ '(ecb-tip-of-the-day nil t)
+ '(ecb-options-version "2.40")
+)
+
+  (require 'speedbar-load)
+  ;; Enabling Semantic (code-parsing, smart completion) features
+  ;; Select one of the following:
+
+  ;; * This enables the database and idle reparse engines
+  (semantic-load-enable-minimum-features)
+
+  ;; * This enables some tools useful for coding, such as summary mode
+  ;;   imenu support, and the semantic navigator
+  (semantic-load-enable-code-helpers)
+
+  ;; * This enables even more coding tools such as intellisense mode
+  ;;   decoration mode, and stickyfunc mode (plus regular code helpers)
+  (semantic-load-enable-gaudy-code-helpers)
+
+  ;; * This enables the use of Exuberent ctags if you have it installed.
+  ;;   If you use C++ templates or boost, you should NOT enable it.
+  ;;(semantic-load-enable-all-exuberent-ctags-support)
+
+  ;; Enable SRecode (Template management) minor-mode.
+  ;;(global-srecode-minor-mode 1)
+
+  (setq semantic-decoration-styles (quote (("semantic-decoration-on-includes") ("semantic-decoration-on-protected-members") ("semantic-decoration-on-private-members") ("semantic-tag-boundary"))))
+  )
+
+(custom-set-variables 
+ '(semanticdb-default-save-directory "~/.semantic-cache" t))
+
+(add-to-list 'Info-default-directory-list (expand-file-name "cedet/semantic/doc" site-lisp-dir))
+(global-set-key [(s-down-mouse-3)] 'senator-completion-menu-popup)
+;; create semantic cache directory if necessary
+(unless (file-directory-p semanticdb-default-save-directory) 
+  (make-directory semanticdb-default-save-directory))
+
+;; ecb
+;; (unless (eq window-system nil)
+(add-to-list 'load-path (expand-file-name "ecb" site-lisp-dir))
+					;    (require 'cl)
+(require 'ecb-autoloads)
+
+(ecb-activate)

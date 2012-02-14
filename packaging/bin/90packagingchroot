@@ -1,0 +1,11 @@
+#! /bin/bash
+#  -*- Shell-Script -*-
+
+PRG="$0"
+# What's my name?
+read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
+
+IP=$(hostname -I)
+cat > ${CHROOT_PATH}/etc/apt/sources.list.d/packaging.list <<EOF
+    deb http://${IP}:8090/ /	
+EOF
