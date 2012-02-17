@@ -11,11 +11,11 @@ TMP_DIR=/tmp/temp-sec$$
 mkdir ${TMP_DIR}
 PWDBACK=`pwd`
 cd ${TMP_DIR}
-for F in github_dsa github_dsa.pub  id_dsa  id_dsa.pub github-apitoken.txt.pgp ; do
+for F in github_dsa github_dsa.pub  id_dsa  id_dsa.pub github-apitoken.txt.pgp config ; do
     cp ~/.ssh/$F .
 done
 gpg --export-secret-keys --armor -o gpgkeys.asc  eric@chastan-jeannin.fr 
 tar cvzf keys.tgz *
 gpg -c -o $PWDBACK/keys.tgz.pgp keys.tgz
-cd ${TMP_DIR}
+cd ${PWDBACK}
 rm -rf ${TMP_DIR}
