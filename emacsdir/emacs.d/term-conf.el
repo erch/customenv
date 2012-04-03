@@ -12,7 +12,8 @@
 (add-hook 'term-mode-hook
       '(lambda ()
 	 (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
-	 (setq multi-term-scroll-show-maximum-output t)))
+	 (setq multi-term-scroll-show-maximum-output t)
+	 (setq multi-term-scroll-to-bottom-on-output "all"))
 
 
 
