@@ -2,5 +2,5 @@
 
 (require 'erin)
 
-(add-hook 'erin-mode-hook 'turn-on-orgtbl)
-(add-hook 'erin-mode-hook 'turn-on-flyspell 'append)
+;(add-hook 'erin-mode-hook 'turn-on-orgtbl)
+;(add-hook 'erin-mode-hook 'turn-on-flyspell 'append)
