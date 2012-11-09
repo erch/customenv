@@ -1,2 +1,3 @@
 (require 'ido)
-  (ido-mode t)
+(ido-mode t)
+(setq ido-use-filename-at-point 'guess)

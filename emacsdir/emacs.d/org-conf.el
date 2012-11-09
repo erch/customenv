@@ -316,7 +316,7 @@
 
   ;(compile-if-newer-and-load (expand-file-name "yasnippet-conf.el" emacs-d-dir))
 
-  (let* ((mlist '("January" "February" "March" "Apri"l "May" "June" "July" "August" "September" "October" "November" "December"))
+  (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (month (nth (nth 1 (get-journal-time)) mlist))
 	 (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
 	 )
