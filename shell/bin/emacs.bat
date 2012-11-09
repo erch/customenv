@@ -1,1 +1,1 @@
-"%EMACS_HOME%\bin\runemacs.exe"  --debug-init  -L "%DEV_HOME%\..\customenv\emacsdir\site-lisp" -l site-start %*
+"%EMACS_HOME%\bin\runemacs.exe"  --debug-init  -L "%DEV_HOME%\emacsdir\site-lisp" -l site-start %*
