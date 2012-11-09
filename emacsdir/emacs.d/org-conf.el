@@ -48,7 +48,7 @@
   (setq org-agenda-prefix-format "%t %s")
 
   ;; Managing org files
-  (setq org-directory (file-name-as-directory (expand-file-name "OrgaNew" my-home-dir)))
+  (setq org-directory (file-name-as-directory (expand-file-name "Orga" my-home-dir)))
 
   (defun get-journal-time (&optional wk time)
     "Return the file name of the current journal file"
