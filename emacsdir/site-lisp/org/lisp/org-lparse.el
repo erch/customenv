@@ -67,7 +67,7 @@ lists."
 	       ((file-exists-p file-or-buf) file-or-buf)
 	       (t (error "org-lparse-and-open: This shouldn't happen"))))
       (message "Opening file %s" f)
-      (org-open-file f)
+      (org-open-file f 'system)
       (when org-export-kill-product-buffer-when-displayed
 	(kill-buffer (current-buffer))))))
 
@@ -89,9 +89,9 @@ emacs   --batch
 No file is created.  The prefix ARG is passed through to
 `org-lparse'."
   (let ((tempbuf (format "*Org %s Export*" (upcase backend))))
-      (org-lparse backend backend arg nil nil tempbuf)
-      (when org-export-show-temporary-export-buffer
-	(switch-to-buffer-other-window tempbuf))))
+    (org-lparse backend backend arg nil nil tempbuf)
+    (when org-export-show-temporary-export-buffer
+      (switch-to-buffer-other-window tempbuf))))
 
 ;;;###autoload
 (defun org-replace-region-by (backend beg end)
@@ -101,7 +101,7 @@ itemized list in org-mode syntax in an HTML buffer and then use
 this command to convert it."
   (let (reg backend-string buf pop-up-frames)
     (save-window-excursion
-      (if (eq major-mode 'org-mode)
+      (if (derived-mode-p 'org-mode)
 	  (setq backend-string (org-lparse-region backend beg end t 'string))
 	(setq reg (buffer-substring beg end)
 	      buf (get-buffer-create "*Org tmp*"))
@@ -145,16 +145,16 @@ in a window.  A non-interactive call will only return the buffer."
 (defvar org-lparse-par-open nil)
 
 (defun org-lparse-should-inline-p (filename descp)
-   "Return non-nil if link FILENAME should be inlined.
+  "Return non-nil if link FILENAME should be inlined.
 The decision to inline the FILENAME link is based on the current
 settings.  DESCP is the boolean of whether there was a link
 description.  See variables `org-export-html-inline-images' and
 `org-export-html-inline-image-extensions'."
-   (let ((inline-images (org-lparse-get 'INLINE-IMAGES))
-	 (inline-image-extensions
-	  (org-lparse-get 'INLINE-IMAGE-EXTENSIONS)))
-        (and (or (eq t inline-images) (and inline-images (not descp)))
-	     (org-file-image-p filename inline-image-extensions))))
+  (let ((inline-images (org-lparse-get 'INLINE-IMAGES))
+	(inline-image-extensions
+	 (org-lparse-get 'INLINE-IMAGE-EXTENSIONS)))
+    (and (or (eq t inline-images) (and inline-images (not descp)))
+	 (org-file-image-p filename inline-image-extensions))))
 
 (defun org-lparse-format-org-link (line opt-plist)
   "Return LINE with markup of Org mode links.
@@ -435,6 +435,10 @@ PUB-DIR specifies the publishing directory."
   (let* ((org-lparse-backend (intern native-backend))
 	 (org-lparse-other-backend (and target-backend
 					(intern target-backend))))
+    (add-hook 'org-export-preprocess-hook
+	      'org-lparse-strip-experimental-blocks-maybe)
+    (add-hook 'org-export-preprocess-after-blockquote-hook
+	      'org-lparse-preprocess-after-blockquote)
     (unless (org-lparse-backend-is-native-p native-backend)
       (error "Don't know how to export natively to backend %s" native-backend))
 
@@ -443,7 +447,11 @@ PUB-DIR specifies the publishing directory."
       (error "Don't know how to export to backend %s %s" target-backend
 	     (format "via %s" native-backend)))
     (run-hooks 'org-export-first-hook)
-    (org-do-lparse arg hidden ext-plist to-buffer body-only pub-dir)))
+    (org-do-lparse arg hidden ext-plist to-buffer body-only pub-dir)
+    (remove-hook 'org-export-preprocess-hook
+		 'org-lparse-strip-experimental-blocks-maybe)
+    (remove-hook 'org-export-preprocess-after-blockquote-hook
+		 'org-lparse-preprocess-after-blockquote)))
 
 (defcustom org-lparse-use-flashy-warning nil
   "Control flashing of messages logged with `org-lparse-warn'.
@@ -509,7 +517,7 @@ This is a helper routine for interactive use."
       (message "Exported to %s" out-file)
       (when prefix-arg
 	(message "Opening %s..."  out-file)
-	(org-open-file out-file))
+	(org-open-file out-file 'system))
       out-file)
      (t
       (message "Export to %s failed" out-file)
@@ -565,7 +573,7 @@ and then converted to \"doc\" then org-lparse-backend is set to
 (defun org-do-lparse (arg &optional hidden ext-plist
 			  to-buffer body-only pub-dir)
   "Export the outline to various formats.
-See `org-lparse' for more information. This function is a
+See `org-lparse' for more information.  This function is a
 html-agnostic version of the `org-export-as-html' function in 7.5
 version."
   ;; Make sure we have a file name when we need it.
@@ -771,7 +779,7 @@ version."
 	 ;; collection
 	 org-lparse-collect-buffer
 	 (org-lparse-collect-count 0)	; things will get haywire if
-					; collections are chained. Use
+					; collections are chained.  Use
 					; this variable to assert this
 					; pre-requisite
 	 org-lparse-toc
@@ -809,6 +817,8 @@ version."
       (setq umax-toc (if (integerp org-export-with-toc)
 			 (min org-export-with-toc umax)
 		       umax))
+      (setq org-lparse-opt-plist
+	    (plist-put org-lparse-opt-plist :headline-levels  umax))
 
       (when (and org-export-with-toc (not body-only))
 	(setq lines (org-lparse-prepare-toc
@@ -844,48 +854,6 @@ version."
 					 (car lines))))
 	      (org-lparse-end-environment 'fixedwidth))
 	    (throw 'nextline nil))
-
-	  ;; Notes: The baseline version of org-html.el (git commit
-	  ;; 3d802e), while encountering a *line-long* protected text,
-	  ;; does one of the following two things based on the state
-	  ;; of the export buffer.
-
-	  ;; 1. If a paragraph element has just been opened and
-	  ;;    contains only whitespace as content, insert the
-	  ;;    protected text as part of the previous paragraph.
-
-	  ;; 2. If the paragraph element has already been opened and
-	  ;;    contains some valid content insert the protected text
-	  ;;    as part of the current paragraph.
-
-	  ;; I think --->
-
-	  ;; Scenario 1 mentioned above kicks in when a block of
-	  ;; protected text has to be inserted en bloc. For example,
-	  ;; this happens, when inserting an source or example block
-	  ;; or preformatted content enclosed in #+backend,
-	  ;; #+begin_backend ... #+end_backend)
-
-	  ;; Scenario 2 mentioned above kicks in when the protected
-	  ;; text is part of a running sentence. For example this
-	  ;; happens in the case of an *multiline* LaTeX equation that
-	  ;; needs to be inserted verbatim.
-
-	  ;; org-html.el in the master branch seems to do some
-	  ;; jugglery by moving paragraphs around. Inorder to make
-	  ;; these changes backend-agnostic introduce a new text
-	  ;; property org-native-text and impose the added semantics
-	  ;; that these protected blocks appear outside of a
-	  ;; conventional paragraph element.
-	  ;;
-	  ;; Extra Note: Check whether org-example and org-native-text
-	  ;; are entirely equivalent.
-
-	  ;; Fixes bug reported by Christian Moe concerning verbatim
-	  ;; LaTeX fragments.
-	  ;; on git commit 533ba3f90250a1f25f494c390d639ea6274f235c
-	  ;; http://repo.or.cz/w/org-mode/org-jambu.git/shortlog/refs/heads/staging
-	  ;; See http://lists.gnu.org/archive/html/emacs-orgmode/2011-03/msg01379.html
 
 	  ;; Native Text
 	  (when (and (get-text-property 0 'org-native-text line)
@@ -941,7 +909,6 @@ version."
 		(funcall f style env-options-plist)
 		(throw 'nextline nil))))
 
-	  (run-hooks 'org-export-html-after-blockquotes-hook)
 	  (when (org-lparse-current-environment-p 'verse)
 	    (let ((i (org-get-string-indentation line)))
 	      (if (> i 0)
@@ -1151,9 +1118,6 @@ version."
       (unless body-only
 	(org-lparse-end 'DOCUMENT-CONTENT))
 
-      (unless (plist-get opt-plist :buffer-will-be-killed)
-	(set-auto-mode t))
-
       (org-lparse-end 'EXPORT)
 
       ;; kill collection buffer
@@ -1201,7 +1165,7 @@ version."
 
 (defun org-lparse-table-get-colalign-info (lines)
   (let ((col-cookies (org-find-text-property-in-string
-			'org-col-cookies (car lines))))
+		      'org-col-cookies (car lines))))
     (when (and col-cookies org-table-clean-did-remove-column)
       (setq col-cookies
 	    (mapcar (lambda (x) (cons (1- (car x)) (cdr x))) col-cookies)))
@@ -1261,7 +1225,11 @@ for formatting.  This is required for the DocBook exporter."
     ;; column and the special lines
     (setq lines (org-table-clean-before-export lines)))
   (let* ((caption (org-find-text-property-in-string 'org-caption (car lines)))
+	 (short-caption (or (org-find-text-property-in-string
+			     'org-caption-shortn (car lines)) caption))
 	 (caption (and caption (org-xml-encode-org-text caption)))
+	 (short-caption (and short-caption
+			     (org-xml-encode-plain-text short-caption)))
 	 (label (org-find-text-property-in-string 'org-label (car lines)))
 	 (org-lparse-table-colalign-info (org-lparse-table-get-colalign-info lines))
 	 (attributes (org-find-text-property-in-string 'org-attributes
@@ -1272,11 +1240,13 @@ for formatting.  This is required for the DocBook exporter."
 			       (cdr lines))))))
     (setq lines (org-lparse-org-table-to-list-table lines splice))
     (org-lparse-insert-list-table
-     lines splice caption label attributes head org-lparse-table-colalign-info)))
+     lines splice caption label attributes head org-lparse-table-colalign-info
+     short-caption)))
 
 (defun org-lparse-insert-list-table (lines &optional splice
-					      caption label attributes head
-					      org-lparse-table-colalign-info)
+					   caption label attributes head
+					   org-lparse-table-colalign-info
+					   short-caption)
   (or (featurep 'org-table)		; required for
       (require 'org-table))		; `org-table-number-regexp'
   (let* ((org-lparse-table-rownum -1) org-lparse-table-ncols i (cnt 0)
@@ -1296,7 +1266,7 @@ for formatting.  This is required for the DocBook exporter."
 	(insert (org-lparse-format-table-row line) "\n")))
      (t
       (setq org-lparse-table-is-styled t)
-      (org-lparse-begin 'TABLE caption label attributes)
+      (org-lparse-begin 'TABLE caption label attributes short-caption)
       (setq org-lparse-table-begin-marker (point))
       (org-lparse-begin-table-rowgroup head)
       (while (setq line (pop lines))
@@ -1327,13 +1297,14 @@ But it has the disadvantage, that no cell- or row-spanning is allowed."
 	     (org-lparse-table-cur-rowgrp-is-hdr
 	      org-export-highlight-first-table-line)
 	     (caption nil)
+	     (short-caption nil)
 	     (attributes nil)
 	     (label nil)
 	     (org-lparse-table-style 'table-table)
 	     (org-lparse-table-is-styled nil)
 	     fields org-lparse-table-ncols i (org-lparse-table-rownum -1)
 	     (empty (org-lparse-format 'SPACES 1)))
-    (org-lparse-begin 'TABLE caption label attributes)
+    (org-lparse-begin 'TABLE caption label attributes short-caption)
     (while (setq line (pop lines))
       (cond
        ((string-match "^[ \t]*\\+-" line)
@@ -1363,9 +1334,9 @@ But it has the disadvantage, that no cell- or row-spanning is allowed."
 
 (defvar table-source-languages)		; defined in table.el
 (defun org-lparse-format-table-table-using-table-generate-source (backend
-								 lines
-								 &optional
-								 spanned-only)
+								  lines
+								  &optional
+								  spanned-only)
   "Format a table into BACKEND, using `table-generate-source' from table.el.
 Use SPANNED-ONLY to suppress exporting of simple table.el tables.
 
@@ -1396,9 +1367,9 @@ for further information."
 	(set-buffer " org-tmp2 ")
 	(buffer-substring (point-min) (point-max)))
        (t
-	;; table.el doesn't support the given backend. Currently this
+	;; table.el doesn't support the given backend.  Currently this
 	;; happens in case of odt export.  Strip the table from the
-	;; generated document. A better alternative would be to embed
+	;; generated document.  A better alternative would be to embed
 	;; the table as ascii text in the output document.
 	(org-lparse-warn
 	 (concat
@@ -1749,7 +1720,12 @@ information."
   (org-lparse-end-paragraph)
   (org-lparse-end-list-item (or type "u")))
 
-(defun org-lparse-preprocess-after-blockquote-hook ()
+(define-obsolete-function-alias
+  'org-lparse-preprocess-after-blockquote-hook
+  'org-lparse-preprocess-after-blockquote
+  "24.3")
+
+(defun org-lparse-preprocess-after-blockquote ()
   "Treat `org-lparse-special-blocks' specially."
   (goto-char (point-min))
   (while (re-search-forward
@@ -1762,10 +1738,12 @@ information."
 	 (format "ORG-%s-END %s" (upcase (match-string 2))
 		 (match-string 3))) t t))))
 
-(add-hook 'org-export-preprocess-after-blockquote-hook
-	  'org-lparse-preprocess-after-blockquote-hook)
+(define-obsolete-function-alias
+  'org-lparse-strip-experimental-blocks-maybe-hook
+  'org-lparse-strip-experimental-blocks-maybe
+  "24.3")
 
-(defun org-lparse-strip-experimental-blocks-maybe-hook ()
+(defun org-lparse-strip-experimental-blocks-maybe ()
   "Strip \"list-table\" and \"annotation\" blocks.
 Stripping happens only when the exported backend is not one of
 \"odt\" or \"xhtml\"."
@@ -1779,9 +1757,6 @@ Stripping happens only when the exported backend is not one of
 	   nil t)
 	(when (member (match-string 1) org-lparse-special-blocks)
 	  (replace-match "" t t))))))
-
-(add-hook 'org-export-preprocess-hook
-	  'org-lparse-strip-experimental-blocks-maybe-hook)
 
 (defvar org-lparse-list-table-p nil
   "Non-nil if `org-do-lparse' is within a list-table.")
@@ -1914,7 +1889,7 @@ See `org-xhtml-entity-format-callbacks-alist' for more information."
 			(replace-match
 			 (let ((org-lparse-encode-pending t))
 			   (org-lparse-format 'FONTIFY
-					     (match-string 1 line) "target"))
+					      (match-string 1 line) "target"))
 			 t t line)))
 		(when (string-match
 		       (org-re "[ \t]+:\\([[:alnum:]_@:]+\\):[ \t]*$") txt)
@@ -1966,8 +1941,7 @@ See `org-xhtml-entity-format-callbacks-alist' for more information."
 		  (cond
 		   ((string= align "l") "left")
 		   ((string= align "r") "right")
-		   ((string= align "c") "center")
-		   (t nil))))))))
+		   ((string= align "c") "center"))))))))
   (incf org-lparse-table-rownum)
   (let ((i -1))
     (org-lparse-format
@@ -2079,8 +2053,8 @@ When TITLE is nil, just close all open levels."
 
 (defvar org-lparse-outline-text-open)
 (defun org-lparse-begin-outline-and-outline-text (level1 snumber title tags
-							target extra-targets
-							extra-class)
+							 target extra-targets
+							 extra-class)
   (org-lparse-begin
    'OUTLINE level1 snumber title tags target extra-targets extra-class)
   (org-lparse-begin-outline-text level1 snumber extra-class))
@@ -2130,7 +2104,7 @@ When TITLE is nil, just close all open levels."
 ;; Note that org-tables are NOT multi-line and each line is mapped to
 ;; a unique row in the exported document.  So if an exported table
 ;; needs to contain a single paragraph (with copious text) it needs to
-;; be typed up in a single line. Editing such long lines using the
+;; be typed up in a single line.  Editing such long lines using the
 ;; table editor will be a cumbersome task.  Furthermore inclusion of
 ;; multi-paragraph text in a table cell is well-nigh impossible.
 ;;
@@ -2275,11 +2249,11 @@ Replaces invalid characters with \"_\"."
 
 (defun org-lparse-format-extra-targets (extra-targets)
   (if (not extra-targets) ""
-      (mapconcat (lambda (x)
-	       (setq x (org-solidify-link-text
-			(if (org-uuidgen-p x) (concat "ID-" x) x)))
-	       (org-lparse-format 'ANCHOR "" x))
-	     extra-targets "")))
+    (mapconcat (lambda (x)
+		 (setq x (org-solidify-link-text
+			  (if (org-uuidgen-p x) (concat "ID-" x) x)))
+		 (org-lparse-format 'ANCHOR "" x))
+	       extra-targets "")))
 
 (defun org-lparse-format-org-tags (tags)
   (if (not tags) ""

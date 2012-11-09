@@ -76,6 +76,7 @@
    ;; notes will be put in the journal file when an automatic function will return the journal
    backup-dir (file-name-as-directory (expand-file-name ".archive/org" org-directory))
    project-dir (file-name-as-directory (expand-file-name "ActiveProjects" org-directory))
+   business-as-usual-dir (file-name-as-directory (expand-file-name "BusinessAsUsual" org-directory))
    notes-file (expand-file-name "Orga_Inbox.org" org-directory)  
    project-file (expand-file-name "projects.mm" project-dir)
    org-default-notes-file notes-file  
@@ -113,14 +114,15 @@
 
   (setq org-agenda-files ())
   (add-to-list 'org-agenda-files notes-file)
-  (mapcar (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
-  (mapcar (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
-  (mapcar (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
+  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
+  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
+;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
+;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
   (add-to-list 'org-agenda-files (expand-file-name "Orga_Scheduling.org" org-directory))
   (add-to-list 'org-agenda-files (expand-file-name "Orga_ActionsPlan.org" org-directory))
   (when (file-exists-p google-cal-ical-export) (add-to-list 'org-agenda-files google-cal-ical-export))
 ;;  (let ((refile-targets ()))
-;;    (mapcar (lambda (x) (add-to-list 'refile-targets (cons x '(:tag . "Tasks"))))
+;;    (mapc (lambda (x) (add-to-list 'refile-targets (cons x '(:tag . "Tasks"))))
 ;;    (find-action-plan-in-dir project-dir))
 ;;    (setq org-refile-targets refile-targets))
   ;(setq org-refile-targets `((org-agenda-files :tag . "Tasks")))

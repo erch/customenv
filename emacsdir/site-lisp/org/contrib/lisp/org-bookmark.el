@@ -67,7 +67,7 @@ Otherwise prompt the user for the right bookmark to use."
     (if (not file)
 	(when (eq major-mode 'bookmark-bmenu-mode)
 	  (setq bookmark (bookmark-bmenu-bookmark)))
-      (when (and (setq bmks 
+      (when (and (setq bmks
 		       (mapcar (lambda (name)
 				 (if (equal file
 					    (abbreviate-file-name
@@ -75,12 +75,12 @@ Otherwise prompt the user for the right bookmark to use."
 				     name))
 			       (bookmark-all-names)))
 		 (setq bmks (delete nil bmks)))
-	(setq bookmark 
+	(setq bookmark
 	      (if (or (eq 1 (length bmks)) org-bookmark-use-first-bookmark)
 		  (car bmks)
 		(completing-read "Bookmark: " bmks nil t nil nil (car bmks))))))
     (if bookmark
-	(org-store-link-props :link (org-make-link "bookmark:" bookmark)
+	(org-store-link-props :link (contact "bookmark:" bookmark)
 			      :description bookmark))))
 
 (provide 'org-bookmark)

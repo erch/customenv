@@ -1,11 +1,13 @@
 ;;; org-toc.el --- Table of contents for Org-mode buffer
 
-;; Copyright 2007 Bastien Guerry
+;; Copyright 2007-2012 Free Software Foundation, Inc.
 ;;
-;; Author: Bastien Guerry <bzg AT altern DOT org>
+;; Author: Bastien Guerry <bzg AT gnu DOT org>
 ;; Keywords: Org table of contents
 ;; Homepage: http://www.cognition.ens.fr/~guerry/u/org-toc.el
 ;; Version: 0.8
+
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -216,7 +218,7 @@ specified, then make `org-toc-recenter' use this value."
 (defun org-toc-show (&optional depth position)
   "Show the table of contents of the current Org-mode buffer."
   (interactive "P")
-  (if (org-mode-p)
+  (if (eq major-mode 'org-mode)
       (progn (setq org-toc-base-buffer (current-buffer))
 	     (setq org-toc-odd-levels-only org-odd-levels-only))
     (if (eq major-mode 'org-toc-mode)
@@ -482,7 +484,5 @@ status."
 ;;;;##########################################################################
 ;;;;  User Options, Variables
 ;;;;##########################################################################
-
-
 
 ;;; org-toc.el ends here
