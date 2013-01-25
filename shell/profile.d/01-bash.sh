@@ -1,4 +1,4 @@
-echo -n "."
+#echo -n "."
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 export LANG="en_US.UTF-8"
@@ -20,7 +20,9 @@ else
     export OPT_LOCAL=/opt/local
 fi
 
+pathmunge "${HOME}/bin/temp" before
 pathmunge "${HOME}/bin" before
+
 
 if [ `expr "$TERM" : "emacs*"` -ne 0 ] || [ `expr "$TERM" : "eterm*"` -ne 0 ] ; then
     export PS1="$ "

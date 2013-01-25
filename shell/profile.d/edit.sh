@@ -11,7 +11,7 @@ else
     export EMACS_HOME=/usr/bin
     export EMACS="${EMACS_HOME}/emacs"
     export EMACS_CLI="${EMACS_HOME}/emacsclient"
-    export SITE_LISP=${DEV_HOME}/emacsdir/site-lisp
+    export SITE_LISP=${HOME}/customenv/emacsdir/site-lisp/
 fi
 
 function runemacs

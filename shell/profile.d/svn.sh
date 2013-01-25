@@ -4,3 +4,4 @@ function svnfind
     shift
     find $DIR -name .svn -prune -o $* -print
 }
+export -f svnfind
