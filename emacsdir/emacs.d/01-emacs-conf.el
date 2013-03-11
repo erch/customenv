@@ -50,16 +50,16 @@
 ;; use find file at point bindings
 (ffap-bindings)
 
-(setq show-paren-style 'parenthesis) ; highlight just parens
-(setq show-paren-style 'expression) 
-(global-set-key "%" 'match-paren)
+;; (setq show-paren-style 'parenthesis) ; highlight just parens
+;; (setq show-paren-style 'expression) 
+;; (global-set-key "%" 'match-paren)
 
-(defun match-paren (arg)
-  "Go to the matching parenthesis if on parenthesis otherwise insert %."
-  (interactive "p")
-  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
-	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
-	(t (self-insert-command (or arg 1))))) 
+;; (defun match-paren (arg)
+;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
+;;   (interactive "p")
+;;   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+;; 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+;; 	(t (self-insert-command (or arg 1))))) 
 
 ;; Backup
 (defvar backup-dir (expand-file-name "~/.ebackup/"))

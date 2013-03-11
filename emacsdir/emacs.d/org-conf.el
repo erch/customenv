@@ -1,12 +1,12 @@
 (eval-and-compile
-  (add-to-list 'load-path (expand-file-name "org/lisp"  site-lisp-dir))
-  (add-to-list 'load-path (expand-file-name "org/contrib/lisp" site-lisp-dir))
+  ;(add-to-list 'load-path (expand-file-name "org/lisp"  site-lisp-dir))
+  ;(add-to-list 'load-path (expand-file-name "org/contrib/lisp" site-lisp-dir))
 
   ;;-----------------------------------------------------------------------------
   ;; Org-mode
   ;;-----------------------------------------------------------------------------
   (require 'org-install)
-  (load-library "org-depend")
+  ;(load-library "org-depend")
   (require 'org-crypt)
 
   ;; Standard org stuff
@@ -314,8 +314,7 @@
    
   (define-key global-map "\C-cg" 'gtd)
 
-  ;(compile-if-newer-and-load (expand-file-name "yasnippet-conf.el" emacs-d-dir))
-
+  (compile-if-newer-and-load (expand-file-name "08-yasnippet-conf.el" emacs-d-dir))
   (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (month (nth (nth 1 (get-journal-time)) mlist))
 	 (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))

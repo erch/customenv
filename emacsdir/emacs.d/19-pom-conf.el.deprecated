@@ -1,5 +1,0 @@
-(eval-and-compile
-  (require 'pom)
-  (setq pom-maven-local-repository (expand-file-name ".m2" (getenv "HOME")))
-  (setq pom-project-file-name "pom.xml")
-)
