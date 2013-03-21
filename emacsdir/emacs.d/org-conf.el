@@ -8,7 +8,7 @@
   (require 'org-install)
   ;(load-library "org-depend")
   (require 'org-crypt)
-
+ (locate-library "org")
   ;; Standard org stuff
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 					;(define-key global-map "\C-cl" 'org-store-link)
