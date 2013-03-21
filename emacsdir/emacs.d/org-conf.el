@@ -314,12 +314,12 @@
    
   (define-key global-map "\C-cg" 'gtd)
 
-  (compile-if-newer-and-load (expand-file-name "08-yasnippet-conf.el" emacs-d-dir))
+  (require 'yasnippet-conf)
   (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (month (nth (nth 1 (get-journal-time)) mlist))
 	 (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
 	 )
-    (yas/define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil)) `text-mode))
+    (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
   
   ; enabling fly mode
   (add-hook 'org-mode-hook 'turn-on-flyspell 'append)

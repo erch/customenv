@@ -22,10 +22,6 @@
 (set-keyboard-coding-system 'utf-8-emacs)
 (set-language-environment 'utf-8)
 
-;; Complétion automatique
-(abbrev-mode t) ; completion automatique
-(global-set-key (quote [S-tab]) (quote dabbrev-expand))
-
 ; Laisser le curseur en place lors d'un défilement par pages.
 ; Par défaut, Emacs place le curseur en début ou fin d'écran
 ; selon le sens du défilement.
@@ -46,13 +42,12 @@
       font-lock-use-default-fonts t
       font-lock-use-default-colors t)
 
-
 ;; use find file at point bindings
 (ffap-bindings)
 
-;; (setq show-paren-style 'parenthesis) ; highlight just parens
-;; (setq show-paren-style 'expression) 
-;; (global-set-key "%" 'match-paren)
+(setq show-paren-style 'parenthesis) ; highlight just parens
+(setq show-paren-style 'expression) 
+;;(global-set-key "%" 'match-paren)
 
 ;; (defun match-paren (arg)
 ;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
@@ -169,7 +164,7 @@ user can select from the Windows font selector."
 
 (add-to-list 'completion-ignored-extensions  ".svn/")
 (setq completion-auto-help "lazy")
-(setq iswitchb-mode t)
+;(setq iswitchb-mode t)
 (setq visible-bell t)
 
 (if (boundp 'compilation-error-regexp-alist)

@@ -1,5 +1,6 @@
 ;; installation directory
 (toggle-debug-on-error)
+
 (setq site-lisp-dir (expand-file-name ".." (locate-library "site-start.el")))
 (setq emacs-d-dir (expand-file-name "emacs.d" (file-name-directory  site-lisp-dir)))
 (setq my-home-dir (expand-file-name "../.." (file-name-directory  site-lisp-dir)))
@@ -13,6 +14,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t )
 (setq package-initialize nil)
 (setq package-load-list '(all))
+
 (package-initialize)
 
 ;; loading stuff from emacs.d
@@ -28,4 +30,6 @@
 	(byte-compile-file (concat file-name ".el")))
     (load file-name)))
   
+
 (mapcar 'compile-if-newer-and-load (sort (directory-files emacs-d-dir t ".*\\.el$") 'string<))
+
