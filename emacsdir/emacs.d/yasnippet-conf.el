@@ -1,8 +1,9 @@
 (unless (featurep 'yasnippet-conf)
   (unless (require 'yasnippet nil t)
-    (package-install 'yasnippet))
+    (progn
+      (package-install 'yasnippet)
+      (load-library "yasnippet")))
   (message "loading yasnippet ...")
-  (require 'yasnippet)
   (yas--initialize)
   (yas-load-directory (expand-file-name "snippets" (file-name-directory (locate-library "yasnippet"))))
   (message "yasnippet loaded")

@@ -1,5 +1,5 @@
 (unless (featurep 'autocomplete-conf)
-  (unless (require 'auto-complete)
+  (unless (require 'auto-complete nil t)
     (package-install 'auto-complete))
 
   (message "loading autocomplete-conf ...")
