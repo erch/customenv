@@ -255,7 +255,7 @@
   ;; enabling clocking
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
-  (setq org-clock-idle-time 10)
+  (setq org-clock-ide-time 10)
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; With this typing "L" in agenda and todo buffers allows toggling
    ;; whether category/file names appear or not at the left or entries in

@@ -11,7 +11,7 @@
       (load-library "python"))
 
   (require 'autocomplete-conf)
-  (require 'highlight-conf)
+  ;(require 'highlight-conf)
   (require 'yasnippet-conf)
 
   (unless (require 'pyvirtualenv nil t)
@@ -19,7 +19,7 @@
       (package-install 'pyvirtualenv)
       (load-library "pyvirtualenv")))
 
-  (if (not (string= window-system "w32"))
+  (unless (string= window-system "w32")
       (unless (require 'pyde nil t)
 	(progn
 	  (message "installing of pyde ...")
