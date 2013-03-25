@@ -10,8 +10,8 @@
 (add-to-list 'load-path (expand-file-name "misc" site-lisp-dir))
 
 ;; enabling upcase and downcase
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+;(put 'upcase-region 'disabled nil)
+;(put 'downcase-region 'disabled nil)
 
 ; by default don't set line truncation
 (setq default-truncate-lines nil)
@@ -28,9 +28,9 @@
 (setq scroll-preserve-screen-position t)
 
 ;  écrasement des lignes sélectionnées et lorsqu'on saisit du texte dans la foulée.
-  (progn
-    (delete-selection-mode 1)
-  )
+;  (progn
+;    (delete-selection-mode 1)
+;  )
 
 ;; Syntaxe highlighting pour tout
 (require 'font-lock)
@@ -42,12 +42,9 @@
       font-lock-use-default-fonts t
       font-lock-use-default-colors t)
 
-;; use find file at point bindings
-(ffap-bindings)
-
-(setq show-paren-style 'parenthesis) ; highlight just parens
-(setq show-paren-style 'expression) 
-;;(global-set-key "%" 'match-paren)
+(setq show-paren-delay 0)           ; how long to wait?
+(show-paren-mode nil)                 ; turn paren-mode off
+;;(setq show-paren-style 'expression) ; alternatives are 'parenthesis' and 'mixed'
 
 ;; (defun match-paren (arg)
 ;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
@@ -76,10 +73,10 @@
 (tool-bar-mode -1)			;hide tool-bar
 (column-number-mode 1)			;show column number
 (global-font-lock-mode 1)		;Color syntax highlighting
-(icomplete-mode 1)
+;(icomplete-mode 1)
 (auto-compression-mode 1) ; Use compressed files as if they were normal
 ;(add-hook 'text-mode-hook 'auto-fill-mode)  ;auto-fill
-(auto-fill-mode -1)
+;(auto-fill-mode -1)
 ;(setq transient-mark-mode t)		;highlights selections
 (setq comment-style 'plain)
 (setq frame-title-format (list '("emacs ") '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
@@ -162,13 +159,13 @@ user can select from the Windows font selector."
 ;(server-ensure-safe-dir ".")
 (server-start)
 
-(add-to-list 'completion-ignored-extensions  ".svn/")
-(setq completion-auto-help "lazy")
+;(add-to-list 'completion-ignored-extensions  ".svn/")
+;(setq completion-auto-help "lazy")
 ;(setq iswitchb-mode t)
 (setq visible-bell t)
 
-(if (boundp 'compilation-error-regexp-alist)
-    (add-to-list 'compilation-error-regexp-alist (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))
-  (setq compilation-error-regexp-alist (list (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))))
+;(if (boundp 'compilation-error-regexp-alist)
+;    (add-to-list 'compilation-error-regexp-alist (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))
+;  (setq compilation-error-regexp-alist (list (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))))
 
 ;; (setq compilation-error-regexp-alist nil)

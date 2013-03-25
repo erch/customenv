@@ -29,4 +29,4 @@
   (ac-emacs-eclim-config)
   (setq eclimd-default-workspace "~/eclimworkspace")
   (message "emacs eclim loaded")
-  (provide 'java-mode-hook-conf))
+  (provide 'java-conf))

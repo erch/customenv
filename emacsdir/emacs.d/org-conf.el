@@ -1,14 +1,13 @@
-(eval-and-compile
-  ;(add-to-list 'load-path (expand-file-name "org/lisp"  site-lisp-dir))
-  ;(add-to-list 'load-path (expand-file-name "org/contrib/lisp" site-lisp-dir))
+(unless (featurep 'org-conf)
+  (unless (require 'org nil t)
+    (progn
+      (package-install 'org)
+      (load-library "org-install")))
+  (message "loading org ...")
 
-  ;;-----------------------------------------------------------------------------
-  ;; Org-mode
-  ;;-----------------------------------------------------------------------------
   (require 'org-install)
-  ;(load-library "org-depend")
   (require 'org-crypt)
- (locate-library "org")
+  
   ;; Standard org stuff
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 					;(define-key global-map "\C-cl" 'org-store-link)
@@ -17,6 +16,7 @@
   ;; Settings
   (setq org-list-indent-offset 2)
   (setq org-tags-match-list-sublevels nil) ; don't inherite tags when searching
+  (require 'ido-conf)
   (setq org-completion-use-ido t)
   (setq org-return-follows-link t)
   (setq org-ellipsis "...")
@@ -323,4 +323,5 @@
   
   ; enabling fly mode
   (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
+  (provide 'org-conf)
 )
