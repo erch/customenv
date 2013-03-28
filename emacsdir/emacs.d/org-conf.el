@@ -150,7 +150,6 @@
 		      ("Project_Management" . ?j)
 		      ("Software_Engineering" . ?S)
 		      ("Service_Engineering" . ?E)
-		      ("WorkingSystem" . ?k)
 		      (:endgroup . nil)
 		      (:startgroup . nil) ; project type
 		      ("Architecture" . ?a)
