@@ -80,3 +80,4 @@
       (setq comint-completion-addsuffix '("/" . ""))
       ;;  This variable is local to buffer
       (setq comint-prompt-regexp "^[ \n\t]*[$] ?")))))
+(provide 'shell-conf)

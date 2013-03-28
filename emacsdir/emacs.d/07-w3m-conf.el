@@ -8,3 +8,4 @@
  (setq w3m-use-cookies t)
  (setq w3m-pop-up-frames t)
 )
+(provide '07-w3m-conf)

@@ -11,3 +11,4 @@
 (add-hook 'groovy-mode-hook
 '(lambda ()
 (inf-groovy-keys)))
+(provide 'groovy-conf)

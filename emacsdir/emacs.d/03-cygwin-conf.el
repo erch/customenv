@@ -13,3 +13,4 @@
     (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
     (require 'cygwin-mount)
     (cygwin-mount-activate)))
+(provide '03-cygwin-conf)

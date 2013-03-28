@@ -33,3 +33,4 @@
 	vm-mutable-frames nil
 	vm-auto-get-new-mail t)
   )
+(provide 'vm-config)

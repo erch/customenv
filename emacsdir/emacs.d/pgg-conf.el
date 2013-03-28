@@ -12,3 +12,4 @@
  
 ; gpg default ID to use
 (setq pgg-default-user-id "Eric Chastan <eric@chastan-jeannin.fr>")
+(provide 'pgg-conf)

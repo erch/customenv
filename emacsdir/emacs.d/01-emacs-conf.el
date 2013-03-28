@@ -102,3 +102,4 @@
 (server-start)
 
 (setq visible-bell t)
+(provide '01-emacs-conf)

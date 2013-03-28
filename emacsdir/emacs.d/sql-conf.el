@@ -31,3 +31,4 @@
 ;;        ("-" ("----" "" ""))
 ;;        ("MNEMONIC3" ("SERVER3" "LOGIN-ID3" nil "DATABASE3"))
 ;;        ("MNEMONIC4" ("SERVER4" "LOGIN-ID4" "PASSWORD4"))))
+(provide 'sql-conf)

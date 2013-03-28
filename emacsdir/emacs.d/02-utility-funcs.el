@@ -144,3 +144,5 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 ;;(format-week-day-from-date  "%4d-%02d" 3)
 ;;(format-week-day-from-date  "%4d-%02d-%02d" 1 +1 (encode-time 0 0 0 1 7 2011))
 ;;(week-day-from-date 1 +1  (encode-time 0 0 0 1 8 2011))
+
+(provide '02-utility-funcs)

@@ -20,3 +20,4 @@
    args))
 
 ;;(ech-browse-file "c:/MyHome/dev/java/jdk1.5.0_18/docs/api")
+(provide '04-browser-conf)
