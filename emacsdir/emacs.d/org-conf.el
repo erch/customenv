@@ -132,43 +132,41 @@
 
   ;; Org tags definition
   (setq org-tag-alist '(
-			(:startgroup . nil)
-			("@office" . ?f) 
-			("@home" . ?h) 
-			("@computer" . ?c)
-			("@online" . ?o)
-			("@errand" . ?e)
-			("@phone" . ?p)
-			("@anywhere" . ?a)
-			(:endgroup . nil)
-			(:startgroup . nil)
+			(:startgroup . nil) ; liste
 			("ACTION" . ?A)
 			("WAITING_FOR" . ?W)
 			("LATER" . ?L)
 			("SOMEDAY_MAYBE" . ?S)
 			("AGENDA" . ?G)
-			("CALLS" . ?C)
-			("READ_REVIEW" . ?R)
+			("CALL" . ?C)
+			("READ_REVIEW_1" . ?1)
+			("READ_REVIEW_1" . ?2)	
+			("READ_REVIEW_1" . ?3)
 			("MEETING" . ?M)
 			(:endgroup . nil)
 			("crypt" . ?Y) 
-			(:startgroup . nil)
-			("Archi" . ?r)
+			(:startgroup . nil) ; activity
+			("Architecture" . ?r)
+			("People_Management" . ?p)
+			("Project_Management" . ?j)
+			("Software_Engineering" . ?S)
+			("Service_Engineering" . ?E)
+			("WorkingSystem" . ?k)
+			(:endgroup . nil)
+			(:startgroup . nil) ; project type
+			("Architecture" . ?a)
+			("Platform" . ?f)
+			("Infra" . ?i)
+			("Properties" . ?s)
+			("SEO" . ?o)
+			("BuildAndTools" . ?b)
 			("Management" . ?m)
-			("Project_management" . ?j)
-			("Project" . ?J)
+			("DevEnv" . ?d)
 			(:endgroup . nil)
-			(:startgroup . nil)
-			("Platform" . ?P)
-			("ServiceEngineering" . ?E)
-			("Properties" . ?y)
-			("Science" . ?x)
-			("Business_Support" . ?b)
-			(:endgroup . nil)
-			(:startgroup . nil)
+			(:startgroup . nil) ; type
 			("Perso" . ?z)
 			("Work" . ?w)
-			(:endgroup . nil)
+			(:endgroup . nil) ; people
 			;(:startgroup . nil)
 			("PATRICK" . nil)
 			("CHRISTOPHE" . nil)		       
@@ -193,8 +191,7 @@
 
   ;; Custom keywords
   (setq org-todo-keywords
-	'((sequence "INBOX(i)" "TODO(t)" "NEXT_ACTION(n)" "TODAY(y)" "ON_HOLD(h)" "ON_PROGRESS(p)"  "SCHEDULED(s)" "|" "DONE(d!@)" "CANCEL(c!@)")
-	  (sequence "REVIEW(1!)" "REMEMBER-2(2!)" "REMEMBER-3(3!)" "REMEMBER-END(e!)")
+	'((sequence "INBOX(i)" "TODO(t)" "NEXT_ACTION(n)" "ON_HOLD(h)" "IN_PROGRESS(p)"  "SCHEDULED(s)" "|" "DONE(d!@)" "CANCEL(c!@)")
 	  ))
 
   ;; Publish my website
