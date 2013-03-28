@@ -39,7 +39,7 @@
 
 (defun requires-files(dir)
   (mapcar (lambda (x) 
-	    (let* ((sym (file-name-base x)))
+	    (let* ((sym (file-name-sans-extension (file-name-nondirectory x))))
 	      (progn  
 	      (require (intern sym) nil t)
 	      (message (concat "done for " sym))))) 
