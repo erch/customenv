@@ -34,24 +34,13 @@
 
 ;; Syntaxe highlighting pour tout
 (require 'font-lock)
-(setq initial-major-mode
-      (lambda ()
-    (text-mode)
-    (font-lock-mode)))
-(setq font-lock-mode-maximum-decoration t
-      font-lock-use-default-fonts t
-      font-lock-use-default-colors t)
-
-(setq show-paren-delay 0)           ; how long to wait?
-(show-paren-mode nil)                 ; turn paren-mode off
-;;(setq show-paren-style 'expression) ; alternatives are 'parenthesis' and 'mixed'
-
-;; (defun match-paren (arg)
-;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
-;;   (interactive "p")
-;;   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
-;; 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
-;; 	(t (self-insert-command (or arg 1))))) 
+; (setq initial-major-mode
+;       (lambda ()
+;     (text-mode)
+;     (font-lock-mode)))
+; (setq font-lock-mode-maximum-decoration t
+;       font-lock-use-default-fonts t
+;       font-lock-use-default-colors t)
 
 ;; Backup
 (defvar backup-dir (expand-file-name "~/.ebackup/"))
@@ -72,7 +61,7 @@
 ;(scroll-bar-mode -1)			;hide scroll-bar
 (tool-bar-mode -1)			;hide tool-bar
 (column-number-mode 1)			;show column number
-(global-font-lock-mode 1)		;Color syntax highlighting
+;(global-font-lock-mode 1)		;Color syntax highlighting
 ;(icomplete-mode 1)
 (auto-compression-mode 1) ; Use compressed files as if they were normal
 ;(add-hook 'text-mode-hook 'auto-fill-mode)  ;auto-fill
@@ -85,51 +74,8 @@
 ;; Windows only settings
 ;;-----------------------------------------------------------------------------
 (defun windows-only-settings () 
-  "This is a test"  
-  (global-unset-key "\C-z")		;iconify-or-deiconify-frame (C-x C-z)
-
   ;; What long lines should look like
   (set-fringe-mode (cons 0 8))
-
-  (defun w32-maximize-frame ()
-    "Maximize the current frame (windows only)"
-    (interactive)
-    (w32-send-sys-command 61488))
-
-  (if (equal system-name "CALDERA1049")
-      (w32-maximize-frame))
-
-  (if (equal system-name "CALDERA1065")
-      (progn (set-frame-position (selected-frame) 0 0)
-	     (set-frame-width (selected-frame) 80)
-	     (set-frame-height (selected-frame) 65)))
-
-  ;; prompts for font and returns string (utility function)
-  (defun insert-x-style-font() 
-    "Insert a string in the X format which describes a font the
-user can select from the Windows font selector."
-    (interactive) 
-    (insert (prin1-to-string (w32-select-font))))
-
-  ;; tabbar
-  (require 'tabbar)
-  (setq tabbar-buffer-groups-function 
-	(lambda (b) (list "All Buffers")))
-  (setq tabbar-buffer-list-function
-	(lambda ()
-	  (remove-if
-	   (lambda(buffer)
-	     ; Only show a couple buffers with * in their names
-	     (or (and (find (aref (buffer-name buffer) 0) " *")
-		      (not (equal (buffer-name buffer) "*eshell*"))
-		      (not (equal (buffer-name buffer) "*mpg123*")))
-		 (equal (buffer-name buffer) "calendar.diary")
-		 (equal (buffer-name buffer) "diary")))
-	   (buffer-list))))
-
-  (global-set-key [(meta P)] 'tabbar-backward)
-  (global-set-key [(meta N)] 'tabbar-forward)
-
 )
 
 ;;-----------------------------------------------------------------------------
@@ -153,19 +99,6 @@ user can select from the Windows font selector."
 (when (eq window-system nil) (console-only-settings))
 
 ; start emacs server
-;(and (= emacs-major-version 23) (defun server-ensure-safe-dir (dir) (message "def ensure") t))
-;(let ((f "~/.emacs.d/server"))
-;      (set-file-modes f 700)) 
-;(server-ensure-safe-dir ".")
 (server-start)
 
-;(add-to-list 'completion-ignored-extensions  ".svn/")
-;(setq completion-auto-help "lazy")
-;(setq iswitchb-mode t)
 (setq visible-bell t)
-
-;(if (boundp 'compilation-error-regexp-alist)
-;    (add-to-list 'compilation-error-regexp-alist (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))
-;  (setq compilation-error-regexp-alist (list (list "^\\(.*\\):\\[\\([0-9]*\\),\\([0-9]*\\)\\]" 1 2 3))))
-
-;; (setq compilation-error-regexp-alist nil)

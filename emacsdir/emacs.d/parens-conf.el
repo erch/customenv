@@ -8,6 +8,18 @@
   ;; highlights matching pairs
   (show-smartparens-global-mode t)
 
+;(setq show-paren-delay 0)           ; how long to wait?
+;(show-paren-mode nil)                 ; turn paren-mode off
+;;(setq show-paren-style 'expression) ; alternatives are 'parenthesis' and 'mixed'
+
+;; (defun match-paren (arg)
+;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
+;;   (interactive "p")
+;;   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+;; 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+;; 	(t (self-insert-command (or arg 1))))) 
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
   ;; configuration from: https://github.com/Fuco1/smartparens/wiki/Example-configuration
 
