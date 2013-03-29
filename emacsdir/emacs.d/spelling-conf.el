@@ -12,4 +12,4 @@
     (ispell-change-dictionary lang)))
 
 (global-set-key [f6] 'cycle-ispell-languages)
-(provide '05-flyspell-conf)
+(provide 'spelling-conf)
