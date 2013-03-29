@@ -6,5 +6,5 @@
 (require 'helm-config)
 (global-set-key (kbd "C-c h") 'helm-mini)
 (global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-c l") 'helm-locate)
+;(global-set-key (kbd "C-x c C-x C-l") 'helm-locate)
 (provide 'helm-conf)
