@@ -3,7 +3,7 @@
     (package-install 'org)
     (load-library "org-install")))
 (message "loading org ...")
-
+(require '02-utility-funcs)
 (require 'org-install)
 (require 'org-crypt)
 

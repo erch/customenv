@@ -23,6 +23,9 @@
 
 (package-initialize)
 
+; load needed files for all other configuation
+(require '01-emacs-conf)
+
 ;; compile files in emacs.d
 (defun compile-if-newer (file)
   "Byte compile FILE.el if newer than file.elc."
@@ -36,6 +39,7 @@
 	(byte-compile-file (concat file-name ".el")))))  
 
 (mapcar 'compile-if-newer (sort (directory-files emacs-d-dir t ".*\\.el$") 'string<))
+
 
 (defun requires-files(dir)
   (mapcar (lambda (x) 
