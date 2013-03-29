@@ -6,4 +6,4 @@
   (add-hook 'nxhtml-mode-hook 'flyspell-mode)
   (setq nxml-child-indent 4)
 )
-(provide '06-nxml-conf)
+(provide 'xml-conf)

@@ -1,31 +1,32 @@
+(message "loading emacs eclim ...")
 (unless (require 'eclim nil t)
   (progn
     (package-install 'emacs-eclim)
     (load-library "eclim")))
-(message "loading emacs eclim ...")
-(global-eclim-mode)
-(require 'eclimd)
 
+(require 'eclimd)
 (require 'eclim)
 (global-eclim-mode)
-
-(setq eclim-auto-save t)
-(setq eclim-executable "~/opt/eclipse/eclim")
-(setq eclimd-executable "~/opt/eclipse/eclimd")
-(setq eclim-eclipse-dirs '("~/opt/eclipse"))
-(setq eclimd-wait-for-process nil)
-
-;; regular auto-complete initialization
 (require 'autocomplete-conf)
-(ac-config-default)
-(setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.1)
-(setq ac-delay 0.5)
-(help-at-pt-set-timer)
-
-;; add the emacs-eclim source
 (require 'ac-emacs-eclim-source)
 (ac-emacs-eclim-config)
-(setq eclimd-default-workspace "~/eclimworkspace")
+(defun  eclim-mode-cust()
+       "customisation for java buffers"
+       (setq-local eclim-auto-save t)
+       (setq-local eclim-executable "~/opt/eclipse/eclim")
+       (setq-local eclimd-executable "~/opt/eclipse/eclimd")
+       (setq-local eclim-eclipse-dirs '("~/opt/eclipse"))
+       (setq-local eclimd-wait-for-process nil)
+
+       ;;  auto-complete
+       (auto-complete-mode 1)
+       (setq-local ac-sources '(ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers))
+       (setq-local help-at-pt-display-when-idle t)
+       (setq-local help-at-pt-timer-delay 0.1)
+       (setq-local ac-delay 0.1)
+       (help-at-pt-set-timer)
+       (setq eclimd-default-workspace "~/eclimworkspace"))
+
+(add-hook 'eclim-mode-hook 'eclim-mode-cust)
 (message "emacs eclim loaded")
 (provide 'java-conf)

@@ -1,0 +1,10 @@
+(unless (require 'helm-config nil t)
+  (progn
+    (package-install 'helm)
+    (load-library "helm-config")))
+(message "loading helm ...")
+(require 'helm-config)
+(global-set-key (kbd "C-c h") 'helm-mini)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-c l") 'helm-locate)
+(provide 'helm-conf)

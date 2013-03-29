@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+# name: script
+# key: script
+# --
+#!/usr/bin/python
+# *-* python *-*
+# -*- coding:utf-8 -*-
+
+import sys
+import re
+from time import sleep,time
+from datetime import datetime
+import argparse
+import os
+import logging
+
+closeList = list()
+
+# for -v option
+LOGGING_LEVELS = {'critical': logging.CRITICAL,
+                  'error': logging.ERROR,
+                  'warning': logging.WARNING,
+                  'info': logging.INFO,
+                  'debug': logging.DEBUG}
+
+def closeAll():
+    for item in closeList:
+        try:
+            item.close()
+        except Exception:
+            pass
+
+def main():        
+    try:                        
+        parser = argparse.ArgumentParser(description='$1')
+        parser.add_argument('--verbosity', '-v', choices=LOGGING_LEVELS , help='logging level')
+	$0
+        args = parser.parse_args() 
+        
+        logging_level = LOGGING_LEVELS.get(args.verbosity, LOGGING_LEVELS['warning'])
+        logging.basicConfig(level=logging_level, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%dT%H:%M:%S') 
+        
+        logging.getLogger().warning('Starting script ...')
+
+    except KeyboardInterrupt:
+        return 0
+    except Exception, err:
+        logging.getLogger().exception('Error from throws():')
+        return 1
+    finally:
+        closeAll()
+        
+if __name__ == "__main__":
+    try:
+        status = main()
+    except KeyboardInterrupt:        
+        logging.getLogger().error("Interrupted by user ...")
+        status = 2
+    finally:
+        closeAll()
+	logging.getLogger().warning('End of script')
+    sys.exit(status)     
