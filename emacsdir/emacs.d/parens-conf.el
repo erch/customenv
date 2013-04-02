@@ -1,7 +1,9 @@
 (unless (require 'smartparens nil t)
   (progn
     (package-install 'smartparens)
-    (load-library "smartparens")))
+    ;(load-library "smartparens"))
+))
+(require 'smartparens)
 (smartparens-global-mode 1)
 
 ;; highlights matching pairs
@@ -34,24 +36,22 @@
 (define-key sp-keymap (kbd "C-M-n") 'sp-next-sexp)
 (define-key sp-keymap (kbd "C-M-p") 'sp-previous-sexp)
 
-(define-key sp-keymap (kbd "C-M-k") 'sp-kill-sexp)
+;; (define-key sp-keymap (kbd "C-M-k") 'sp-kill-sexp)
+;; (define-key sp-keymap (kbd "M-<delete>") 'sp-unwrap-sexp)
+;; (define-key sp-keymap (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
+;; (define-key sp-keymap (kbd "C-<right>") 'sp-forward-slurp-sexp)
+;; (define-key sp-keymap (kbd "C-<left>") 'sp-forward-barf-sexp)
+;; (define-key sp-keymap (kbd "C-M-<left>") 'sp-backward-slurp-sexp)
+;; (define-key sp-keymap (kbd "C-M-<right>") 'sp-backward-barf-sexp)
 
-(define-key sp-keymap (kbd "M-<delete>") 'sp-unwrap-sexp)
-(define-key sp-keymap (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
-
-(define-key sp-keymap (kbd "C-<right>") 'sp-forward-slurp-sexp)
-(define-key sp-keymap (kbd "C-<left>") 'sp-forward-barf-sexp)
-(define-key sp-keymap (kbd "C-M-<left>") 'sp-backward-slurp-sexp)
-(define-key sp-keymap (kbd "C-M-<right>") 'sp-backward-barf-sexp)
-
-(define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
-(define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
-(define-key sp-keymap (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
-(define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
-
-(define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
-(define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
-(define-key sp-keymap (kbd "C-M-]") 'sp-select-next-thing)
+;; (define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
+;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
+;; (define-key sp-keymap (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
+;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
+;; 
+;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
+;; (define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
+;; (define-key sp-keymap (kbd "C-M-]") 'sp-select-next-thing)
 
 (define-key sp-keymap (kbd "M-F") 'sp-forward-symbol)
 (define-key sp-keymap (kbd "M-B") 'sp-backward-symbol)
@@ -59,7 +59,7 @@
   ;;;;;;;;;;;;;;;;;;
 ;; pair management
 
-					;  (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
+;;  (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
 
 ;;  ;;; markdown-mode
 ;;  (sp-with-modes '(markdown-mode gfm-mode rst-mode)
@@ -69,12 +69,12 @@
 ;;    (sp-local-tag "<"  "<_>" "</_>" :transform 'sp-match-sgml-tags))
 
   ;;; tex-mode latex-mode
-					;  (sp-with-modes '(tex-mode plain-tex-mode latex-mode)
-					;    (sp-local-tag "i" "e23b2c0677aefe835963afab98e797186e9ccec0quot;<" "e23b2c0677aefe835963afab98e797186e9ccec0quot;>"))
+;;  (sp-with-modes '(tex-mode plain-tex-mode latex-mode)
+;;    (sp-local-tag "i" "e23b2c0677aefe835963afab98e797186e9ccec0quot;<" "e23b2c0677aefe835963afab98e797186e9ccec0quot;>"))
 
   ;;; html-mode
-					;  (sp-with-modes '(html-mode sgml-mode)
-					;    (sp-local-pair "<" ">"))
+;;  (sp-with-modes '(html-mode sgml-mode)
+;;  (sp-local-pair "<" ">"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Custom defuns and macros

@@ -1,0 +1,5 @@
+(require 'yasnippet-conf)
+(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+				  (activate-yasnippet-with-dirs nil)))
+(provide 'lisp-conf)

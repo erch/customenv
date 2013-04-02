@@ -192,6 +192,8 @@
       '((sequence "INBOX(i)" "TODO(t)" "NEXT_ACTION(n)" "ON_HOLD(h)" "IN_PROGRESS(p)"  "SCHEDULED(s)" "|" "DONE(d!@)" "CANCEL(c!@)")
 	))
 
+(setq org-todo-repeat-to-state "SCHEDULED")
+
 ;; Publish my website
 (setq publish-dir  (file-name-as-directory (expand-file-name  "Orga" (getenv "WEB_HOME"))))
 (setq org-publish-project-alist
