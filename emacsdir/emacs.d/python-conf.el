@@ -37,9 +37,7 @@
     (ad-activate 'flymake-post-syntax-check)))
 
 (defun python-mode-cust ()
-  (let 
-      ((all-snip-dir (file-name-as-directory (expand-file-name "snippets" (file-name-directory emacs-d-dir)))))
-    (activate-yasnippet-with-dirs (list (file-name-as-directory (expand-file-name "python" all-snip-dir)))))
+  (activate-yasnippet-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
   (setq-local python-guess-indent nil)
   (setq-local python-indent 4))
 

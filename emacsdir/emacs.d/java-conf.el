@@ -53,7 +53,7 @@
 	       '(maven "\\[ERROR\\] \\(.+?\\):\\[\\([0-9]+\\),\\([0-9]+\\)\\].*"
 		       1 2 3))
   (let* 
-      ((ecust-snips (file-name-as-directory (expand-file-name "snippets/java" (file-name-directory emacs-d-dir))))
+      ((ecust-snips (file-name-as-directory (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
        (eclim-snips (file-name-as-directory (expand-file-name "snippets" (file-name-directory (locate-library "eclim"))))))
     (activate-yasnippet-with-dirs (list ecust-snips eclim-snips))
     ;(message (list ecust-snips eclim-snips))

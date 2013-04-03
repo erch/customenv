@@ -9,8 +9,7 @@
 
 ;; Standard org stuff
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-					;(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
+;(define-key global-map "\C-ca" 'org-agenda)
 
 ;; Settings
 (setq org-list-indent-offset 2)
@@ -61,7 +60,7 @@
     (week-day-time-from-date 1 +1 (encode-time sec min hour day month year))))
 
 					; (get-journal-time 1 (encode-time 0 0 0 10 5 2011))
-					; (get-journal-time 1)
+					; (get-journal-time 3)
 
 (defun get-journal-file-name (&optional wk time)
   (let* ((dt (get-journal-time 1))
@@ -247,6 +246,7 @@
 	    (define-key org-mode-map (kbd "C-c D") 'org-decrypt-entries)
 	    (define-key org-mode-map (kbd "C-c d") 'org-decrypt-entry)
 	    (setq buffer-auto-save-file-name nil) ;; recommended for buffer with crypted parts
+	    (activate-yasnippet-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
 	    )
 	  )
 ;; enabling clocking
@@ -313,11 +313,38 @@
 
 (require 'yasnippet-conf)
 (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
-       (month (nth (nth 1 (get-journal-time)) mlist))
+       (month (nth (- 1 (nth 1 (get-journal-time))) mlist))
        (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
        )
   (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
 
-					; enabling fly mode
+(defun last-journal-names (nb)
+  "return the nb last journal names"
+  (interactive "nnb of previous journal: ")
+  (let ((tl  (decode-time)))
+    (sec (nth 0 tl))
+    (min (nth 1 tl))
+    (hour (nth 2 tl))
+    (day 1)
+    (month (nth 4 tl))
+    (year (nth 5 tl))
+    (setq var1 some)
+     ))
+
+(defun time-nth-months-back (n &optional tme)
+  "get the month number for n month back than time"
+  (let* ((tl  (if (null tme) (decode-time) (decode-time tme)))
+	 (sec (nth 0 tl))
+	 (min (nth 1 tl))
+	 (hour (nth 2 tl))
+	 (day (nth 3 tl))
+	 (month (nth 4 tl))
+	 (year (nth 5 tl))
+	 (dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
+	 (dest-year (- year (/ n 12))))
+    (encode-time sec min hour day dest-month dest-year)))
+
+; (decode-time (time-nth-months-back  12))
+;; enabling fly mode
 (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 (provide 'org-conf)
