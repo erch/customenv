@@ -23,8 +23,7 @@
 
 (package-initialize)
 
-; load needed files for all other configuation
-(require '01-emacs-conf)
+
 
 ;; compile files in emacs.d
 (defun compile-if-newer (file)
@@ -40,7 +39,11 @@
 
 (mapcar 'compile-if-newer (sort (directory-files emacs-d-dir t ".*\\.el$") 'string<))
 
+; load needed files for all other configuration files
+(require '01-emacs-conf)
+(require '02-utility-funcs)
 
+;; load configuration files
 (defun requires-files(dir)
   (mapcar (lambda (x) 
 	    (let* ((sym (file-name-sans-extension (file-name-nondirectory x))))
@@ -50,7 +53,6 @@
 	  (sort  (directory-files dir t ".*\\.elc$") 'string<)))
 
 (requires-files emacs-d-dir)
-
 
 (provide 'site-start)
 

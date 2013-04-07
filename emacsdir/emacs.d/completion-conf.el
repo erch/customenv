@@ -2,7 +2,7 @@
 (unless (require 'auto-complete nil t)
   (progn 
     (package-install 'auto-complete)
-    (load-library "auto-complete")))
+    (require 'auto-complete)))
 
 ;; (unless (require 'company  nil t)
 ;;   (progn 

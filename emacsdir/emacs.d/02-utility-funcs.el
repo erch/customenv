@@ -9,6 +9,15 @@
     (setq path-sep "/")
     (setq clpath-sep ":")))
 
+(unless (boundp 'setq-local)
+  (defmacro setq-local (var value) 
+    `(progn
+      (make-local-variable ',var)
+      (setq ,var ,value))))
+
+;(setq myvar 1)
+;(setq-local myvar 2)
+
 (defun flattenlists(res &rest lists)
   "return a list of string with all strings find in any lists inside list and otherlist recursively"
   (cond ((null lists) res)

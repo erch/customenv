@@ -2,13 +2,13 @@
 (unless (require 'eclim nil t)
   (progn
     (package-install 'emacs-eclim)
-    ;(load-library "eclim")
+    (require 'eclim)
 ))
 
 (unless (require 'javadoc-lookup nil t)
   (progn
     (package-install 'javadoc-lookup)
-    ;(load-library "javadoc-lookup")
+    (require 'javadoc-lookup)
 ))
 
 ;; bug in eclim-maven that defines a wrong regexp for compilation buffer
@@ -21,7 +21,6 @@
 (require 'javadoc-lookup)
 (require 'maven-fetch)
 (require 'eclimd)
-(require 'eclim)
 
 (require 'completion-conf)
 
@@ -59,7 +58,6 @@
     ;(message (list ecust-snips eclim-snips))
     ))      
 
-(java-mode-cust)
 (add-hook 'java-mode-hook 'java-mode-cust)
 (message "java-conf loaded")
 (provide 'java-conf)

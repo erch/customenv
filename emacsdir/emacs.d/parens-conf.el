@@ -1,9 +1,9 @@
 (unless (require 'smartparens nil t)
   (progn
     (package-install 'smartparens)
-    ;(load-library "smartparens"))
-))
-(require 'smartparens)
+    (require 'smartparens))
+)
+
 (smartparens-global-mode 1)
 
 ;; highlights matching pairs
