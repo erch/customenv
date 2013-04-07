@@ -1,9 +1,9 @@
 (message "loading shell-conf ...")
 (unless (require 'multi-term nil t)
   (progn
-    (package-install 'multi-term)))
+    (package-install 'multi-term)
+    (require 'multi-term)))
 
-(require 'multi-term)
 (multi-term-keystroke-setup) 
 (global-set-key (kbd "<f2>") 'multi-term)
 (global-set-key (kbd "S-<f2>") 'multi-term-next)

@@ -2,10 +2,9 @@
 (unless (require 'yasnippet nil t)
   (progn
     (package-install 'yasnippet)
-    ;(load-library "yasnippet")
+    (require 'yasnippet)
 ))
 
-(require 'yasnippet)
 (setq yas-snippet-dirs (list (expand-file-name "snippets" (file-name-directory (locate-library "yasnippet")))))
 
 (require 'dropdown-list)

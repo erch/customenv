@@ -1,15 +1,15 @@
 (unless (require 'org nil t)
   (progn
     (package-install 'org)
-    (load-library "org-install")))
+    (require  'org-install)))
 (message "loading org ...")
-(require '02-utility-funcs)
+
 (require 'org-install)
 (require 'org-crypt)
 
 ;; Standard org stuff
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-;(define-key global-map "\C-ca" 'org-agenda)
+;(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(define-key global-map "\C-ca" 'org-agenda)
 
 ;; Settings
 (setq org-list-indent-offset 2)
