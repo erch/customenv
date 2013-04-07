@@ -63,7 +63,7 @@
 					; (get-journal-time 3)
 
 (defun get-journal-file-name (&optional wk time)
-  (let* ((dt (get-journal-time 1))
+  (let* ((dt (get-journal-time 1 time))
 	 (year (nth 0 dt))
 	 (month (nth 1 dt)))
     (expand-file-name (format "Orga_Dairy-%4d-%02d.org" year month) org-directory)))
@@ -312,11 +312,18 @@
 (define-key global-map "\C-cg" 'gtd)
 
 (require 'yasnippet-conf)
-(let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
-       (month (nth (- 1 (nth 1 (get-journal-time))) mlist))
-       (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
-       )
-  (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
+(defun journal-month-as-string (&optional tme)
+  "get the journal month for time as a string"
+  (interactive "Mdate: ")
+  (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
+	 (tl  (if (null tme) (decode-time) (decode-time tme))))
+       (nth (- (nth 1 (get-journal-time (apply 'encode-time tl))) 1) mlist)))
+
+;(journal-month)
+;(apply 'encode-time (decode-time))
+;;       (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
+;;      )
+;;  (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
 
 (defun last-journal-names (nb)
   "return the nb last journal names"
@@ -344,6 +351,7 @@
 	 (dest-year (- year (/ n 12))))
     (encode-time sec min hour day dest-month dest-year)))
 
+; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
 ; (decode-time (time-nth-months-back  12))
 ;; enabling fly mode
 (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
