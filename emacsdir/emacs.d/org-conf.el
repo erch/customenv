@@ -144,7 +144,7 @@
 		      (:endgroup . nil)
 		      ("crypt" . ?Y) 
 		      (:startgroup . nil) ; activity
-		      ("Architecture" . ?r)
+		      ("Design" . ?d)
 		      ("People_Management" . ?p)
 		      ("Project_Management" . ?j)
 		      ("Software_Engineering" . ?S)
@@ -289,7 +289,6 @@
  (lambda ()
    (define-key org-agenda-keymap   "L" 'my-org-agenda-toggle-list-category)
    (define-key org-agenda-mode-map "L" 'my-org-agenda-toggle-list-category)
-
    ))
 
 ;;   (add-hook 
