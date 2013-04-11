@@ -1,3 +1,4 @@
+(message "loadind display-conf ...")
 (require 'ibuffer) 
 (setq ibuffer-saved-filter-groups
       (quote (("default"
@@ -19,4 +20,15 @@
   (ibuffer-filter-by-filename "."))) ;; to show only dired and files buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (setq mouse-buffer-menu-mode-mult 0)
-(provide 'buffer-conf)
+
+(winner-mode 1)
+
+(unless (require 'framemove nil t)
+  (progn
+    (package-install 'framemove)
+    (require 'framemove)
+))
+;(framemove-default-keybindings)
+(windmove-default-keybindings)
+(setq framemove-hook-into-windmove t)
+(provide 'display-conf)
