@@ -144,7 +144,8 @@
 		      (:endgroup . nil)
 		      ("crypt" . ?Y) 
 		      (:startgroup . nil) ; activity
-		      ("Design" . ?d)
+		      ("Design" . ?D)
+		      ("Communication" . ?c)
 		      ("People_Management" . ?p)
 		      ("Project_Management" . ?j)
 		      ("Software_Engineering" . ?S)
@@ -163,8 +164,8 @@
 		      (:startgroup . nil) ; type
 		      ("Perso" . ?z)
 		      ("Work" . ?w)
-		      (:endgroup . nil) ; people
-					;(:startgroup . nil)
+		      (:endgroup . nil)
+					;(:startgroup . nil)  ; people
 		      ("PATRICK" . nil)
 		      ("CHRISTOPHE" . nil)		       
 		      ("GILLES" . nil)
