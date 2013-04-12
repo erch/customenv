@@ -28,7 +28,7 @@
     (package-install 'framemove)
     (require 'framemove)
 ))
-;(framemove-default-keybindings)
+(framemove-default-keybindings)
 (windmove-default-keybindings)
 (setq framemove-hook-into-windmove t)
 (provide 'display-conf)

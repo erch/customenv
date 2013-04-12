@@ -50,7 +50,7 @@
 	      (progn  
 	      (require (intern sym) nil t)
 	      (message (concat "done for " sym))))) 
-	  (sort  (directory-files dir t ".*\\.elc$") 'string<)))
+	  (sort  (directory-files dir t ".*\\.el$") 'string<)))
 
 (requires-files emacs-d-dir)
 
