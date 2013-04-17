@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# name: socks-proxy
+# key: socks
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+ssh -fN -D ${1:$$(yas-choose-value '("1083" "1085"))} ${1:$(if (string= text "1083") "bom-cron1" "bom-prex1.bestofmedia.com")}$0

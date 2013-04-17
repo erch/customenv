@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# name: curl
+# key: curl
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+curl --socks5-hostname localhost:${1:$$(yas-choose-value '("1083" "1085"))} -H'accept:text/xml' -H 'accept-language:${2:$$(yas-choose-value '("en" "fr" "de"))}' 'http://${3:bom-prod-bss-serving-05}:8080/${4:$$(yas-choose-value '("search-4" "acquisition-4" "fastsearch-4" "custom-logic-4"))}/$5' | xmlstarlet fo$0
