@@ -54,7 +54,7 @@
   (let* 
       ((ecust-snips (file-name-as-directory (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
        (eclim-snips (file-name-as-directory (expand-file-name "snippets" (file-name-directory (locate-library "eclim"))))))
-    (activate-yasnippet-with-dirs (list ecust-snips eclim-snips))
+    (activate-yasnippet-buffer-local-with-dirs (list ecust-snips eclim-snips))
     ;(message (list ecust-snips eclim-snips))
     ))      
 

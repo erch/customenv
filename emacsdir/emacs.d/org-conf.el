@@ -110,10 +110,27 @@
 	(find-todos-in-files files pattern)))))
 ;;(find-todos-in-dir project-dir)
 
+(defun last-journal-names (nb)
+  "return the nb last journal names"
+  (interactive "nnb of previous journal: ")
+  (let ((tl  (decode-time)))
+    (sec (nth 0 tl))
+    (min (nth 1 tl))
+    (hour (nth 2 tl))
+    (day 1)
+    (month (nth 4 tl))
+    (year (nth 5 tl))
+    (setq var1 some)
+     ))
+; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
+; (decode-time (time-nth-months-back  12))
+
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
+(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5)))
+
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
 (add-to-list 'org-agenda-files (expand-file-name "Orga_Scheduling.org" org-directory))
@@ -138,8 +155,8 @@
 		      ("AGENDA" . ?G)
 		      ("CALL" . ?C)
 		      ("READ_REVIEW_1" . ?1)
-		      ("READ_REVIEW_1" . ?2)	
-		      ("READ_REVIEW_1" . ?3)
+		      ("READ_REVIEW_2" . ?2)	
+		      ("READ_REVIEW_3" . ?3)
 		      ("MEETING" . ?M)
 		      (:endgroup . nil)
 		      ("crypt" . ?Y) 
@@ -247,7 +264,7 @@
 	    (define-key org-mode-map (kbd "C-c D") 'org-decrypt-entries)
 	    (define-key org-mode-map (kbd "C-c d") 'org-decrypt-entry)
 	    (setq buffer-auto-save-file-name nil) ;; recommended for buffer with crypted parts
-	    (activate-yasnippet-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
+	    (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
 	    )
 	  )
 ;; enabling clocking
@@ -325,34 +342,7 @@
 ;;      )
 ;;  (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
 
-(defun last-journal-names (nb)
-  "return the nb last journal names"
-  (interactive "nnb of previous journal: ")
-  (let ((tl  (decode-time)))
-    (sec (nth 0 tl))
-    (min (nth 1 tl))
-    (hour (nth 2 tl))
-    (day 1)
-    (month (nth 4 tl))
-    (year (nth 5 tl))
-    (setq var1 some)
-     ))
 
-(defun time-nth-months-back (n &optional tme)
-  "get the month number for n month back than time"
-  (let* ((tl  (if (null tme) (decode-time) (decode-time tme)))
-	 (sec (nth 0 tl))
-	 (min (nth 1 tl))
-	 (hour (nth 2 tl))
-	 (day (nth 3 tl))
-	 (month (nth 4 tl))
-	 (year (nth 5 tl))
-	 (dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
-	 (dest-year (- year (/ n 12))))
-    (encode-time sec min hour day dest-month dest-year)))
-
-; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
-; (decode-time (time-nth-months-back  12))
 ;; enabling fly mode
 (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 (provide 'org-conf)

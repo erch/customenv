@@ -148,6 +148,19 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 	 (prev-day (nth 2 prev-day)))
       (format  format-str prev-year prev-month prev-day)))
 
+(defun time-nth-months-back (n &optional tme)
+  "get the month number for n month back than time"
+  (let* ((tl  (if (null tme) (decode-time) (decode-time tme)))
+	 (sec (nth 0 tl))
+	 (min (nth 1 tl))
+	 (hour (nth 2 tl))
+	 (day (nth 3 tl))
+	 (month (nth 4 tl))
+	 (year (nth 5 tl))
+	 (dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
+	 (dest-year (- year (/ n 12))))
+    (encode-time sec min hour day dest-month dest-year)))
+
 ;;(calendar-nth-named-day -1 1 07 2009 27)
 ;;(decode-time (week-day-time-from-date 3))
 ;;(format-week-day-from-date  "%4d-%02d" 3)

@@ -45,6 +45,26 @@
     (require 'frame-cmds)
 ))
 
+(defun myenlarge-frame()
+  (interactive)
+  (enlarge-frame 10))
+; (myenlarge-frame)
+
+(defun myenlarge-frame-horizontally()
+  (interactive)
+  (enlarge-frame-horizontally 20))
+;(myenlarge-frame-horizontally)
+
+(defun myshrink-frame()
+  (interactive)
+  (shrink-frame 10))
+; (myshrink-frame)
+
+(defun myshrink-frame-horizontally()
+  (interactive)
+  (shrink-frame-horizontally 20))
+;(myshrink-frame-horizontally)
+
 ;;   (global-set-key [(meta up)]                    'move-frame-up)
 ;;   (global-set-key [(meta down)]                  'move-frame-down)
 ;;   (global-set-key [(meta left)]                  'move-frame-left)
@@ -53,10 +73,10 @@
 (global-set-key [(control shift ?v)]           'move-frame-to-screen-bottom)   ; like `C-v'
 (global-set-key [(control shift prior)]        'move-frame-to-screen-left)     ; like `C-prior'
 (global-set-key [(control shift next)]         'move-frame-to-screen-right)    ; like `C-next'
-(global-set-key [(control meta down)]          'enlarge-frame)
-(global-set-key [(control meta right)]         'enlarge-frame-horizontally)
-(global-set-key [(control meta up)]            'shrink-frame)
-(global-set-key [(control meta left)]          'shrink-frame-horizontally)
+(global-set-key [(control meta down)]          'myenlarge-frame)
+(global-set-key [(control meta right)]         'myenlarge-frame-horizontally)
+(global-set-key [(control meta up)]            'myshrink-frame)
+(global-set-key [(control meta left)]          'myshrink-frame-horizontally)
 ;;   (global-set-key [(control ?x) (control ?z)]    'iconify-everything)
 ;;   (global-set-key [vertical-line S-down-mouse-1] 'iconify-everything)
 ;;   (global-set-key [(control ?z)]                 'iconify/map-frame)
@@ -81,53 +101,83 @@
 ;;  Customize the menu.  Uncomment this to try it out.
 ;;
 ;;
-(defvar menu-bar-frames-menu (make-sparse-keymap "Frames"))
-(define-key global-map [menu-bar frames]
-  (cons "Frames" menu-bar-frames-menu))
-;)
-(define-key menu-bar-frames-menu [set-all-params-from-frame]
-  '(menu-item "Set All Frame Parameters from Frame" set-all-frame-alist-parameters-from-frame
-    :help "Set frame parameters of a frame to their current values in frame"))
-(define-key menu-bar-frames-menu [set-params-from-frame]
-  '(menu-item "Set Frame Parameter from Frame..." set-frame-alist-parameter-from-frame
-    :help "Set parameter of a frame alist to its current value in frame"))
-(define-key menu-bar-frames-menu [separator-frame-1] '("--"))
-(define-key menu-bar-frames-menu [tile-frames-vertically]
-  '(menu-item "Tile Frames Vertically..." tile-frames-vertically
-    :help "Tile all visible frames vertically"))
-(define-key menu-bar-frames-menu [tile-frames-horizontally]
-  '(menu-item "Tile Frames Horizontally..." tile-frames-horizontally
-    :help "Tile all visible frames horizontally"))
-(define-key menu-bar-frames-menu [separator-frame-2] '("--"))
-(define-key menu-bar-frames-menu [toggle-max-frame-vertically]
-  '(menu-item "Toggle Max Frame Vertically" toggle-max-frame-vertically
-    :help "Maximize or restore the selected frame vertically"
-    :enable (frame-parameter nil 'restore-height)))
-(define-key menu-bar-frames-menu [toggle-max-frame-horizontally]
-  '(menu-item "Toggle Max Frame Horizontally" toggle-max-frame-horizontally
-    :help "Maximize or restore the selected frame horizontally"
-    :enable (frame-parameter nil 'restore-width)))
-(define-key menu-bar-frames-menu [toggle-max-frame]
-  '(menu-item "Toggle Max Frame" toggle-max-frame
-    :help "Maximize or restore the selected frame (in both directions)"
-    :enable (or (frame-parameter nil 'restore-width) (frame-parameter nil 'restore-height))))
-(define-key menu-bar-frames-menu [maximize-frame-vertically]
-  '(menu-item "Maximize Frame Vertically" maximize-frame-vertically
-    :help "Maximize the selected frame vertically"))
-(define-key menu-bar-frames-menu [maximize-frame-horizontally]
-  '(menu-item "Maximize Frame Horizontally" maximize-frame-horizontally
-    :help "Maximize the selected frame horizontally"))
-(define-key menu-bar-frames-menu [maximize-frame]
-  '(menu-item "Maximize Frame" maximize-frame
-    :help "Maximize the selected frame (in both directions)"))
-(define-key menu-bar-frames-menu [separator-frame-3] '("--"))
-(define-key menu-bar-frames-menu [iconify-everything]
-  '(menu-item "Iconify All Frames" iconify-everything
-    :help "Iconify all frames of session at once"))
-(define-key menu-bar-frames-menu [show-hide]
-  '(menu-item "Hide Frames / Show Buffers" show-hide
-    :help "Show, if only one frame visible; else hide."))
-;)
+(let ((menu-bar-frames-menu (make-sparse-keymap "Frames")))
+  (define-key-after global-map [menu-bar frames]
+    (cons "Frames" menu-bar-frames-menu))
+  (define-key menu-bar-frames-menu [set-all-params-from-frame]
+    '(menu-item "Set All Frame Parameters from Frame" set-all-frame-alist-parameters-from-frame
+		:help "Set frame parameters of a frame to their current values in frame"))
+  (define-key menu-bar-frames-menu [set-params-from-frame]
+    '(menu-item "Set Frame Parameter from Frame..." set-frame-alist-parameter-from-frame
+		:help "Set parameter of a frame alist to its current value in frame"))
+  (define-key menu-bar-frames-menu [separator-frame-1] '("--"))
+  (define-key menu-bar-frames-menu [tile-frames-vertically]
+    '(menu-item "Tile Frames Vertically..." tile-frames-vertically
+		:help "Tile all visible frames vertically"))
+  (define-key menu-bar-frames-menu [tile-frames-horizontally]
+    '(menu-item "Tile Frames Horizontally..." tile-frames-horizontally
+		:help "Tile all visible frames horizontally"))
+  (define-key menu-bar-frames-menu [separator-frame-2] '("--"))
+  (define-key menu-bar-frames-menu [toggle-max-frame-vertically]
+    '(menu-item "Toggle Max Frame Vertically" toggle-max-frame-vertically
+		:help "Maximize or restore the selected frame vertically"
+		:enable (frame-parameter nil 'restore-height)))
+  (define-key menu-bar-frames-menu [toggle-max-frame-horizontally]
+    '(menu-item "Toggle Max Frame Horizontally" toggle-max-frame-horizontally
+		:help "Maximize or restore the selected frame horizontally"
+		:enable (frame-parameter nil 'restore-width)))
+  (define-key menu-bar-frames-menu [toggle-max-frame]
+    '(menu-item "Toggle Max Frame" toggle-max-frame
+		:help "Maximize or restore the selected frame (in both directions)"
+		:enable (or (frame-parameter nil 'restore-width) (frame-parameter nil 'restore-height))))
+  (define-key menu-bar-frames-menu [maximize-frame-vertically]
+    '(menu-item "Maximize Frame Vertically" maximize-frame-vertically
+		:help "Maximize the selected frame vertically"))
+  (define-key menu-bar-frames-menu [maximize-frame-horizontally]
+    '(menu-item "Maximize Frame Horizontally" maximize-frame-horizontally
+		:help "Maximize the selected frame horizontally"))
+  (define-key menu-bar-frames-menu [maximize-frame]
+    '(menu-item "Maximize Frame" maximize-frame
+		:help "Maximize the selected frame (in both directions)"))
+  (define-key menu-bar-frames-menu [separator-frame-3] '("--"))
+  (define-key menu-bar-frames-menu [iconify-everything]
+    '(menu-item "Iconify All Frames" iconify-everything
+		:help "Iconify all frames of session at once"))
+  (define-key menu-bar-frames-menu [show-hide]
+    '(menu-item "Hide Frames / Show Buffers" show-hide
+		:help "Show, if only one frame visible; else hide."))
+  (define-key menu-bar-frames-menu [separator-frame-4] '("--"))
+  (define-key menu-bar-frames-menu [move-to-top]
+    '(menu-item "Move frame to top of screen" move-frame-to-screen-top
+		:help "Move the frame to the top of the screen."))
+  (define-key menu-bar-frames-menu [move-to-bottom]
+    '(menu-item "Move frame to the bottom of screen" move-frame-to-screen-bottom
+		:help "Move the frame to the bottom of the screen."))
+  (define-key menu-bar-frames-menu [move-to-left]
+    '(menu-item "Move frame to the left" move-frame-to-screen-left
+		:help "Move the frame to the left of the screen."))
+  (define-key menu-bar-frames-menu [move-to-right]
+    '(menu-item "Move frame to the right" move-frame-to-screen-right
+		:help "Move the frame to the right of the screen."))
+  (define-key menu-bar-frames-menu [enlarge]
+    '(menu-item "Enlarge the frame vertically" myenlarge-frame
+		:help "Enlarge the frame vertically until it reaches the borders."))
+  (define-key menu-bar-frames-menu [enlarge-horizontally]
+    '(menu-item "Enlarge the frame horizontally" myenlarge-frame-horizontally
+		:help "Enlarge the frame horizontally until it reaches the borders."))
+  (define-key menu-bar-frames-menu [shrink]
+    '(menu-item "Shrink the frame vertically" myshrink-frame
+		:help "Shrink the frame vertically."))
+  (define-key menu-bar-frames-menu [shrink-horizontally]
+    '(menu-item "Shrink the frame horizontally" myshrink-frame-horizontally
+		:help "Shrink the frame horizontally."))
+  (define-key menu-bar-frames-menu [separator-frame-5] '("--"))
+  (define-key menu-bar-frames-menu [winner-undo]
+    '(menu-item "Restore previous windows" winner-undo
+		:help "Restore previous windows layout."))
+  (define-key menu-bar-frames-menu [winner-redo]
+    '(menu-item "Undo restore windows" winner-redo
+		:help "Come back to windows layout before the last restore.")))
 
 ;; (defvar menu-bar-doremi-menu (make-sparse-keymap "Do Re Mi"))
 ;; (define-key global-map [menu-bar doremi]

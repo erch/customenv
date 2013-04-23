@@ -3,15 +3,6 @@
 ;(load-file (expand-file-name "misc/term.el" site-lisp-dir))
 (require 'term)
 
-;(unless (require 'multi-term nil t)
-;  (progn
-;    (package-install 'multi-term)
-;    (require 'multi-term)))
-
-;(multi-term-keystroke-setup) 
-;(global-set-key (kbd "<f2>") 'ansi-term)
-;(global-set-key (kbd "S-<f2>") 'multi-term-next)
-
 (defun visit-ansi-term ()
   "If the current buffer is:
 1) a running ansi-term named *ansi-term*, rename it.
@@ -53,6 +44,28 @@ or start a new one while killing a defunt one"
     (message "ok")
     (if char-mode-beforep (term-char-mode))))
 
+(defun mygetpoint ()
+  (interactive)
+  (message "at %d" (point)))
+
+(defun myterm-clear-process-input()
+  "clear all char send to the sub process for a non yet executed line"
+  (interactive)
+  (save-excursion
+    (let* ((end (progn (end-of-line) (point)))
+	   (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+	   (nbdel (- end beg))
+	   (input (if (> nbdel 0) (buffer-substring-no-properties beg end) "")))
+      (when (> nbdel 0)	        
+	(message "beg : %d, end : %d , input %s - going to delete %d char" beg end input nbdel)
+	;(term-send-raw-string (make-string nbdel ?\C-? )))
+	(term-send-invisible (make-string nbdel ?\C-? )))
+      input)))
+
+(defadvice term-line-mode (before clean-process-input-before-line-mode activate)
+  (message "before switching to line mode")
+  (myterm-clear-process-input))
+
 ;; -------------- from mutli-term.el
 
 ; The key list that will need to be unbind.
@@ -65,10 +78,10 @@ or start a new one while killing a defunt one"
   '(
     ("C-<rigth>" . myterm-send-backward-word)
     ("C-c C-c" . term-interrupt-subjob)
-    ("C-p" . previous-line)
-    ("C-n" . next-line)
-    ("C-s" . isearch-forward)
-    ("C-r" . isearch-backward)
+    ("C-p" . term-previous-prompt)
+    ("C-n" . term-next-prompt)
+    ("M-s" . isearch-forward)
+    ("M-r" . isearch-backward)
     ("C-m" . term-send-raw)
   
     ("M-f" . myterm-send-forward-word)
@@ -79,7 +92,7 @@ or start a new one while killing a defunt one"
     ("M-n" . term-send-down)
     ("M-M" . myterm-send-forward-kill-word)
     ("M-N" . myterm-send-backward-kill-word)
-   ; ("M-r" . term-send-reverse-search-history)
+    ("C-r" . term-send-reverse-search-history)
    ; ("M-," . term-send-input)
     ("M-." . comint-dynamic-complete)))
 
@@ -147,7 +160,7 @@ and binds some keystroke with `term-raw-map'."
 	     (setq-local overflow-newline-into-fringe t)
 	     (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
 	     (setq-local  autopair-dont-activate t)
-	     (activate-yasnippet-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
+	     (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
 	     (ansi-color-for-comint-mode-on) 
 	     (toggle-truncate-lines -1)
 	     (setq-local comint-scroll-to-bottom-on-input t)  ; always insert at the bottom
@@ -158,9 +171,7 @@ and binds some keystroke with `term-raw-map'."
 	     (setq-local comint-completion-addsuffix t)       ; insert space/slash after file completion
 	     (setq-local comint-buffer-maximum-size 50000)    ; max length of the buffer in lines
 	     (setq-local comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
-	     (setq-local comint-get-old-input 'term-myget-new-input) ;(lambda () "")) ; what to run when i press enter on a
-	     ;(setq-local comint-get-old-input (lambda () "")) ; what to run when i press enter on a
-	     (setq-local comint-get-old-input (lambda () ""))
+	     (setq-local comint-get-old-input 'term-myget-new-input) ; what to run when i press enter on a	  
 	     (setq-local comint-input-ring-size 5000)         ; max shell history size
 	     (setq-local  mouse-yank-at-point t)
 	     (setq-local transient-mark-mode nil)	     
@@ -171,7 +182,7 @@ and binds some keystroke with `term-raw-map'."
 ))
 
 ;; truncate buffers continuously
-(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
+;(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
 
 ; interpret and use ansi color codes in shell output windows
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
@@ -179,7 +190,7 @@ and binds some keystroke with `term-raw-map'."
 (defun set-scroll-conservatively ()
   "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell buffers."
   (set (make-local-variable 'scroll-conservatively) 10))
-(add-hook 'shell-mode-hook 'set-scroll-conservatively)
+;(add-hook 'shell-mode-hook 'set-scroll-conservatively)
 
 (unless (string= window-system "w32")
   (setenv "PAGER" "cat")
