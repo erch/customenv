@@ -6,7 +6,7 @@
 (unless (require 'outline-magic nil t)
   (progn 
     (package-install 'outline-magic)
-    (requre 'outline-magic))
+    (require 'outline-magic))
 )
 (setq outline-cycle-emulate-tab nil)
 

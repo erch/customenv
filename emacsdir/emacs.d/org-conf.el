@@ -70,6 +70,14 @@
 
 ;;(get-journal-file-name)
 
+(defun get-journal-file-name-if-exists(&optional wk time)
+  (let ((file (get-journal-file-name wk time)))
+    (if (file-exists-p file) file nil)))
+
+;(get-journal-file-name-if-exists)
+
+
+
 (setq
  ;; notes will be put in the journal file when an automatic function will return the journal
  backup-dir (file-name-as-directory (expand-file-name ".archive/org" org-directory))
@@ -110,26 +118,15 @@
 	(find-todos-in-files files pattern)))))
 ;;(find-todos-in-dir project-dir)
 
-(defun last-journal-names (nb)
-  "return the nb last journal names"
-  (interactive "nnb of previous journal: ")
-  (let ((tl  (decode-time)))
-    (sec (nth 0 tl))
-    (min (nth 1 tl))
-    (hour (nth 2 tl))
-    (day 1)
-    (month (nth 4 tl))
-    (year (nth 5 tl))
-    (setq var1 some)
-     ))
 ; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
+; (time-nth-months-back 1)
 ; (decode-time (time-nth-months-back  12))
 
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5)))
+(mapc (lambda(x) (when (not (null x)) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists 1 (time-nth-months-back x))) '(0 1 2 3 4 5)))
 
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
