@@ -101,51 +101,38 @@
   ;; Enable warning faces for flake8 output.
   (when (string-match "flake8" python-check-command)
     (set (make-local-variable 'flymake-warning-re) "^W[0-9]"))
-
-  ; add keys to run nose tests
-  (local-set-key "\C-ca" 'nosetests-all)
-  (local-set-key "\C-cm" 'nosetests-module)
-  (local-set-key "\C-c." 'nosetests-one)
-  (local-set-key "\C-cpa" 'nosetests-pdb-all)
-  (local-set-key "\C-cpm" 'nosetests-pdb-module)
-  (local-set-key "\C-cp." 'nosetests-pdb-one)
-
-  ; setup pylookup to search in documentation
-  (local-set-key (kbd "C-c C-d C-b") 'pylookup-lookup)
-  (modify-python-menu)
+  ; change key bindings and menu
+  (modify-python-keymap)
   )
 
 (defun modify-python-keymap()
-  (let ((map python-mode-map))
-    (define-key map (kbd "C-c C-f") 'rope-find-file)
-    ;; Movement
-    (define-key map (kbd "M-e") 'pyde-nav-forward-statement)
-    (define-key map (kbd "M-a") 'pyde-nav-backward-statement)
-    ;; Shell interaction
-    (define-key map (kbd "C-c C-c") 'pyde-shell-send-region-or-buffer)
-    ;; Virtual Env support
-    (define-key map (kbd "C-c C-e") 'pyvirtualenv)
-    ;; Goto
-    (define-key map (kbd "C-c C-g C-d") 'rope-goto-definition)
-    (define-key map (kbd "C-c C-g C-c") 'rope-find-occurrences)
-    (define-key map (kbd "C-c C-g C-i") 'rope-find-implementations)
-    (define-key map (kbd "C-c C-g C-g") 'rope-jump-to-global)
-    ;; Documentation
-    (define-key map (kbd "C-c C-v") 'pyde-check)
-    (define-key map (kbd "C-c C-d") 'pyde-doc-rope)
-    (define-key map (kbd "C-c C-w C-s") 'pyde-doc-search)
-    (define-key map (kbd "C-c C-w C-w") 'pyde-doc-show)
-    ;; Rope Project
-    (define-key map (kbd "C-c C-p C-o") 'rope-open-project)
-    (define-key map (kbd "C-c C-p C-c") 'rope-close-project)
-    (define-key map (kbd "C-c C-p C-p") 'rope-project-config)
-    ;; Rope Refactoring
-    (define-key map (kbd "C-c C-r") 'pyde-refactor)))
+  (setq-local pyde-mode-map nil)
+  (setq-local ropemacs-local-keymap nil)
+  (setq-local python-mode-map mypython-mode-map))
 
-(defun modify-python-menu()
-  
-  (define-key python-mode-map [menu-bar Python] nil)
-  (define-key  ropemacs-local-keymap [menu-bar Rope] nil)
+(defun define-mypython-mode-map()
+  (setq mypython-mode-map (make-sparse-keymap))
+  ;; (define-prefix-command 'document-bindings)
+  ;; Navigation
+  (define-key mypython-mode-map (kbd "C-c C-g n") 'imenu)
+  (define-key mypython-mode-map (kbd "C-c C-g d") 'rope-goto-definition)
+  (define-key mypython-mode-map (kbd "C-c C-g m") 'rope-pop-mark)
+  (define-key mypython-mode-map (kbd "C-c C-g g") 'rope-jump-to-global)
+  (define-key mypython-mode-map (kbd "C-c C-g f") 'rope-find-file)
+  (define-key mypython-mode-map (kbd "C-c C-g c") 'rope-find-occurrences)
+  (define-key mypython-mode-map (kbd "C-c C-g i") 'rope-find-implementations)
+  (define-key mypython-mode-map (kbd "M-e") 'pyde-nav-forward-statement)
+  (define-key mypython-mode-map (kbd "M-a") 'pyde-nav-backward-statement)
+  ;; Test
+  (define-key mypython-mode-map (kbd "C-c C-t a") 'nosetests-all)
+  (define-key mypython-mode-map (kbd "C-c C-t f") 'nosetests-module)
+  (define-key mypython-mode-map (kbd "C-c C-t o") 'nosetests-one)
+  (define-key mypython-mode-map (kbd "C-c C-t C-a") 'nosetests-pdb-all)
+  (define-key mypython-mode-map (kbd "C-c C-t C-f") 'nosetests-pdb-module)
+  (define-key mypython-mode-map (kbd "C-c C-t C-o") 'nosetests-pdb-one)
+  ;; Documentation
+  ; setup pylookup to search in documentation
+  (define-key mypython-mode-map (kbd "C-c C-d b") 'pylookup-lookup)
   (easy-menu-define python-menu python-mode-map
     "Python menu"
     '("Python"
@@ -199,21 +186,21 @@
        ["Undo" rope-undo t]
        ["Redo" rope-redo t]
        )
-       ("Test"
-	["Test all" nosetests-all t]
-	["Test module" nosetests-module t]
-	["Test one" nosetests-one t]
-	["Test all debug" nosetests-pdb-all t]
-	["Test module debug" nosetests-pdb-one t]
-	["Test one debug" nosetests-pdb-one t]
-	)
-       ("Process"
-	["Activate virtual env" rope-module-to-package t]
-	["Disable virtual env" pyvirtualenv t]
-	["Send region or buffer" pyde-shell-send-region-or-buffer t]
-	["Switch to shell" python-shell-switch-to-shell t]
-	["Send defun" python-shell-send-defun t]
-	)
+      ("Test"
+       ["Test all" nosetests-all t]
+       ["Test module" nosetests-module t]
+       ["Test one" nosetests-one t]
+       ["Test all debug" nosetests-pdb-all t]
+       ["Test module debug" nosetests-pdb-one t]
+       ["Test one debug" nosetests-pdb-one t]
+       )
+      ("Process"
+       ["Activate virtual env" rope-module-to-package t]
+       ["Disable virtual env" pyvirtualenv t]
+       ["Send region or buffer" pyde-shell-send-region-or-buffer t]
+       ["Switch to shell" python-shell-switch-to-shell t]
+       ["Send defun" python-shell-send-defun t]
+       )
       ("Project"
        ["Open project" rope-open-project t]
        ["Close project" rope-close-project t]
@@ -226,21 +213,11 @@
        ["File" rope-create-file t]
        ["Directory" rope-create-directory t]
        )
-      ))
-  )
+      )))
 
-
-(defun myremove-keymap-key (keymap evt binding)
-  (cond 
-   ((keymapp binding) 
-    (progn (myempty-keymap binding)
-	   (define-key keymap evt nil)))
-   ((fboundp binding) (define-key keymap evt nil))))
-
-(defun myempty-keymap(keymap)
-  (interactive)
-  (map-keymap (lambda(evt binding) (myremove-keymap-key keymap evt binding)) keymap)
-)
+(define-mypython-mode-map)
+;(modify-python-keymap)
+;(modify-python-menu)
 
 (add-hook 'python-mode-hook 'python-mode-setup-hook)
 
