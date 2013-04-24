@@ -1,7 +1,7 @@
 (message "loading python-conf ...")
 
 (unless (locate-library "python-pkg")
-  (progn 
+  (progn
     (package-install 'python))
 )
 
@@ -12,23 +12,23 @@
 (require 'outline-conf)
 
 (unless (require 'pyvirtualenv nil t)
-  (progn 
+  (progn
     (package-install 'pyvirtualenv)
     (require 'pyvirtualenv)
 ))
 
 (unless (require 'nose nil t)
-  (progn 
+  (progn
     (package-install 'nose)
     (require 'nose)
 ))
 
 ;; Browse online documentation ;
 ; Check https://github.com/tsgates/pylookup
-(let ((pylookup-dir (expand-file-name "pylookup/"  site-lisp-dir)))
+(let ((pylookup-dir (file-name-directory (expand-file-name "pylookup"  site-lisp-dir))))
   (add-to-list 'load-path pylookup-dir)
-  (require 'pylookup)                                                                                             
-  (setq pylookup-program  (expand-file-name "pylookup.py"  pylookup-dir))
+  (require 'pylookup)
+  (setq pylookup-program  (file-name-as-directory(expand-file-name "pylookup.py"  pylookup-dir)))
   (setq pylookup-db-file (expand-file-name "pylookup.db" "~/.emacs.d")))
 
 (unless (string= window-system "w32")
@@ -38,7 +38,7 @@
 	(package-install 'pyde)
 	(require 'pyde)))
     (pyde-enable)
-    (pyde-clean-modeline)  
+    (pyde-clean-modeline)
     ;; Flymake support using flake8, including warning faces.
     (if (executable-find "flake8")
 	(setq python-check-command "flake8")
@@ -231,8 +231,8 @@
 
 
 (defun myremove-keymap-key (keymap evt binding)
-  (cond 
-   ((keymapp binding) 
+  (cond
+   ((keymapp binding)
     (progn (myempty-keymap binding)
 	   (define-key keymap evt nil)))
    ((fboundp binding) (define-key keymap evt nil))))
