@@ -25,7 +25,7 @@
 
 ;; Browse online documentation ;
 ; Check https://github.com/tsgates/pylookup
-(let ((pylookup-dir (file-name-as-directory (expand-file-name "pylookup-dir"  site-lisp-dir))))
+(let ((pylookup-dir (file-name-as-directory (expand-file-name "pylookup-pkg"  site-lisp-dir))))
   (add-to-list 'load-path pylookup-dir)
   (require 'pylookup)
   (setq pylookup-program  (file-name-as-directory(expand-file-name "pylookup.py"  pylookup-dir)))
