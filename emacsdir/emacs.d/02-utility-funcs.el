@@ -166,5 +166,64 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 ;;(format-week-day-from-date  "%4d-%02d" 3)
 ;;(format-week-day-from-date  "%4d-%02d-%02d" 1 +1 (encode-time 0 0 0 1 7 2011))
 ;;(week-day-from-date 1 +1  (encode-time 0 0 0 1 8 2011))
+    
+(defun print-debug(mess)
+  (let ((buffer (get-buffer-create "*Debug*")))
+    (with-current-buffer buffer
+      (set-buffer buffer)
+      (insert (format "%s" mess)))))
+
+(defun  build-menu-and-bindings (menu-map key-map menu-key-spec)
+  (if (null menu-key-spec) 
+      nil
+    (let ((firstelem (car menu-key-spec)))
+      (cond 
+       ((and (stringp firstelem) (string-prefix-p "--" firstelem)) 
+	(let ((sep-symbol (make-symbol (format "sep-%d" (random 1000)))))
+	  (progn
+	    (define-key menu-map (vector sep-symbol) '("--"))
+	    (build-menu-and-bindings menu-map key-map (cdr menu-key-spec)))))
+       ((stringp firstelem)
+	(let ((submenu-map (make-sparse-keymap firstelem))
+	      (submenu-symb (make-symbol firstelem)))
+	  (progn
+	    (define-key menu-map (vector submenu-symb)
+	      (cons firstelem submenu-map))
+	    (build-menu-and-bindings submenu-map key-map (cdr menu-key-spec)))))
+       ((listp firstelem)
+	(progn
+	  (build-menu-and-bindings menu-map key-map (car menu-key-spec))
+	  (build-menu-and-bindings menu-map key-map (cdr menu-key-spec))))
+       ((arrayp firstelem)
+	(let* ((name (elt firstelem 0))
+	       (help (elt firstelem 1))
+	       (func (elt firstelem 2))
+	       (menu-symb (make-symbol name)))
+	  (progn
+	    (define-key menu-map (vector menu-symb) (list 'menu-item name func :help help))
+	    (when (= (length firstelem) 4) (define-key key-map  (eval (elt firstelem 3)) func))
+	    (unless (null (cdr menu-key-spec)) (build-menu-and-bindings menu-map key-map (cdr menu-key-spec))))))))))
+
+(defun create-menu-and-key-bindings(name menu-key-spec)
+  (let ((menu-map (make-sparse-keymap name))
+	(key-map (make-sparse-keymap))
+	(menu-symb (make-symbol name)))
+    (progn
+      (define-key key-map (vector 'menu-bar menu-symb) (cons name menu-map))
+      (build-menu-and-bindings menu-map key-map menu-key-spec)
+      )
+    key-map))
+
+ (let ((map (create-menu-and-key-bindings 
+        "Python"
+        '(("Refactor"
+ 	  ["Inline" "Inline" rope-inline]
+ 	  ("Module"
+ 	   ["Module to Package" "Module to Package" rope-module-to-package]
+ 	   )
+ 	  "--"
+ 	  ["Redo" "Redo" rope-redo]
+ 	  )))))
+   (print-debug (format "%s" map)))  
 
 (provide '02-utility-funcs)

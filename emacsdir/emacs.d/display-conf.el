@@ -65,6 +65,32 @@
   (shrink-frame-horizontally 20))
 ;(myshrink-frame-horizontally)
 
+(defadvice fm-next-frame (around next-frame-ignore-error activate)
+  "Ignore errors in fm-next-frame"
+  (ignore-errors
+    ad-do-it))
+
+;; (defun myframe-next(dir)
+;;   "call framemove function with ignore errors to avoid jumping in debug windows that debug-on-error is toggled"
+;;   (ignore-errors
+;;     (fm-next-frame dir)))
+;; 
+;; (defun myframe-right()
+;;   (interactive)
+;;   (myframe-next 'right))
+;; 
+;; (defun myframe-left()
+;;   (interactive)
+;;   (myframe-next 'left))
+;; 
+;; (defun myframe-up()
+;;   (interactive)
+;;   (myframe-next 'up))
+;; 
+;; (defun myframe-dow()
+;;   (interactive)
+;;   (myframe-next 'down))
+
 ;;   (global-set-key [(meta up)]                    'move-frame-up)
 ;;   (global-set-key [(meta down)]                  'move-frame-down)
 ;;   (global-set-key [(meta left)]                  'move-frame-left)
@@ -177,7 +203,24 @@
 		:help "Restore previous windows layout."))
   (define-key menu-bar-frames-menu [winner-redo]
     '(menu-item "Undo restore windows" winner-redo
-		:help "Come back to windows layout before the last restore.")))
+		:help "Come back to windows layout before the last restore."))
+  (define-key menu-bar-frames-menu [separator-frame-6] '("--"))
+  (define-key menu-bar-frames-menu [jump-to-next-frame]
+    '(menu-item "Other windows frame" other-window-or-frame
+		:help "Jump to other window or frame."))
+  (define-key menu-bar-frames-menu [jump-to-frame-right]
+    '(menu-item "Jump to frame right" fm-right-frame
+		:help "Jump to frame on the right."))
+  (define-key menu-bar-frames-menu [jump-to-frame-left]
+    '(menu-item "Jump to frame left" fm-left-frame
+		:help "Jump to frame on the left."))
+  (define-key menu-bar-frames-menu [jump-to-frame-up]
+    '(menu-item "Jump to frame up" fm-up-frame
+		:help "Jump to frame up."))
+  (define-key menu-bar-frames-menu [jump-to-frame-down]
+    '(menu-item "Jump to frame down" fm-down-frame
+		:help "Jump to frame down."))
+)
 
 ;; (defvar menu-bar-doremi-menu (make-sparse-keymap "Do Re Mi"))
 ;; (define-key global-map [menu-bar doremi]
