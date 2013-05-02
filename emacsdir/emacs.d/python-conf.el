@@ -107,36 +107,26 @@
   )
 
 (defun modify-python-keymap()
-  (define-key ropemacs-local-keymap [menu-bar] nil)
-  (setq-local ropemacs-local-keymap nil)
+  ;(define-key ropemacs-local-keymap [menu-bar] nil)
   (use-local-map mypython-mode-map))
 
 (setq mypython-mode-map  
       (create-menu-and-key-bindings 
        "Python"
-       '(("Navigation"
-	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
-	  ["Goto definition" "Jump to symbol definition" rope-goto-definition (kbd "C-c C-g d")]
-	  ["Pop mark" "Pop mark" rope-pop-mark (kbd "C-c C-g m")]
-	  ["Jump to global" "Jump to global" rope-jump-to-global (kbd "C-c C-g g")]
-	  ["Find file" "Find file" rope-find-file (kbd "C-c C-g f")]
-	  ["Find Occurrences" "Find Occurrences" rope-find-occurrences (kbd "C-c C-g c")]
-	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
-	  ["Forward Statement" "Forward Statement" pyde-nav-forward-statement (kbd "M-e")]
-	  ["Backwared Statement" "Backwared Statement" pyde-nav-backward-statement  (kbd "M-a")]
+       '(
+	 ("Process"
+	  ["Send defun" "Send defun" python-shell-send-defun (kbd "C-c C-i f")]
+	  ["Send region or buffer" "Send region or buffer" pyde-shell-send-region-or-buffer (kbd "C-c C-i s")]
+	  ["Switch to shell" "Switch to shell" python-shell-switch-to-shell (kbd "C-c C-i g")]
+	  ["Start Python" "Start a Python interpreter" run-python (kbd "C-c C-i r")]
 	  )
-	 ("Source"
-	  ["Code assist" "Code assist" rope-code-assist]
-	  ["Lucky assist" "Lucky assist" rope-lucky-assist]
-	  ["Analyze module" "Analyze module" rope-analyze-module]
-	  ["Check" "Check" pyde-check]
-	  )
-	 ("Documentation"
-	  ["Show documentation" "Show documentation" rope-show-doc]
-	  ["Show documentation (pyde)" "Show documentation (pyde)" pyde-doc-rope]
-	  ["Search documentation" "Search documentation" pyde-doc-search]
-	  ["Show documentation (pyde 2)" "Show documentation (pyde 2)" pyde-doc-show]
-	  ["Browse documentation" "Browse documentation" pylookup-lookup]
+	 ("Test"
+	  ["Test one" "Test one" nosetests-one (kbd "C-c C-t o")]
+	  ["Test module debug" "Test module debug" nosetests-pdb-one (kbd "C-c C-t C-f")]
+	  ["Test all debug" "Test all debug" nosetests-pdb-all (kbd "C-c C-t C-a")]
+	  ["Test one debug" "Test one debug" nosetests-pdb-one (kbd "C-c C-t C-o")]
+	  ["Test module" "Test module" nosetests-module (kbd "C-c C-t f")]
+	  ["Test all" "Test all" nosetests-all (kbd "C-c C-t a")]
 	  )
 	 ("Refactor"
 	  ["Inline" "Inline" rope-inline]
@@ -148,49 +138,70 @@
 	  ["Restructure" "Restructure" rope-restructure]
 	  ["Use Function" "Use Function" rope-use-function]
 	  ["Introduce Factory" "Introduce Factory" rope-introduce-factory]
-	  ("Generate"
-	   ["Class" "Class" rope-generate-class]
-	   ["Function" "Function" rope-generate-function]
-	   ["Module" "Module" rope-generate-module]
-	   ["Package" "Package" rope-generate-package]
-	   ["Variable" "Variable" rope-generate-variable]
-	   )
 	  ("Module"
 	   ["Module to Package" "Module to Package" rope-module-to-package]
 	   ["Rename Module" "Rename Module" rope-rename-current-module]
 	   ["Move Module" "Move Module" rope-move-current-module]
 	   )
 	  "--"
-	  ["Undo" "Undo" rope-undo]
-	  ["Redo" "Redo" rope-redo]
+	  ["Redo" "Redo" rope-redo (kbd "S-M-_")]
+	  ["Undo" "Undo" rope-undo (kbd "C-M-_")]
 	  )
-	 ("Test"
-	  ["Test all" "Test all" nosetests-all (kbd "C-c C-t a")]
-	  ["Test module" "Test module" nosetests-module (kbd "C-c C-t f")]
-	  ["Test one" "Test one" nosetests-one (kbd "C-c C-t o")]
-	  ["Test all debug" "Test all debug" nosetests-pdb-all (kbd "C-c C-t C-a")]
-	  ["Test module debug" "Test module debug" nosetests-pdb-one (kbd "C-c C-t C-f")]
-	  ["Test one debug" "Test one debug" nosetests-pdb-one (kbd "C-c C-t C-o")]
+	 ("Documentation"
+	  ["Show documentation" "Show documentation" rope-show-doc (kbd "C-c C-d M-s")]
+	  ["Show documentation (pyde)" "Show documentation (pyde)" pyde-doc-rope (kbd "C-c C-d C-s")]
+	  ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
+	  ["Show documentation (pyde 2)" "Show documentation (pyde 2)" pyde-doc-show (kbd "C-c C-d s")]
+	  ["Browse documentation" "Browse documentation" pylookup-lookup (kbd "C-c C-d b")]
 	  )
-	 ("Process"
-	  ["Activate virtual env" "Activate virtual env" rope-module-to-package]
-	  ["Disable virtual env" "Disable virtual env" pyvirtualenv]
-	  ["Send region or buffer" "Send region or buffer" pyde-shell-send-region-or-buffer]
-	  ["Switch to shell" "Switch to shell" python-shell-switch-to-shell]
-	  ["Send defun" "Send defun" python-shell-send-defun]
+	 ("Source"
+	  ("Generate"
+	   ["Create File" "File" rope-create-file]
+	   ["Create Directory" "Directory" rope-create-directory]
+	   ["Create Package" "Package" rope-create-package (kbd "C-c C-s C-c p")]
+	   ["Create Module" "Module" rope-create-module (kbd "C-c C-s C-c m")]
+	   "--"
+	   ["Generate Module" "Module" rope-generate-module]
+	   ["Generate Package" "Package" rope-generate-package]
+	   ["Generate Function" "Function" rope-generate-function]
+	   ["Generate Variable" "Variable" rope-generate-variable]
+	   ["Generate Class" "Class" rope-generate-class]
+	   )
+	  ["Auto Import" "Auto Import" rope-auto-import]
+	  ["Code assist" "Code assist" rope-code-assist]
+	  ["Lucky assist" "Lucky assist" rope-lucky-assist]
+	  "--"
+	  ["Analyze module" "Analyze module" rope-analyze-module (kbd "C-c C-s a")]
+	  ["Check" "Check" pyde-check (kbd "C-c C-s c")]
+	  "--"
+	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
+	  ["Complete" "Auto complete complete" ac-complete]
 	  )
+	 
 	 ("Project"
 	  ["Open project" "Open project" rope-open-project]
 	  ["Close project" "Close project" rope-close-project]
-	  ["Find file" "Find file" rope-find-file]
+	  "--"
 	  ["Open project config" "Open project config" rope-project-config]
+	  ["Find file" "Find file" rope-find-file]
 	  )
-	 ("Create"
-	  ["Module" "Module" rope-create-module]
-	  ["Package" "Package" rope-create-package]
-	  ["File" "File" rope-create-file]
-	  ["Directory" "Directory" rope-create-directory]
-	  ))))
+	 ("Navigation"
+	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
+	  ["Find file other windows" "Find file Other window" rope-find-file (kbd "C-c C-g 4 f")]
+	  ["Find file" "Find file" rope-find-file (kbd "C-c C-g f")]
+	  ["Find Occurrences" "Find Occurrences" rope-find-occurrences (kbd "C-c C-g c")]
+	  "--"
+	  ["Beginning of def" "Move point to the beginning of def or class" python-beginning-of-defun-function]
+	  ["End of def" "Move point to end of def or class" python-end-of-defun-function]
+	  ["Backwared Statement" "Backwared Statement" pyde-nav-backward-statement  (kbd "M-a")]
+	  ["Forward Statement" "Forward Statement" pyde-nav-forward-statement (kbd "M-e")]
+	  "--"
+	  ["Pop mark" "Pop mark" rope-pop-mark (kbd "C-c C-g m")]
+	  ["Jump to global" "Jump to global" rope-jump-to-global (kbd "C-c C-g g")]
+	  ["Goto definition" "Jump to symbol definition" rope-goto-definition (kbd "C-c C-g d")]
+	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
+	  )
+	 )))
 
 (let ((blocking-map (make-sparse-keymap)))
   (define-key blocking-map [menu-bar] nil)
