@@ -31,33 +31,33 @@ def closeAll():
         except Exception:
             pass
 
-def main():        
-    try:                        
+def main():
+    try:
         parser = argparse.ArgumentParser(description='$1')
-        parser.add_argument('--verbosity', '-v', choices=LOGGING_LEVELS , help='logging level')
-	$0
-        args = parser.parse_args() 
-        
+        parser.add_argument('--verbosity', '-v', choices=LOGGING_LEVELS, help='logging level')
+        $0
+        args = parser.parse_args()
+
         logging_level = LOGGING_LEVELS.get(args.verbosity, LOGGING_LEVELS['warning'])
-        logging.basicConfig(level=logging_level, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%dT%H:%M:%S') 
-        
+        logging.basicConfig(level=logging_level, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%dT%H:%M:%S')
+
         logging.getLogger().warning('Starting script ...')
 
     except KeyboardInterrupt:
         return 0
-    except Exception, err:
+    except Exception:
         logging.getLogger().exception('Error from throws():')
         return 1
     finally:
         closeAll()
-        
+
 if __name__ == "__main__":
     try:
         status = main()
-    except KeyboardInterrupt:        
+    except KeyboardInterrupt:
         logging.getLogger().error("Interrupted by user ...")
         status = 2
     finally:
         closeAll()
-	logging.getLogger().warning('End of script')
-    sys.exit(status)     
+        logging.getLogger().warning('End of script')
+    sys.exit(status)

@@ -15,7 +15,7 @@
   (progn
     (package-install 'pyvirtualenv)
     (require 'pyvirtualenv)
-))
+    ))
 
 (unless (require 'nose nil t)
   (progn
@@ -28,7 +28,7 @@
 (let ((pylookup-dir (file-name-as-directory (expand-file-name "pylookup-pkg"  site-lisp-dir))))
   (add-to-list 'load-path pylookup-dir)
   (require 'pylookup)
-  (setq pylookup-program  (file-name-as-directory(expand-file-name "pylookup.py"  pylookup-dir)))
+  (setq pylookup-program  (expand-file-name "pylookup.py"  pylookup-dir))
   (setq pylookup-db-file (expand-file-name "pylookup.db" "~/.emacs.d")))
 
 (unless (string= window-system "w32")
@@ -81,7 +81,7 @@
 
   ;; activation of outline.
   (setq-local python-indent-offset 4)
-  (activate-outline-buffer-local "[ \t]*\\(class\\|def\\|if\\|elif\\|else\\|while\\|for\\|try\\|except\\|finally\\|with\\|import\\|from\\)\\( \\|:\\)" "\n" 'mypy-outline-level)
+  (activate-outline-buffer-local "[ \t]*\\(class\\|def\\|if\\|elif\\|else\\|while\\|for\\|try\\|except\\|finally\\|with\\|import\\|from\\)\\( \\|:\\)" "\n" python-indent-offset)
   
   ;; `flymake-no-changes-timeout': The original value of 0.5 is too
   ;; short for Python code, as that will result in the current line to
@@ -102,6 +102,10 @@
   ;; Enable warning faces for flake8 output.
   (when (string-match "flake8" python-check-command)
     (set (make-local-variable 'flymake-warning-re) "^W[0-9]"))
+
+  ;; browse documentation with w3m
+  (setq-local
+   browse-url-browser-function 'w3m-browse-url)
   ; change key bindings and menu
   (modify-python-keymap)
   )
@@ -148,11 +152,10 @@
 	  ["Undo" "Undo" rope-undo (kbd "C-M-_")]
 	  )
 	 ("Documentation"
-	  ["Show documentation" "Show documentation" rope-show-doc (kbd "C-c C-d M-s")]
-	  ["Show documentation (pyde)" "Show documentation (pyde)" pyde-doc-rope (kbd "C-c C-d C-s")]
-	  ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
-	  ["Show documentation (pyde 2)" "Show documentation (pyde 2)" pyde-doc-show (kbd "C-c C-d s")]
-	  ["Browse documentation" "Browse documentation" pylookup-lookup (kbd "C-c C-d b")]
+	  ["Show documentation" "Show symbol documentation in other window" pyde-doc-rope (kbd "C-c C-d C-s")]
+	  ; ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
+	  ["Browse documentation" "Browse python documentation" pyde-doc-show (kbd "C-c C-d s")]
+	  ["Browse symbol documentation" "Browse documentation for symbol at point" pylookup-lookup (kbd "C-c C-d b")]
 	  )
 	 ("Source"
 	  ("Generate"
@@ -177,7 +180,6 @@
 	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
 	  ["Complete" "Auto complete complete" ac-complete]
 	  )
-	 
 	 ("Project"
 	  ["Open project" "Open project" rope-open-project]
 	  ["Close project" "Close project" rope-close-project]

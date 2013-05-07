@@ -8,7 +8,8 @@
 (setq emacs-d-dir (expand-file-name "emacs.d" (file-name-directory  site-lisp-dir)))
 (setq my-home-dir (expand-file-name "../.." (file-name-directory  site-lisp-dir)))
 (add-to-list 'load-path emacs-d-dir)
-
+(let ((cedet-dir (file-name-as-directory (expand-file-name "cedet" site-lisp-dir))))
+  (load-file (expand-file-name "common/cedet.el" cedet-dir)))
 
 ;; 
 ;(setq package-archives nil)

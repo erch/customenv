@@ -48,27 +48,47 @@ or start a new one while killing a defunt one"
   (interactive)
   (message "at %d" (point)))
 
-(defun myterm-clear-process-input()
-  "clear all char send to the sub process for a non yet executed line"
+;; (defun myterm-clear-process-input()
+;;   "clear all char send to the sub process for a non yet executed line"         
+;;   (interactive)
+;;   (save-excursion
+;;     (let* (
+;; 	   (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+;; 	   (end (progn (end-of-line) (point)))
+;; 	   (nbdel (- end beg))
+;; 	   (input (if (> nbdel 0) (buffer-substring-no-properties beg end) "")))
+;;       (when (> nbdel 0)	        
+;; 	(message "beg : %d, end : %d , input %s - going to delete %d char" beg end input nbdel)
+;; 	;(term-send-raw-string (make-string nbdel ?\C-? )))
+;; 	(term-send-invisible (make-string nbdel ?\C-? )))
+;;       input)))
+
+
+(defadvice term-line-mode (around clean-process-input-before-line-mode disable)
   (interactive)
-  (save-excursion
-    (let* (
-	   (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
-	   (end (progn (end-of-line) (point)))
-	   (nbdel (- end beg))
-	   (input (if (> nbdel 0) (buffer-substring-no-properties beg end) "")))
-      (when (> nbdel 0)	        
-	(message "beg : %d, end : %d , input %s - going to delete %d char" beg end input nbdel)
-	;(term-send-raw-string (make-string nbdel ?\C-? )))
-	(term-send-invisible (make-string nbdel ?\C-? )))
-      input)))
-
-(defadvice term-line-mode (before clean-process-input-before-line-mode activate)
-  (message "before switching to line mode")
-  ;(insert (myterm-clear-process-input))
-  (myterm-clear-process-input)
-)
-
+  (let* (
+	 (pos (point))
+	 (proc (get-buffer-process (current-buffer)))
+	 (end (progn (end-of-line) (point)))
+	 (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+	 (input-before (buffer-substring-no-properties beg pos))
+	 (input-after (buffer-substring-no-properties pos end)))
+    (message "switching to line mode: %s->%s" input-before input-after)
+    ;;(insert (myterm-clear-process-input))
+    ;(goto-char pos)
+    (term-send-string proc "\C-a\C-k")
+    ;(goto-char (+ 2 beg))
+    ;(set-marker (process-mark proc) (point))
+    ad-do-it
+    ;(save-excursion
+      ;; Insert the text, advancing the process marker.
+     ;(goto-char (process-mark proc))
+    (let ((markpos (point)))
+     (insert (concat input-before input-after)))
+     ;(set-marker (process-mark proc) markpos))
+    ;(goto-char pos)
+))
+ 
 ;; -------------- from mutli-term.el
 
 ; The key list that will need to be unbind.
@@ -150,16 +170,16 @@ and binds some keystroke with `term-raw-map'."
 
 ;------------------------------------
 
-(defun term-myget-new-input ()
-  "Return new input Take chars from beginning of line to the point, and discard any initial text matching term-prompt-regexp."
-  (save-excursion
-    (let* ((beg (progn (beginning-of-line) (term-skip-prompt) (point)))
-	   (end (progn (end-of-line) (point)))	   
-	   (text (buffer-substring-no-properties beg end)))
-	   (message (concat "input is : " text))
-	   text)))
-
-;(progn (setq term-mode-hook ())(setq yas-after-exit-snippet-hook ())(setq yas-before-expand-snippet-hook ()))
+;; (defun term-myget-new-input ()
+;;   "Return new input Take chars from beginning of line to the point, and discard any initial text matching term-prompt-regexp."
+;;   (save-excursion
+;;     (let* ((beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+;; 	   (end (progn (end-of-line) (point)))	   
+;; 	   (text (buffer-substring-no-properties beg end)))
+;; 	   (message (concat "input is : " text))
+;; 	   text)))
+;; 
+;; ;(progn (setq term-mode-hook ())(setq yas-after-exit-snippet-hook ())(setq yas-before-expand-snippet-hook ()))
 (add-hook 'term-mode-hook
 	  '(lambda ()	  
 	     (myterm-keystroke-setup)
