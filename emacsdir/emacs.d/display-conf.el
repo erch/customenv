@@ -220,6 +220,9 @@
   (define-key menu-bar-frames-menu [jump-to-frame-down]
     '(menu-item "Jump to frame down" fm-down-frame
 		:help "Jump to frame down."))
+  (define-key menu-bar-frames-menu [other-frame]
+    '(menu-item "Switch frame" other-frame
+		:help "Switch to other frame."))
 )
 
 ;; (defvar menu-bar-doremi-menu (make-sparse-keymap "Do Re Mi"))
