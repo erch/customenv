@@ -126,7 +126,7 @@
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (when (not (null x)) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists 1 (time-nth-months-back x))) '(0 1 2 3 4 5)))
+(mapc (lambda(x) (when (not (null x)) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists 1 (time-nth-months-back x))) '(0 1 2 3)))
 
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
