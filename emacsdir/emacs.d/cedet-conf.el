@@ -1,6 +1,5 @@
 (message "loadind cedet-conf ...")
 
-
 (require 'semantic-ia)
 (require 'semanticdb-javap)
 
