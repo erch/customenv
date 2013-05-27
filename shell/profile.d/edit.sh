@@ -1,4 +1,6 @@
+
 echo -n "."
+set -x
 if [ "$OSTYPE" = "cygwin" ] ; then
     convertenvvar EMACS_HOME 
     pathmunge "${EMACS_HOME}/bin" after
@@ -8,7 +10,7 @@ if [ "$OSTYPE" = "cygwin" ] ; then
     EMACS_BAT=`cygpath -aw "${DEV_HOME}/shell/bin/emacs.bat"`
 
 else
-    export EMACS_HOME=/usr/bin
+    export EMACS_HOME=/usr/local/bin
     export EMACS="${EMACS_HOME}/emacs"
     export EMACS_CLI="${EMACS_HOME}/emacsclient"
     export SITE_LISP=${HOME}/customenv/emacsdir/site-lisp/
