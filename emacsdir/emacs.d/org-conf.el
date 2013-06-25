@@ -162,7 +162,7 @@
 		      ("Communication" . ?c)
 		      ("People_Management" . ?p)
 		      ("Project_Management" . ?j)
-		      ("Software_Engineering" . ?S)
+		      ("Software_Engineering" . ?G)
 		      ("Service_Engineering" . ?E)
 		      (:endgroup . nil)
 		      (:startgroup . nil) ; project type

@@ -176,7 +176,7 @@
 	  "--"
 	  ["Analyze module" "Analyze module" rope-analyze-module (kbd "C-c C-s a")]
 	  ["Check" "Check" pyde-check (kbd "C-c C-s c")]
-	  "--"
+	  "--q"
 	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
 	  ["Complete" "Auto complete complete" ac-complete]
 	  )

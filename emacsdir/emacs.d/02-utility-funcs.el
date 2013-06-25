@@ -174,56 +174,69 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
       (insert (format "%s" mess)))))
 
 (defun  build-menu-and-bindings (menu-map key-map menu-key-spec)
-  (if (null menu-key-spec) 
-      nil
-    (let ((firstelem (car menu-key-spec)))
-      (cond 
-       ((and (stringp firstelem) (string-prefix-p "--" firstelem)) 
-	(let ((sep-symbol (make-symbol (format "sep-%d" (random 1000)))))
-	  (progn
-	    (define-key menu-map (vector sep-symbol) '("--"))
-	    (build-menu-and-bindings menu-map key-map (cdr menu-key-spec)))))
-       ((stringp firstelem)
-	(let ((submenu-map (make-sparse-keymap firstelem))
-	      (submenu-symb (make-symbol firstelem)))
-	  (progn
-	    (define-key menu-map (vector submenu-symb)
-	      (cons firstelem submenu-map))
-	    (build-menu-and-bindings submenu-map key-map (cdr menu-key-spec)))))
-       ((listp firstelem)
+  "the menu key spec is as follow:
+- specs :: spec specs 
+- spec :: nil | (string (arrays | specs ))
+- arrays :: array arrays 
+- array :: nil | (name help func menu-symbol)"
+  (cond 
+   ((null menu-key-spec) 
+    nil)
+   ((and (stringp menu-key-spec) (string-prefix-p "--" menu-key-spec)) 
+    (let ((sep-symbol (make-symbol (format "sep-%d" (random 1000)))))
+      (define-key menu-map (vector sep-symbol) '("--")))
+    menu-map)
+   ((stringp menu-key-spec)
+    (let ((submenu-map (make-sparse-keymap menu-key-spec))
+	  (submenu-symb (make-symbol menu-key-spec)))
+      (progn
+	(define-key menu-map (vector submenu-symb) (cons menu-key-spec submenu-map)))
+      submenu-map))
+   ((arrayp menu-key-spec)
+    (let* ((name (elt menu-key-spec 0))
+	   (help (elt menu-key-spec 1))
+	   (func (elt menu-key-spec 2))
+	   (menu-symb (make-symbol name)))
+      (progn
+	(define-key menu-map (vector menu-symb) (list 'menu-item name func :help help))
+	(when (= (length menu-key-spec) 4) (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
+   ((listp menu-key-spec)
+    (if (stringp (car menu-key-spec))
 	(progn
-	  (build-menu-and-bindings menu-map key-map (car menu-key-spec))
-	  (build-menu-and-bindings menu-map key-map (cdr menu-key-spec))))
-       ((arrayp firstelem)
-	(let* ((name (elt firstelem 0))
-	       (help (elt firstelem 1))
-	       (func (elt firstelem 2))
-	       (menu-symb (make-symbol name)))
-	  (progn
-	    (define-key menu-map (vector menu-symb) (list 'menu-item name func :help help))
-	    (when (= (length firstelem) 4) (define-key key-map  (eval (elt firstelem 3)) func))
-	    (unless (null (cdr menu-key-spec)) (build-menu-and-bindings menu-map key-map (cdr menu-key-spec))))))))))
+	  (let ((submenu-map (build-menu-and-bindings menu-map key-map (car menu-key-spec))))
+	    (mapc '(lambda(x) (build-menu-and-bindings submenu-map key-map x)) (nreverse (cdr menu-key-spec)))))
+      (mapc '(lambda(x) (build-menu-and-bindings menu-map key-map x)) (nreverse menu-key-spec))))))
 
 (defun create-menu-and-key-bindings(name menu-key-spec)
   (let ((menu-map (make-sparse-keymap name))
 	(key-map (make-sparse-keymap))
 	(menu-symb (make-symbol name)))
     (progn
-      (define-key key-map (vector 'menu-bar menu-symb) (cons name menu-map))
+      (define-key-after key-map (vector 'menu-bar menu-symb) (cons name menu-map))
       (build-menu-and-bindings menu-map key-map menu-key-spec)
       )
     key-map))
 
- (let ((map (create-menu-and-key-bindings 
-        "Python"
-        '(("Refactor"
- 	  ["Inline" "Inline" rope-inline]
- 	  ("Module"
- 	   ["Module to Package" "Module to Package" rope-module-to-package]
- 	   )
- 	  "--"
- 	  ["Redo" "Redo" rope-redo]
- 	  )))))
-   (print-debug (format "%s" map)))  
+(defun insert-global-menu-and-key-bindings(name menu-key-spec)
+  (let ((menu-map (make-sparse-keymap name))
+	(key-map (make-sparse-keymap))
+	(menu-symb (make-symbol name)))
+    (progn
+      (define-key-after global-map (vector 'menu-bar menu-symb) (cons name menu-map))
+      (build-menu-and-bindings menu-map key-map menu-key-spec)
+      )
+    key-map))
+
+;;(let ((map (create-menu-and-key-bindings 
+;;        "Python"
+;;        '(("Refactor"
+;; 	  ["Inline" "Inline" rope-inline]
+;; 	  ("Module"
+;; 	   ["Module to Package" "Module to Package" rope-module-to-package]
+;; 	   )
+;; 	  "--"
+;; 	  ["Redo" "Redo" rope-redo]
+;; 	  )))))
+;;   (print-debug (format "%s" map)))  
 
 (provide '02-utility-funcs)

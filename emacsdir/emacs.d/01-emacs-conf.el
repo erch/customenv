@@ -9,9 +9,10 @@
 
 (add-to-list 'load-path (expand-file-name "misc" site-lisp-dir))
 
-;; enabling upcase and downcase
-;(put 'upcase-region 'disabled nil)
-;(put 'downcase-region 'disabled nil)
+;; enabling some functions
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 ; by default don't set line truncation
 (setq default-truncate-lines nil)
