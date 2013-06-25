@@ -212,7 +212,17 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 	(key-map (make-sparse-keymap))
 	(menu-symb (make-symbol name)))
     (progn
-      (define-key key-map (vector 'menu-bar menu-symb) (cons name menu-map))
+      (define-key-after key-map (vector 'menu-bar menu-symb) (cons name menu-map))
+      (build-menu-and-bindings menu-map key-map menu-key-spec)
+      )
+    key-map))
+
+(defun insert-global-menu-and-key-bindings(name menu-key-spec)
+  (let ((menu-map (make-sparse-keymap name))
+	(key-map (make-sparse-keymap))
+	(menu-symb (make-symbol name)))
+    (progn
+      (define-key-after global-map (vector 'menu-bar menu-symb) (cons name menu-map))
       (build-menu-and-bindings menu-map key-map menu-key-spec)
       )
     key-map))
