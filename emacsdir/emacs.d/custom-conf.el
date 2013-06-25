@@ -36,7 +36,7 @@
 	  ["Delete previous word" "Kill word before cursor" backward-kill-word]
 	  ["Uper case region" "Change a region to upper case" upcase-region]
 	  ["Lower case region" "Change a region to lower case word" downcase-region]
-	  ["Text completion" "Cycle through possible completions" ]
+	  ;;["Text completion" "Cycle through possible completions" ]
 	  ["New line indent" "Insert CR after cursor and indent" newline-and-indent]
 	  ["Undo" "undo" undo]
 	  )
