@@ -1,12 +1,11 @@
-(unless (require 'org nil t)
-  (progn
-    (package-install 'org)
-    (require  'org-install)))
 (message "loading org ...")
+
+(unless (require 'org nil t)
+    (package-install 'org))
 
 (require 'org-install)
 (require 'org-crypt)
-
+(require 'org-agenda)
 ;; Standard org stuff
 ;(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (define-key global-map "\C-ca" 'org-agenda)
@@ -162,7 +161,7 @@
 		      ("Communication" . ?c)
 		      ("People_Management" . ?p)
 		      ("Project_Management" . ?j)
-		      ("Software_Engineering" . ?G)
+		      ("Software_Engineering" . ?g)
 		      ("Service_Engineering" . ?E)
 		      (:endgroup . nil)
 		      (:startgroup . nil) ; project type
@@ -182,7 +181,6 @@
 					;(:startgroup . nil)  ; people
 		      ("PATRICK" . nil)
 		      ("CHRISTOPHE" . nil)		       
-		      ("GILLES" . nil)
 		      ("XAVIER" . nil)
 		      ("REDOUANE" . nil)
 		      ("TEAM" . nil)
@@ -192,12 +190,8 @@
 		      ("SCIENCE" . nil)
 		      ("GUILLAUME" . nil)
 		      ("CYRILLE" . nil)
-		      ("JULIEN_Mo" . nil)
 		      ("SEVERINE" . nil)
-		      ("LAURENT" . nil)
 		      ("FRANCK" . nil)
-		      ("JEFF" . nil)
-		      ("BRICE" . nil)
 					;(:endgroup . nil)
 		      ))
 
