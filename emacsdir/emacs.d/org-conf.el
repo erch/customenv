@@ -38,7 +38,7 @@
 (setq org-log-into-drawer nil)
 (setq org-highest-priority ?A)
 (setq org-lowest-priority ?Z)
-(setq org-default-priority ?M)
+(setq org-default-priority ?S)
 (setq org-odd-levels-only t)
 (setq org-agenda-todo-list-sublevels t)
 (setq org-enforce-todo-dependencies t)
