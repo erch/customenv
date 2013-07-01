@@ -86,9 +86,21 @@
       (create-menu-and-key-bindings 
        "Java"
        '(
-	 ("Problems"
-	  ["Show" "Show Problems" eclim-problems (kbd "C-c S-p s")]
-	  ["Open" "Open Problem window" eclim-problems-open (kbd "C-c S-p o")]
+	 ("Navigation"
+	  ["Goto definition" "Jump to symbol definition" eclim-java-find-declaration (kbd "C-c C-g d")]
+	  ["Find Occurrences" "Find Occurrences" eclim-java-find-references (kbd "C-c C-g c")]
+	  ["Find Type" "Find type" eclim-java-find-type]
+	  ["Find Generic" "Find Generic" eclim-java-find-generic]
+	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
+	  "--"
+	  ["Forward Statement" "Forward Statement" c-end-of-statement]
+	  ["Backward Statement" "Backward Statement" c-beginning-of-statement]
+	  )
+	 ("Project"
+	  ["Import Project" "Import Eclim Project" eclim-project-import]
+	  ["Open project" "Open project" eclim-project-goto]
+	  ["Manage Projects" "Manage Eclim Projects" eclim-manage-projects]
+	  ["Create Projects" "Create Eclim Project" eclim-project-create]
 	  )
 	 ("Process"
 	  ["Stop Eclim" "Stop Eclim deamon" stop-eclimd (kbd "C-c C-i S-s")]
@@ -138,24 +150,11 @@ project" eclim-maven-lifecycle-phase-run (kbd "C-c C-c t")]
 	  ["Complete" "Auto complete complete" ac-complete]
 	  ["Complete (eclim)" "eclim complete" eclim-complete]
 	  )	 
-	 ("Project"
-	  ["Open project" "Open project" eclim-project-goto]
-	  ["Manage Projects" "Manage Eclim Projects" eclim-manage-projects]
-	  ["Create Projects" "Create Eclim Project" eclim-project-create]
-	  ["Import Project" "Import Eclim Project" eclim-project-import]
-	  )
-	 ("Navigation"
-	  ["Backward Statement" "Backward Statement" c-beginning-of-statement]
-	  ["Forward Statement" "Forward Statement" c-end-of-statement]
-	  "--"
-	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
-	  ["Find Generic" "Find Generic" eclim-java-find-generic]
-	  ["Find Type" "Find type" eclim-java-find-type]
-	  ["Find Occurrences" "Find Occurrences" eclim-java-find-references (kbd "C-c C-g c")]
-	  ["Goto definition" "Jump to symbol definition" eclim-java-find-declaration (kbd "C-c C-g d")]
+	 ("Problems"
+	  ["Show" "Show Problems" eclim-problems (kbd "C-c S-p s")]
+	  ["Open" "Open Problem window" eclim-problems-open (kbd "C-c S-p o")]
 	  )
 	 )))
-
 		       
 (let ((blocking-map (make-sparse-keymap)))
   (define-key blocking-map [menu-bar] nil)

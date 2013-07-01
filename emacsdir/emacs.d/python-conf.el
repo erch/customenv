@@ -118,11 +118,58 @@
       (create-menu-and-key-bindings 
        "Python"
        '(
-	 ("Process"
-	  ["Send defun" "Send defun" python-shell-send-defun (kbd "C-c C-i f")]
-	  ["Send region or buffer" "Send region or buffer" pyde-shell-send-region-or-buffer (kbd "C-c C-i s")]
-	  ["Switch to shell" "Switch to shell" python-shell-switch-to-shell (kbd "C-c C-i g")]
-	  ["Start Python" "Start a Python interpreter" run-python (kbd "C-c C-i r")]
+	 ("Navigation"
+	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
+	  ["Goto definition" "Jump to symbol definition" rope-goto-definition (kbd "C-c C-g d")]
+	  "--"
+	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
+	  ["Find file other windows" "Find file Other window" rope-find-file (kbd "C-c C-g 4 f")]
+	  ["Find file" "Find file" rope-find-file (kbd "C-c C-g f")]
+	  ["Find Occurrences" "Find Occurrences" rope-find-occurrences (kbd "C-c C-g c")]
+	  "--"
+	  ["Beginning of def" "Move point to the beginning of def or class" python-beginning-of-defun-function]
+	  ["End of def" "Move point to end of def or class" python-end-of-defun-function]
+	  ["Backwared Statement" "Backwared Statement" pyde-nav-backward-statement  (kbd "M-a")]
+	  ["Forward Statement" "Forward Statement" pyde-nav-forward-statement (kbd "M-e")]
+	  "--"
+	  ["Pop mark" "Pop mark" rope-pop-mark (kbd "C-c C-g m")]
+	  ["Jump to global" "Jump to global" rope-jump-to-global (kbd "C-c C-g g")]
+	  )
+	 ("Project"
+	  ["Open project" "Open project" rope-open-project]
+	  ["Close project" "Close project" rope-close-project]
+	  "--"
+	  ["Open project config" "Open project config" rope-project-config]
+	  ["Find file" "Find file" rope-find-file]
+	  )
+	 ("Source"
+	  ["Code assist" "Code assist" rope-code-assist]
+	  ["Lucky assist" "Lucky assist" rope-lucky-assist]
+	  ["Auto Import" "Auto Import" rope-auto-import]
+	  "--"
+	  ["Analyze module" "Analyze module" rope-analyze-module (kbd "C-c C-s a")]
+	  ["Check" "Check" pyde-check (kbd "C-c C-s c")]
+	  "--"
+	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
+	  ["Complete" "Auto complete complete" ac-complete]
+	  ("Generate"
+	   ["Create File" "File" rope-create-file]
+	   ["Create Directory" "Directory" rope-create-directory]
+	   ["Create Package" "Package" rope-create-package (kbd "C-c C-s C-c p")]
+	   ["Create Module" "Module" rope-create-module (kbd "C-c C-s C-c m")]
+	   "--"
+	   ["Generate Module" "Module" rope-generate-module]
+	   ["Generate Package" "Package" rope-generate-package]
+	   ["Generate Function" "Function" rope-generate-function]
+	   ["Generate Variable" "Variable" rope-generate-variable]
+	   ["Generate Class" "Class" rope-generate-class]
+	   )
+	  )
+	 ("Documentation"
+	  ["Show documentation" "Show symbol documentation in other window" pyde-doc-rope (kbd "C-c C-d C-s")]
+	  ; ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
+	  ["Browse documentation" "Browse python documentation" pyde-doc-show (kbd "C-c C-d s")]
+	  ["Browse symbol documentation" "Browse documentation for symbol at point" pylookup-lookup (kbd "C-c C-d b")]
 	  )
 	 ("Test"
 	  ["Test one" "Test one" nosetests-one (kbd "C-c C-t o")]
@@ -151,57 +198,11 @@
 	  ["Redo" "Redo" rope-redo (kbd "S-M-_")]
 	  ["Undo" "Undo" rope-undo (kbd "C-M-_")]
 	  )
-	 ("Documentation"
-	  ["Show documentation" "Show symbol documentation in other window" pyde-doc-rope (kbd "C-c C-d C-s")]
-	  ; ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
-	  ["Browse documentation" "Browse python documentation" pyde-doc-show (kbd "C-c C-d s")]
-	  ["Browse symbol documentation" "Browse documentation for symbol at point" pylookup-lookup (kbd "C-c C-d b")]
-	  )
-	 ("Source"
-	  ("Generate"
-	   ["Create File" "File" rope-create-file]
-	   ["Create Directory" "Directory" rope-create-directory]
-	   ["Create Package" "Package" rope-create-package (kbd "C-c C-s C-c p")]
-	   ["Create Module" "Module" rope-create-module (kbd "C-c C-s C-c m")]
-	   "--"
-	   ["Generate Module" "Module" rope-generate-module]
-	   ["Generate Package" "Package" rope-generate-package]
-	   ["Generate Function" "Function" rope-generate-function]
-	   ["Generate Variable" "Variable" rope-generate-variable]
-	   ["Generate Class" "Class" rope-generate-class]
-	   )
-	  ["Auto Import" "Auto Import" rope-auto-import]
-	  ["Code assist" "Code assist" rope-code-assist]
-	  ["Lucky assist" "Lucky assist" rope-lucky-assist]
-	  "--"
-	  ["Analyze module" "Analyze module" rope-analyze-module (kbd "C-c C-s a")]
-	  ["Check" "Check" pyde-check (kbd "C-c C-s c")]
-	  "--q"
-	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
-	  ["Complete" "Auto complete complete" ac-complete]
-	  )
-	 ("Project"
-	  ["Open project" "Open project" rope-open-project]
-	  ["Close project" "Close project" rope-close-project]
-	  "--"
-	  ["Open project config" "Open project config" rope-project-config]
-	  ["Find file" "Find file" rope-find-file]
-	  )
-	 ("Navigation"
-	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
-	  ["Find file other windows" "Find file Other window" rope-find-file (kbd "C-c C-g 4 f")]
-	  ["Find file" "Find file" rope-find-file (kbd "C-c C-g f")]
-	  ["Find Occurrences" "Find Occurrences" rope-find-occurrences (kbd "C-c C-g c")]
-	  "--"
-	  ["Beginning of def" "Move point to the beginning of def or class" python-beginning-of-defun-function]
-	  ["End of def" "Move point to end of def or class" python-end-of-defun-function]
-	  ["Backwared Statement" "Backwared Statement" pyde-nav-backward-statement  (kbd "M-a")]
-	  ["Forward Statement" "Forward Statement" pyde-nav-forward-statement (kbd "M-e")]
-	  "--"
-	  ["Pop mark" "Pop mark" rope-pop-mark (kbd "C-c C-g m")]
-	  ["Jump to global" "Jump to global" rope-jump-to-global (kbd "C-c C-g g")]
-	  ["Goto definition" "Jump to symbol definition" rope-goto-definition (kbd "C-c C-g d")]
-	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
+	 ("Process"
+	  ["Send defun" "Send defun" python-shell-send-defun (kbd "C-c C-i f")]
+	  ["Send region or buffer" "Send region or buffer" pyde-shell-send-region-or-buffer (kbd "C-c C-i s")]
+	  ["Switch to shell" "Switch to shell" python-shell-switch-to-shell (kbd "C-c C-i g")]
+	  ["Start Python" "Start a Python interpreter" run-python (kbd "C-c C-i r")]
 	  )
 	 )))
 
