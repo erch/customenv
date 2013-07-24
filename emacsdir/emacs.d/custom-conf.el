@@ -11,6 +11,9 @@
 (insert-global-menu-and-key-bindings 
  "Custom"
  '(
+   ("Programming"
+    ["Start Eclim" "Start eclim server" start-eclimd]
+    )
    ("Display"
     ["Narrow to defun" "Narrow text to defun" narrow-to-defun]
     ["Narrow to region" "Narrow text to region" narrow-to-region]

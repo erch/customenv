@@ -190,18 +190,19 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
    ((and (stringp menu-key-spec) (string-prefix-p "--" menu-key-spec))
     (define-key menu-map (vector (make-symbol (format "sep-%d" (random 10000)))) '("--")))
    ((arrayp menu-key-spec)
-    (let ((name (elt menu-key-spec 0))
+    (let* ((name (elt menu-key-spec 0))
 	   (help (elt menu-key-spec 1))
-	   (func (elt menu-key-spec 2)))
+	   (func (elt menu-key-spec 2))
+	   (menu-symb (make-symbol name)))
       (progn
-	(define-key menu-map (vector (intern (format "%s-%s" name "symb"))) (list 'menu-item name func ':help help))
-	(unless (or (< (length menu-key-spec) 4) (null (elt menu-key-spec 3)))  (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
+	(define-key menu-map (vector menu-symb) (list 'menu-item name func ':help help))
+	(when (= (length menu-key-spec) 4) (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
    ((listp menu-key-spec)
     (if (and (stringp (car menu-key-spec)) (not (string-prefix-p "--" (car menu-key-spec))))
 	(let* ((submenu (car menu-key-spec))
 	       (submenu-map (make-sparse-keymap submenu)))
 	  (progn
-	    (define-key menu-map  (vector (intern submenu)) (cons submenu submenu-map))
+	    (define-key menu-map  (vector (make-symbol submenu)) (cons submenu submenu-map))
 	    (mapc '(lambda(x) (build-menu-and-bindings submenu-map key-map x)) (nreverse (cdr menu-key-spec)))))
       (mapc '(lambda(x) (build-menu-and-bindings menu-map key-map x)) (nreverse menu-key-spec))))))
 
@@ -225,12 +226,19 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 (defun insert-global-menu-and-key-bindings(name menu-key-spec)
   (let ((menu-map (make-sparse-keymap name))
 	(key-map (make-sparse-keymap))
-	(menu-symb (intern name)))
+	(menu-symb (make-symbol name)))
     (progn
       (define-key-after global-map (vector 'menu-bar menu-symb) (cons name menu-map))
       (build-menu-and-bindings menu-map key-map menu-key-spec)
       )
     key-map))
+
+(insert-global-menu-and-key-bindings 
+ "Test"
+ '("Test display screen"
+    ["About screen" "Display about screen" display-about-screen]
+    "--"
+    ["Copy rules" "Describe copy conditions" describe-copying]))
 
 ;;(let ((map (create-menu-and-key-bindings 
 ;;        "Python"
@@ -245,11 +253,11 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 ;;    (print-debug (format "%s" map)))  
 
 
-;;  (let ((km (make-sparse-keymap "testmanual"))
-;;        (subkm (make-sparse-keymap "test2")))
-;;    (define-key km [symb2] (cons "sub" subkm))
-;;    (define-key km (vector (make-symbol "test menu with space")) (list 'menu-item "test display" 'display-about-screen :help "this is help"))
-;;    (define-key subkm (vector (make-symbol "symb 3")) '(menu-item "testbis" display-about-screen :help "this is help 2"))
-;;    (define-key-after global-map (vector 'menu-bar 'menu-symb) (cons "Test manual" km)))
+ ;; (let ((km (make-sparse-keymap "test"))
+ ;;       (subkm (make-sparse-keymap "test2")))
+ ;;   (define-key km (vector (make-symbol "test menu with space")) '(menu-item "test display" display-about-screen :help "this is help"))
+ ;;   (define-key km [symb2] (cons "sub" subkm))
+ ;;   (define-key subkm (vector (make-symbol "symb 3")) '(menu-item "testbis" display-about-screen :help "this is help 2"))
+ ;;   (define-key-after global-map (vector 'menu-bar 'menu-symb) (cons "Test" km)))
 
 (provide '02-utility-funcs)

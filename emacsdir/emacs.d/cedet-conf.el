@@ -1,11 +1,15 @@
 (message "loadind cedet-conf ...")
 
+;; cedet is loaded from site-start.el file to avoid conflicts with emacs default installation of cedet.
+
+(require 'semantic)
 (require 'semantic-ia)
 (require 'semanticdb-javap)
 
 (defun activate-cedet-buffer-local()
-  (setq-local semantic-default-submodes (quote (global-semantic-highlight-func-mode global-semantic-decoration-mode global-semantic-stickyfunc-mode global-semantic-idle-completions-mode global-semantic-idle-scheduler-mode global-semanticdb-minor-mode global-semantic-idle-summary-mode global-semantic-mru-bookmark-mode global-semantic-idle-local-symbol-highlight-mode global-semantic-highlight-edits-mode global-semantic-show-unmatched-syntax-mode global-semantic-show-parser-state-mode)))
-; (semantic-mode t)
+  ;(setq-local semantic-default-submodes (quote (global-semantic-highlight-func-mode global-semantic-decoration-mode global-semantic-stickyfunc-mode global-semantic-idle-completions-mode global-semantic-idle-scheduler-mode global-semanticdb-minor-mode global-semantic-idle-summary-mode global-semantic-mru-bookmark-mode global-semantic-idle-local-symbol-highlight-mode global-semantic-highlight-edits-mode global-semantic-show-unmatched-syntax-mode global-semantic-show-parser-state-mode)))
+  ;(semantic-mode 1)
+  (semantic-load-enable-gaudy-code-helpers)
 )
 
 (defun my-semantic-hook ()
