@@ -28,7 +28,7 @@
 	      (define-key outline-minor-mode-map [M-up] 'outline-move-subtree-up)
 	      ;(outline-minor-mode t)
 	      (setq-local outline-blank-line t)
-	      (hide-sublevels 1)
+	      (show-all)
 	      ;(hide-body)
 )))
 

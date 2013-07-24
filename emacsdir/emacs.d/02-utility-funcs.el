@@ -195,7 +195,7 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 	   (func (elt menu-key-spec 2)))
       (progn
 	(define-key menu-map (vector (intern (format "%s-%s" name "symb"))) (list 'menu-item name func ':help help))
-	(when (= (length menu-key-spec) 4) (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
+	(unless (or (< (length menu-key-spec) 4) (null (elt menu-key-spec 3)))  (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
    ((listp menu-key-spec)
     (if (and (stringp (car menu-key-spec)) (not (string-prefix-p "--" (car menu-key-spec))))
 	(let* ((submenu (car menu-key-spec))
