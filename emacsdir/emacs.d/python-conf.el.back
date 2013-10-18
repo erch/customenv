@@ -23,84 +23,6 @@
     (require 'nose)
 ))
 
-(unless (require 'elpy nil t)
-  (progn
-    (package-install 'elpy)
-    (require 'elpy)
-))
-
-
-(setq mypython-mode-map  
-      (create-menu-and-key-bindings 
-       "Python"
-       '(
-	 ("Navigation"
-	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
-	  ["Goto definition" "Jump to symbol definition" elpy-goto-definition (kbd "C-c C-g d")]
-	  "--"
-	  ["Find Occurrences" "Find Occurrences" elpy-occur-definitions (kbd "C-c C-g c")]
-	  "--"
-	  ["Beginning of def" "Move point to the beginning of def or class" python-beginning-of-defun-function (kbd "M-{")]
-	  ["End of def" "Move point to end of def or class" python-end-of-defun-function (kbd "M-}")]
-	  ["Move to next definition" "Forward definition" elpy-forward-definition  (kbd "M-S-n")]
-	  ["Move to previous definition" "Backward definition" elpy-backward-definition  (kbd "M-S-p")]
-	  ["Move to next Statement" "Forward Statement" elpy-nav-forward-statement (kbd "M-n")]
-	  ["Move to previous Statement" "Backwared Statement" elpy-nav-backward-statement  (kbd "M-p")]
-	  )
-	 ("Project"
-	  ["Set project root" "Set project root" elpy-set-project-root (kbd "C-c C-p r")]
-	  "--"
-	  ["Find file" "Find file" find-file-in-project (kbd "C-c C-p f")]
-	  ["Grep symbol in project" "Grep in project" elpy-rgrep-symbol (kbd "C-c C-p g")]
-	  )
-	 ("Source"
-	  ["Check" "Check" elpy-check (kbd "C-c C-s c")]
-	  "--"
-	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
-	  ["Complete" "Auto complete complete" ac-complete]
-	  )
-	 ("Documentation"
-	  ["Show documentation" "Show symbol at point documentation" elpy-doc (kbd "C-c C-d C-s")]
-	  ["Search documentation" "Search documentation" elpy-pydoc-completions (kbd "C-c C-d S")]
-	  ["Browse documentation" "Browse python documentation" pyde-doc-show (kbd "C-c C-d s")]
-	  ["Browse symbol documentation" "Browse documentation for symbol at point" pylookup-lookup (kbd "C-c C-d b")]
-	  )
-	 ("Test"
-	  ["Run nose" "Run nose test" elpy-test  (kbd "C-c C-t t")]
-	  ["Test one" "Test one" nosetests-one (kbd "C-c C-t o")]
-	  ["Test module debug" "Test module debug" nosetests-pdb-one (kbd "C-c C-t C-f")]
-	  ["Test all debug" "Test all debug" nosetests-pdb-all (kbd "C-c C-t C-a")]
-	  ["Test one debug" "Test one debug" nosetests-pdb-one (kbd "C-c C-t C-o")]
-	  ["Test module" "Test module" nosetests-module (kbd "C-c C-t f")]
-	  ["Test all" "Test all" nosetests-all (kbd "C-c C-t a")]
-	  )
-	 ("Refactor"
-	  ["Show refactor menu" "Show refactor" elpy-refactor (kbd "C-c C-r s")]
-	  )
-	 ("Process"
-	  ["Send defun" "Send defun" python-shell-send-defun (kbd "C-c C-i f")]
-	  ["Send region or buffer" "Send region or buffer" elpy-shell-send-region-or-buffer (kbd "C-c C-i s")]
-	  ["Switch to shell" "Switch to shell" elpy-shell-switch-to-shell (kbd "C-c C-i g")]
-	  ["Start Python" "Start a Python interpreter" elpy-shell-get-or-create-process (kbd "C-c C-i r")]
-	  )
-	 )))
-
-(let ((blocking-map (make-sparse-keymap)))
-  (define-key blocking-map [menu-bar] nil)
-  (set-keymap-parent blocking-map python-mode-map)
-  (set-keymap-parent blocking-map elpy-mode-map)
-  (set-keymap-parent mypython-mode-map blocking-map))
-
-
-(defun modify-python-keymap()
-  ;(define-key ropemacs-local-keymap [menu-bar] nil)
-  (use-local-map mypython-mode-map)
-  ;(setq python-mode-map (make-sparse-keymap))
-)
-
-(setq elpy-mode-map mypython-mode-map)
-(setq elpy-default-minor-modes '(eldoc-mode))
-
 ;; Browse online documentation ;
 ; Check https://github.com/tsgates/pylookup
 (let ((pylookup-dir (file-name-as-directory (expand-file-name "pylookup-pkg"  site-lisp-dir))))
@@ -108,6 +30,24 @@
   (require 'pylookup)
   (setq pylookup-program  (expand-file-name "pylookup.py"  pylookup-dir))
   (setq pylookup-db-file (expand-file-name "pylookup.db" "~/.emacs.d")))
+
+(unless (string= window-system "w32")
+  (progn
+    (unless (require 'pyde nil t)
+      (progn
+	(package-install 'pyde)
+	(require 'pyde)))
+    (pyde-enable)
+    (pyde-clean-modeline)
+    ;; Flymake support using flake8, including warning faces.
+    (if (executable-find "flake8")
+	(setq python-check-command "flake8")
+      (setq python-check-command "pylint"))
+    ;; bug fix
+    (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
+      (setq flymake-check-was-interrupted t))
+    (ad-activate 'flymake-post-syntax-check)
+    ))
 
 ;; 
 (defun mygetoutline-level()
@@ -134,10 +74,9 @@
        (+ 1 (/ first-not-blank-pos python-indent-offset)))))
 
 (defun python-mode-setup-hook ()
-  (modify-python-keymap)
   "hook to python mode"
   ;; add custom directory of snippets
-  (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir)) (concat (file-name-directory (locate-library "elpy")) "snippets/")))
+  (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-d-dir))))
   (setq-local python-guess-indent nil)
 
   ;; activation of outline.
@@ -168,12 +107,111 @@
   (setq-local
    browse-url-browser-function 'w3m-browse-url)
   ; change key bindings and menu
-  
+  (modify-python-keymap)
   )
 
+(defun modify-python-keymap()
+  ;(define-key ropemacs-local-keymap [menu-bar] nil)
+  (use-local-map mypython-mode-map))
+
+(setq mypython-mode-map  
+      (create-menu-and-key-bindings 
+       "Python"
+       '(
+	 ("Navigation"
+	  ["Nav menu" "Navigation menu" imenu  (kbd "C-c C-g n")]
+	  ["Goto definition" "Jump to symbol definition" rope-goto-definition (kbd "C-c C-g d")]
+	  "--"
+	  ["Find Implementation" "Find Implementation" rope-find-implementations (kbd "C-c C-g i")]
+	  ["Find file other windows" "Find file Other window" rope-find-file (kbd "C-c C-g 4 f")]
+	  ["Find file" "Find file" rope-find-file (kbd "C-c C-g f")]
+	  ["Find Occurrences" "Find Occurrences" rope-find-occurrences (kbd "C-c C-g c")]
+	  "--"
+	  ["Beginning of def" "Move point to the beginning of def or class" python-beginning-of-defun-function]
+	  ["End of def" "Move point to end of def or class" python-end-of-defun-function]
+	  ["Backwared Statement" "Backwared Statement" pyde-nav-backward-statement  (kbd "M-a")]
+	  ["Forward Statement" "Forward Statement" pyde-nav-forward-statement (kbd "M-e")]
+	  "--"
+	  ["Pop mark" "Pop mark" rope-pop-mark (kbd "C-c C-g m")]
+	  ["Jump to global" "Jump to global" rope-jump-to-global (kbd "C-c C-g g")]
+	  )
+	 ("Project"
+	  ["Open project" "Open project" rope-open-project]
+	  ["Close project" "Close project" rope-close-project]
+	  "--"
+	  ["Open project config" "Open project config" rope-project-config]
+	  ["Find file" "Find file" rope-find-file]
+	  )
+	 ("Source"
+	  ["Code assist" "Code assist" rope-code-assist]
+	  ["Lucky assist" "Lucky assist" rope-lucky-assist]
+	  ["Auto Import" "Auto Import" rope-auto-import]
+	  "--"
+	  ["Analyze module" "Analyze module" rope-analyze-module (kbd "C-c C-s a")]
+	  ["Check" "Check" pyde-check (kbd "C-c C-s c")]
+	  "--"
+	  ["Show Snipets" "shows all possible snippets that can be expanded here" yas-insert-snippet]
+	  ["Complete" "Auto complete complete" ac-complete]
+	  ("Generate"
+	   ["Create File" "File" rope-create-file]
+	   ["Create Directory" "Directory" rope-create-directory]
+	   ["Create Package" "Package" rope-create-package (kbd "C-c C-s C-c p")]
+	   ["Create Module" "Module" rope-create-module (kbd "C-c C-s C-c m")]
+	   "--"
+	   ["Generate Module" "Module" rope-generate-module]
+	   ["Generate Package" "Package" rope-generate-package]
+	   ["Generate Function" "Function" rope-generate-function]
+	   ["Generate Variable" "Variable" rope-generate-variable]
+	   ["Generate Class" "Class" rope-generate-class]
+	   )
+	  )
+	 ("Documentation"
+	  ["Show documentation" "Show symbol documentation in other window" pyde-doc-rope (kbd "C-c C-d C-s")]
+	  ; ["Search documentation" "Search documentation" pyde-doc-search (kbd "C-c C-d S")]
+	  ["Browse documentation" "Browse python documentation" pyde-doc-show (kbd "C-c C-d s")]
+	  ["Browse symbol documentation" "Browse documentation for symbol at point" pylookup-lookup (kbd "C-c C-d b")]
+	  )
+	 ("Test"
+	  ["Test one" "Test one" nosetests-one (kbd "C-c C-t o")]
+	  ["Test module debug" "Test module debug" nosetests-pdb-one (kbd "C-c C-t C-f")]
+	  ["Test all debug" "Test all debug" nosetests-pdb-all (kbd "C-c C-t C-a")]
+	  ["Test one debug" "Test one debug" nosetests-pdb-one (kbd "C-c C-t C-o")]
+	  ["Test module" "Test module" nosetests-module (kbd "C-c C-t f")]
+	  ["Test all" "Test all" nosetests-all (kbd "C-c C-t a")]
+	  )
+	 ("Refactor"
+	  ["Inline" "Inline" rope-inline]
+	  ["Extract Variable" "Extract Variable" rope-extract-variable]
+	  ["Extract Method" "Extract Method" rope-extract-method]
+	  ["Organize Imports" "Organize Imports" rope-organize-imports]
+	  ["Rename" "Rename" rope-rename]
+	  ["Move" "Move" rope-move]
+	  ["Restructure" "Restructure" rope-restructure]
+	  ["Use Function" "Use Function" rope-use-function]
+	  ["Introduce Factory" "Introduce Factory" rope-introduce-factory]
+	  ("Module"
+	   ["Module to Package" "Module to Package" rope-module-to-package]
+	   ["Rename Module" "Rename Module" rope-rename-current-module]
+	   ["Move Module" "Move Module" rope-move-current-module]
+	   )
+	  "--"
+	  ["Redo" "Redo" rope-redo (kbd "S-M-_")]
+	  ["Undo" "Undo" rope-undo (kbd "C-M-_")]
+	  )
+	 ("Process"
+	  ["Send defun" "Send defun" python-shell-send-defun (kbd "C-c C-i f")]
+	  ["Send region or buffer" "Send region or buffer" pyde-shell-send-region-or-buffer (kbd "C-c C-i s")]
+	  ["Switch to shell" "Switch to shell" python-shell-switch-to-shell (kbd "C-c C-i g")]
+	  ["Start Python" "Start a Python interpreter" run-python (kbd "C-c C-i r")]
+	  )
+	 )))
+
+(let ((blocking-map (make-sparse-keymap)))
+  (define-key blocking-map [menu-bar] nil)
+  (set-keymap-parent blocking-map python-mode-map)
+  (set-keymap-parent mypython-mode-map blocking-map))
+
 (add-hook 'python-mode-hook 'python-mode-setup-hook)
-(setq elpy-rpc-backend "rope")
-(elpy-enable t)
 
 (message "python-conf loaded.")
 (provide 'python-conf)
