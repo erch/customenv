@@ -23,6 +23,7 @@
     (require 'nose)
 ))
 
+(setq elpy-mode-map (make-sparse-keymap))
 (unless (require 'elpy nil t)
   (progn
     (package-install 'elpy)
@@ -85,12 +86,12 @@
 	  )
 	 )))
 
+;; try to block the display of menu from python and elpy keymaps
 (let ((blocking-map (make-sparse-keymap)))
   (define-key blocking-map [menu-bar] nil)
-  (set-keymap-parent blocking-map python-mode-map)
-  (set-keymap-parent blocking-map elpy-mode-map)
-  (set-keymap-parent mypython-mode-map blocking-map))
-
+  (set-keymap-parent python-mode-map elpy-mode-map)
+  (set-keymap-parent elpy-mode-map blocking-map)
+  (set-keymap-parent blocking-map mypython-mode-map))
 
 (defun modify-python-keymap()
   ;(define-key ropemacs-local-keymap [menu-bar] nil)
@@ -98,7 +99,6 @@
   ;(setq python-mode-map (make-sparse-keymap))
 )
 
-(setq elpy-mode-map mypython-mode-map)
 (setq elpy-default-minor-modes '(eldoc-mode))
 
 ;; Browse online documentation ;
@@ -133,7 +133,7 @@
  	   (first-not-blank-pos (progn (beginning-of-line) (skip-chars-forward " \t"))))
        (+ 1 (/ first-not-blank-pos python-indent-offset)))))
 
-(defun python-mode-setup-hook ()
+(defun elpy-mode-setup-hook ()
   (modify-python-keymap)
   "hook to python mode"
   ;; add custom directory of snippets
@@ -171,7 +171,7 @@
   
   )
 
-(add-hook 'python-mode-hook 'python-mode-setup-hook)
+(add-hook 'elpy-mode-hook 'elpy-mode-setup-hook)
 (setq elpy-rpc-backend "rope")
 (elpy-enable t)
 
