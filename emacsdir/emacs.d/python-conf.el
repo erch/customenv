@@ -25,6 +25,12 @@
     (require 'nose)
 ))
 
+(unless (locate-library "elpy")
+  (progn
+    (package-install 'elpy)
+    (require 'elpy))
+)
+
 (defun my-get-python-buffer-name()
   (format "*%s*" (python-shell-get-process-name nil))
 )
