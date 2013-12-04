@@ -3,6 +3,17 @@
 ;(load-file (expand-file-name "misc/term.el" site-lisp-dir))
 (require 'term)
 
+(unless (require 'isend-mode nil t)
+  (progn
+    (package-install 'isend-mode)
+    (require 'isend-mode)
+    ))
+
+(setq isend-forward-line nil)
+(setq isend-strip-empty-lines t)
+(setq isend-delete-indentation t)
+(setq isend-end-with-empty-line t)
+
 (defun visit-ansi-term ()
   "If the current buffer is:
 1) a running ansi-term named *ansi-term*, rename it.

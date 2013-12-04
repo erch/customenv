@@ -1,4 +1,6 @@
 (message "loading python-conf ...")
+;; add python to exec path
+(add-to-list 'exec-path "/usr/bin")
 
 (unless (locate-library "python-pkg")
   (progn
@@ -22,6 +24,51 @@
     (package-install 'nose)
     (require 'nose)
 ))
+
+(defun my-get-python-buffer-name()
+  (format "*%s*" (python-shell-get-process-name nil))
+)
+
+;; overide function to fix a bug
+(defadvice elpy-shell-get-or-create-process (around elpy-shell-get-or-create-process-fixed activate)
+  "Fix missing arg  when calling python-run."
+  (let* ((bufname (my-get-python-buffer-name))
+         (proc (get-buffer-process bufname)))
+    (if proc
+        proc
+      (run-python nil (python-shell-parse-command))
+      (get-buffer-process bufname))))
+
+
+(defadvice elpy-shell-send-region-or-buffer (around elpy-shell-send-region-or-buffer-fixed activate)
+  "Fix issue with indentation the switch to the shell buffer"
+  ;; Ensure process exists
+  (elpy-shell-get-or-create-process)
+  (if (region-active-p)
+;; A temporary buffer is used to apply filters
+      (let ((origin (current-buffer))
+	    (begin (region-beginning))
+	    (end (region-end)))
+	(with-temp-buffer
+	  (setq filtered (current-buffer))
+	  (insert-buffer-substring origin begin end)
+	  ;;  Apply filters on the region
+	  (delete-matching-lines "^[[:space:]]*$" (point-min) (point-max))
+	  (goto-char (point-min))
+	  (back-to-indentation)
+	  (indent-rigidly (point-min) (point-max) (- (current-column)))
+	  (goto-char (point-max))
+	  (insert "\n")
+	  (python-shell-send-region (point-min) (point-max))))
+    (python-shell-send-buffer ad-set-args 0))
+  (elpy-shell-switch-to-shell)
+)
+
+(defadvice elpy-shell-switch-to-shell (around  elpy-shell-switch-to-shell-fixed activate)
+  "Switch to inferior Python process buffer."
+  (interactive)
+  (switch-to-buffer-other-window (process-buffer (elpy-shell-get-or-create-process))))
+
 
 (setq elpy-mode-map (make-sparse-keymap))
 (unless (require 'elpy nil t)

@@ -212,6 +212,7 @@
 				 :make-index t
 				 :recursive t
 				 :publishing-directory publish-dir
+				 :publishing-function 'org-html-publish-to-html
 				 :with-section-numbers t
 				 :table-of-contents t
 				 :auto-postamble nil
