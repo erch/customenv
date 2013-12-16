@@ -1,13 +1,13 @@
 (message "loading org ...")
 
 (unless (require 'org nil t)
-    (package-install 'org))
+  (package-install 'org))
 
 (require 'org-install)
 (require 'org-crypt)
 (require 'org-agenda)
 ;; Standard org stuff
-;(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+					;(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (define-key global-map "\C-ca" 'org-agenda)
 
 ;; Settings
@@ -74,25 +74,26 @@
   (let ((file (get-journal-file-name wk time)))
     (if (file-exists-p file) file nil)))
 
-;(get-journal-file-name-if-exists)
+					;(get-journal-file-name-if-exists)
 
 
 
 (setq
  ;; notes will be put in the journal file when an automatic function will return the journal
  backup-dir (file-name-as-directory (expand-file-name ".archive/org" org-directory))
+ journal-backup-dir (file-name-as-directory (expand-file-name "journal" backup-dir))
  project-dir (file-name-as-directory (expand-file-name "ActiveProjects" org-directory))
  business-as-usual-dir (file-name-as-directory (expand-file-name "BusinessAsUsual" org-directory))
  notes-file (expand-file-name "Orga_Inbox.org" org-directory)  
  project-file (expand-file-name "projects.mm" project-dir)
  org-default-notes-file notes-file  
  google-cal-ical-export (expand-file-name "google-cal-ical.org" org-directory)
- todos-file-name-patterns (list "^.+_ActionsPlan.org$" "^.+_Dairy.*\.org$")
- org-archive-location (expand-file-name "%s_archive::" backup-dir))
+ todos-file-name-patterns (list "^.+_ActionsPlan.org$" "^.+_Dairy.*\.org$"))
 
 (unless (file-exists-p backup-dir) (make-directory  backup-dir t))
+(unless (file-exists-p journal-backup-dir) (make-directory  journal-backup-dir t))
 
-(defun find-todos-in-files (list pattern)
+(defun  rec-find-filenames-in-list (list pattern)
   "find todo files in a list of file names, search in directories if there are some in the list"
   (when (not (null list))
     (let* ((first (car list))
@@ -101,34 +102,34 @@
       ;;(message "\t --> first is %s, end is %s, fn is %s" first end fn)
       (cond 
        ((and (file-regular-p first) (string-match-p pattern fn)) 
-	(cons first (find-todos-in-files end pattern))) 
-       ((and (file-directory-p first) (not (string= ".backup" first)))
-	(append (find-todos-in-dir first pattern) (find-todos-in-files end pattern)))
-       (t (find-todos-in-files end pattern))))))
+	(cons first (rec-find-filenames-in-list end pattern))) 
+       ((and (file-directory-p first) (not (or (string= ".backup" fn) (string= ".archive" fn))))
+	(append (rec-find-filename-in-dir first pattern) (rec-find-filenames-in-list end pattern)))
+       (t (rec-find-filenames-in-list end pattern))))))
 
 ;;  (string-match-p action-plan-file-pattern "working on the grid_AP.org")
 
-(defun find-todos-in-dir (root pattern)
+(defun rec-find-filename-in-dir (root pattern)
   "find todos files in  a directory, 
      return the list of full path files."
   (when (file-directory-p root)
     (let ((files (non-dot-directory-files root)))
       ;;(message "=> root %s, files are %s" root files)
       (when (not (null files))
-	(find-todos-in-files files pattern)))))
-;;(find-todos-in-dir project-dir)
+	(rec-find-filenames-in-list files pattern)))))
+;;(rec-find-filename-in-dir project-dir)
 
-; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
-; (time-nth-months-back 1)
-; (decode-time (time-nth-months-back  12))
+					; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
+					; (time-nth-months-back 1)
+					; (decode-time (time-nth-months-back  12))
 
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
-(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
+(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_ActionsPlan.org$"))
+(mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (when (not (null x)) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists 1 (time-nth-months-back x))) '(0 1 2 3)))
 
-;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (find-todos-in-dir project-dir "^.+_Dairy.*\.org$"))
+;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
 (add-to-list 'org-agenda-files (expand-file-name "Orga_Scheduling.org" org-directory))
 (add-to-list 'org-agenda-files (expand-file-name "Orga_ActionsPlan.org" org-directory))
@@ -138,6 +139,41 @@
 ;;    (find-action-plan-in-dir project-dir))
 ;;    (setq org-refile-targets refile-targets))
 					;(setq org-refile-targets `((org-agenda-files :tag . "Tasks")))
+
+;; archive old Journal files
+(defun is-old-journal (filename maxmonth)
+  (let* ((fn (file-name-nondirectory filename))
+ 	 (tl  (decode-time))
+ 	 (day (nth 3 tl))
+ 	 (month (nth 4 tl))
+ 	 (year (nth 5 tl))
+ 	 (match (string-match "^Orga_Dairy-\\([0-9]+\\)-\\([0-9]+\\)\.org$" fn))
+ 	 (fyear (or (and (null match) 0) (match-string 1 fn)))
+ 	 (fmonth (or (and (null match) 0) (match-string 2 fn)))
+ 	 (ftime (or (and (null match) 0) (encode-time 0 0 0 day (string-to-number fmonth) (string-to-number fyear))))
+ 	 (overdueday (or (and (null match) 0) (time-add ftime (seconds-to-time (* 24 30.5 3600 maxmonth))))))
+    (progn 
+      (decode-time tl)
+      (decode-time ftime)
+      (decode-time overdueday)
+      (cond
+       ((null match) nil)
+       ((time-less-p overdueday (current-time)) filename)
+       (t nil)))))
+
+(defun archive-file-if-old-journal (file-path)
+  (let
+      ((dir (file-name-directory file-path))
+       (ff (file-name-nondirectory file-path)))
+    (if (is-old-journal (file-name-nondirectory ff) 7)
+	(rename-file file-path (expand-file-name ff journal-backup-dir)))))
+
+; (string-to-number "09")
+;; (find-old-journal "Orga_Dairy-2013-08.org" 3)   
+;; (decode-time (time-subtract (decode-time) (encode-time 0 0 0 0 3 0)))
+;; ;(find-old-journal "Orga_Dairy-2013-12.org" 3)
+(mapc (lambda (x) (archive-file-if-old-journal x)) (rec-find-filename-in-dir org-directory "^Orga_Dairy-.+\.org$"))
+;; ; (string-match "^Orga_Dairy-\\([0-9]+\\)-\\([0-9]\\)+\.org$" "Orga_Dairy-2013-12.org")
 
 (setq org-refile-targets '((org-agenda-files . (:regexp . "Tasks"))))
 (setq org-refile-use-outline-path t)
@@ -327,10 +363,10 @@
   (interactive "Mdate: ")
   (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (tl  (if (null tme) (decode-time) (decode-time tme))))
-       (nth (- (nth 1 (get-journal-time (apply 'encode-time tl))) 1) mlist)))
+    (nth (- (nth 1 (get-journal-time (apply 'encode-time tl))) 1) mlist)))
 
-;(journal-month)
-;(apply 'encode-time (decode-time))
+					;(journal-month)
+					;(apply 'encode-time (decode-time))
 ;;       (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
 ;;      )
 ;;  (yas-define-snippets `org-mode (list (list nil (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------") "journal" nil nil nil nil nil))))
