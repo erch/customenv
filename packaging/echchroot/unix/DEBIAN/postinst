@@ -1,0 +1,65 @@
+#!/bin/bash
+#  -*- Shell-Script -*-
+
+echo starting
+FILE=/var/chroots/echchroot
+MOUNT_DIR=/tmp/chroot-dir
+FILE_GIGA_SIZE=5
+
+# add pathmunge to environment is not there
+typeset -F pathmunge > /dev/null
+if [[ $? -ne 0 ]] ; then
+    cat >> /etc/profile <<'EOF'
+
+pathmunge () 
+{ 
+    if ! echo $PATH | /bin/egrep -q "(^|:)$1($|:)"; then
+        if [ "$2" = "after" ] ; then
+              PATH=$PATH:$1
+           else
+              PATH=$1:$PATH
+        fi
+    fi
+}
+EOF
+fi
+
+# building the loop back file
+if [[ -f ${FILE} ]]; then
+    rm ${FILE}
+fi
+mkdir -p $(dirname ${FILE})
+fallocate -l ${FILE_GIGA_SIZE}G ${FILE}
+
+LOOP_DEV_ID=$(for i in 1 2 3 4 5 6 7 8 ; do
+    losetup /dev/loop${i} >/dev/null 2>&1
+    if [ $? -ne 0 ] ; then
+	echo $i
+	break
+    fi
+done)
+
+if [[ -z "${LOOP_DEV_ID}" ]]; then
+    echo "couldn\'t find a loop device" >&2 && exit 1
+fi
+
+LOOP_DEV=/dev/loop${LOOP_DEV_ID}
+losetup ${LOOP_DEV} ${FILE}
+mkfs -t ext3 -m 1 -v ${LOOP_DEV}
+
+# mounting the loop back file in order to deboostrat it, will umount it when finished
+mkdir -p ${MOUNT_DIR}
+mount -t ext3 ${LOOP_DEV} ${MOUNT_DIR}
+debootstrap --variant=buildd --arch  amd64 squeeze ${MOUNT_DIR} ftp://ftp.us.debian.org/debian/
+umount ${MOUNT_DIR}
+rmdir ${MOUNT_DIR}
+
+# run a schroot session on source to update the chroot.
+cd /
+SESSION=$(schroot -b -c echchroot-source)
+schroot -c ${SESSION} -r apt-get -y install vim emacs adduser
+schroot -c ${SESSION} -r dpkg-reconfigure locales
+schroot -c ${SESSION} -r apt-get -y install -y language-pack-en
+schroot -c ${SESSION} -r locale-gen en_US.UTF-8
+schroot -c ${SESSION} -r useradd -d /home/ech -g ech -G sudo -m -r -s /bin/bash -u 1000  ech
+schroot -c ${SESSION} -e
