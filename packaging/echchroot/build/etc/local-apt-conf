@@ -1,0 +1,30 @@
+#! /bin/bash
+#  -*- shell-script -*-
+
+set -e
+. "$SETUP_DATA_DIR/common-data"
+. "$SETUP_DATA_DIR/common-functions"
+
+
+SOURCE_FILE=${CHROOT_PATH}/etc/apt/sources.list.d/chroot.list
+PROX_FILE=${CHROOT_PATH}/etc/apt/apt.conf.d/chroot.conf
+if [[ "${CHROOT_NAME%%-source}" == "$CHROOT_NAME" ]] ; then 
+    unset CHROOT_SOURCE
+else
+    CHROOT_SOURCE=1
+fi
+
+if [ $STAGE = "setup-start" ]; then    
+    IP=$(hostname -I | cut -d' ' -f1)	    
+    cat > ${PROX_FILE} <<EOF
+Acquire::http { Proxy "http://${IP}:3142"; }
+Acquire::HTTP::Proxy::${IP} "DIRECT";
+EOF
+    cat > ${SOURCE_FILE} <<EOF
+deb http://${IP}:8090/ /	
+EOF
+
+elif [ $STAGE = "setup-stop" ]; then	
+    rm -f ${PROX_FILE}
+    rm -f ${SOURCE_FILE}
+fi

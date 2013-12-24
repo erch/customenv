@@ -1,0 +1,39 @@
+#!/bin/bash
+#  -*- Shell-Script -*-
+
+FILE=/var/chroots/echchroot
+
+do_purge() {
+    # remove loopback file
+    rm -f $FILE
+    # clean old sessions
+    SESSION_DIRS=`ls /var/lib/schroot/session/echchroot-*`
+    for SESS in $SESSION_DIRS ; do
+	MOUNT_DIRS=`/usr/lib/schroot/schroot-listmounts -m /var/lib/schroot/mount/$SESS > /dev/null 2>&1`
+	for MOUNT_POINT in $MOUNT_DIRS ; do
+	    umount -f $MOUNT_POINT
+	done
+    done
+
+    REM_MOUNTPOINTS=`mount | perl -ne '/( \/var\/lib\/schroot\/echchroot-\S+ )/ and print "$1\n"'`
+    for MOUNT_POINT in $REM_MOUNTPOINTS ; do
+	umount -f $MOUNT_POINT
+    done
+
+    if [[ -n "$SESSION_DIRS" ]] ; then
+	for SESS in  $SESSION_DIRS ; do
+	    for ROOT_DIR in /var/lib/schroot/mount/ /var/lib/schroot/union/underlay /var/lib/schroot/union/overlay/ ; do
+		DIR=${ROOT_DIR}/${SESS}
+		rmdir $DIR       
+	    done
+	    rm -f /var/lib/schroot/session/${SESS}
+	done
+    fi
+}
+
+case "$1" in
+       remove)
+	do_purge;;
+       purge)
+	do_purge;;
+esac

@@ -1,0 +1,121 @@
+#
+# SConstruct file.
+#
+
+
+import distutils.util
+import os
+import os.path
+import re
+from SCons.Node.FS import Entry,FS
+from SCons.Action import Action
+import SCons.Builder
+import fnmatch
+import shutil
+import stat
+
+#----------- Scons patches 
+def createFsDir(self):
+    print "create Fs Dir: %s" % self.path
+    if not os.path.exists(self.path):
+        self.fs.makedirs(self.path)
+
+SCons.Node.FS.Dir.FSCreate = createFsDir
+
+def subDir(self,sdir,create=True):
+    return self.fs.Dir(str(sdir),self,create)
+
+SCons.Node.FS.Dir.Dir = subDir
+
+def copyFile(self,srcFile,destFile):
+    print 'create dest dir : %s' % destFile.get_dir()
+    destFile.get_dir().FSCreate()
+    print 'going to copy : %s, to : %s' % (srcFile,destFile)
+    shutil.copy2(srcFile.path, destFile.path)
+    st = self.stat(srcFile.path)
+    self.chmod(destFile.path, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
+
+SCons.Node.FS.FS.FSCopy2 = copyFile
+
+#---------------------
+
+Import('env')
+
+env['TMPL_RE'] = re.compile(r'^(.*)\.tmpl$')
+env['PROJECT'] = 'echchroot'
+env['PLATFORM'] = distutils.util.get_platform()
+print "%s\n" % env['PLATFORM']
+
+env.SetDefault(BUILD_DIR = Dir('build'))
+env.Execute(Mkdir(env.subst('$BUILD_DIR')))
+
+# store signature files in the build directory
+env.SetDefault(SCONS_SIGNFILE = env['BUILD_DIR'].File('.sconsign'))
+SConsignFile(str(env['SCONS_SIGNFILE']))
+
+class DebPkgBuilder:
+    def __init__(self):
+        self.fileMap = dict()
+
+    def buildFileMap(self,srcDir,destDir,include = ['*'],  exclude= []):
+        """ Recursively find files in path matching include patterns list
+        and not matching exclude patterns
+        """
+        path = str(srcDir)
+        dest = str(destDir)
+        if dest[0] == os.sep:
+            dest = dest[1:]
+        for filename in os.listdir (path):
+            included = False
+            for incPattern in include:
+                if fnmatch.fnmatch (filename, incPattern):
+                    included = True
+                    for exclPattern in exclude:
+                        if fnmatch.fnmatch (filename, exclPattern):
+                            included = False
+                            break
+                        break
+            if included:
+                fullname = os.path.join (path, filename)
+                if os.path.isdir (fullname):
+                    self.buildFileMap (fullname, destDir,include, exclude)
+                else:
+                    self.fileMap[File(fullname)] = dest
+
+    def collect(self,destRoot):
+        """ collect files by copying them to the build directory """   
+        destRoot = env['BUILD_DIR']     
+        for source in self.fileMap:
+            print "for source : % s" % source             
+            destDir = destRoot.Dir(self.fileMap.get(source))    
+            destFile = destDir.File(source.name)
+            destRoot.fs.FSCopy2(source,destFile)        
+
+    def buildDebPkg(self,target, source, env):
+        print 'target: %s, source: %s' % (target[0],source[0])
+        self.collect(env)
+
+    def debPkgEmitter(self,target,source,env):
+        for entry in source[0].value:        
+            self.buildFileMap(entry[0],entry[3],entry[1],entry[2])
+        self.buildFileMap(target[0],env['BUILD_DIR'].Dir('DEBIAN'))
+        dpkgFile = env['BUILD_DIR'].File('debpck')        
+        print 'emitter, target: %s, source : %s' %(target,",".join([str(f) for f in self.fileMap]))
+        return ([dpkgFile],self.fileMap.keys())
+
+builder = DebPkgBuilder()
+debPkgBuilder = Builder(action = Action(builder.buildDebPkg),target_factory=SCons.Node.FS.Dir,source_factory=SCons.Node.Python.Value,emitter=builder.debPkgEmitter)
+
+env.Append (BUILDERS = {'DEB_PKG' : debPkgBuilder})
+
+spec = [  
+    ('unix/etc',['*'], ['.*'],'/etc'),
+    ('unix/usr',['*'], ['.*'],'/usr')
+]
+
+env.DEB_PKG('unix/DEBIAN',env.Value(spec))
+
+
+
+
+
