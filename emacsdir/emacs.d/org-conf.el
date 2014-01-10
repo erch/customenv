@@ -276,7 +276,7 @@
 	("W" "Non Actions Work" tags-todo "Work/!-ACTION-CALL")
 	("P" "Non Actions Perso" tags-todo "Perso/!-ACTION-CALL")
 	("l" "Later" tags-todo "LATER+SOMEDAY_MAYBE")
-	("s" "Scheduled things" tags-todo "TODO=\"SCHEDULED\""
+	("X" "Scheduled things" tags-todo "TODO=\"SCHEDULED\""
 	 )))
 
 
