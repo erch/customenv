@@ -1,7 +1,12 @@
 #!/bin/bash
 #  -*- Shell-Script -*-
 
-echo starting
+. /usr/share/debconf/confmodule
+
+# get user and group from debconf
+db_get echenv/user
+T_USER=${RET}
+ set -x
 FILE=/var/chroots/echchroot
 MOUNT_DIR=/tmp/chroot-dir
 FILE_GIGA_SIZE=5
@@ -10,7 +15,6 @@ FILE_GIGA_SIZE=5
 typeset -F pathmunge > /dev/null
 if [[ $? -ne 0 ]] ; then
     cat >> /etc/profile <<'EOF'
-
 pathmunge () 
 { 
     if ! echo $PATH | /bin/egrep -q "(^|:)$1($|:)"; then
@@ -31,28 +35,21 @@ fi
 mkdir -p $(dirname ${FILE})
 fallocate -l ${FILE_GIGA_SIZE}G ${FILE}
 
-LOOP_DEV_ID=$(for i in 1 2 3 4 5 6 7 8 ; do
-    losetup /dev/loop${i} >/dev/null 2>&1
-    if [ $? -ne 0 ] ; then
-	echo $i
-	break
-    fi
-done)
 
-if [[ -z "${LOOP_DEV_ID}" ]]; then
-    echo "couldn\'t find a loop device" >&2 && exit 1
-fi
 
-LOOP_DEV=/dev/loop${LOOP_DEV_ID}
+LOOP_DEV=`losetup -f`
 losetup ${LOOP_DEV} ${FILE}
 mkfs -t ext3 -m 1 -v ${LOOP_DEV}
 
 # mounting the loop back file in order to deboostrat it, will umount it when finished
 mkdir -p ${MOUNT_DIR}
 mount -t ext3 ${LOOP_DEV} ${MOUNT_DIR}
-debootstrap --variant=buildd --arch  amd64 squeeze ${MOUNT_DIR} ftp://ftp.us.debian.org/debian/
-umount ${MOUNT_DIR}
-rmdir ${MOUNT_DIR}
+#debootstrap --variant=buildd --arch  amd64 squeeze ${MOUNT_DIR} ftp://ftp.us.debian.org/debian/
+#umount ${MOUNT_DIR}
+#rmdir ${MOUNT_DIR}
+
+# end of configuration of the schroot
+cat /var/cache/echchroot/echchroot.conf | perl -pe 's/__USER__/'$T_USER'/g' > /etc/schroot/chroot.d/echchroot.conf
 
 # run a schroot session on source to update the chroot.
 cd /
