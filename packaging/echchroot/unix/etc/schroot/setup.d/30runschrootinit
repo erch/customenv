@@ -1,0 +1,37 @@
+#! /bin/bash
+#  -*- shell-script -*-
+
+set -e
+
+. "$SETUP_DATA_DIR/common-data"
+. "$SETUP_DATA_DIR/common-functions"
+
+CANONICAL_SCHROOT_NAME=${CHROOT_NAME%%-source}
+USER_HOME=`cat /etc/passwd | perl -F':' -nae 'if ($F[0] eq "'$AUTH_USER'"){ print "$F[5]\n"}'`
+if [ -z "$USER_HOME" ] ; then
+    USER_HOME="/"
+fi
+export CANONICAL_SCHROOT_NAME
+export USER_HOME
+SCHROOT_SETUPDIR="/etc/schroot/${CANONICAL_SCHROOT_NAME}/setup.d"
+if [[ -d "${SCHROOT_SETUPDIR}" ]] ; then
+    while read f; do
+        if [ -x "${f}" ]; then
+	    warn "running init file : $f"
+	    SCHROOT_SETUPSCRIPT=$f
+            . "${f}"
+        fi
+    done <<- EOF
+        `/usr/bin/find -L "$SCHROOT_SETUPDIR" -type f | LC_ALL=C sort`
+	EOF
+fi
+
+if [[ -n "${SCHROOT_SETUPFILES}" ]] ; then
+    for f in ${SCHROOT_SETUPFILES} ; do
+        if [ -x "${f}" ]; then
+	    warn "running init file : $f"
+	    SCHROOT_SETUPSCRIPT=$f      
+            . "${f}"
+        fi
+    done
+fi

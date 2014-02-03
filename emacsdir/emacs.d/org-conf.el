@@ -12,7 +12,7 @@
 
 ;; Settings
 (setq org-list-indent-offset 2)
-(setq org-tags-match-list-sublevels nil) ; don't inherite tags when searching
+(setq org-tags-match-list-sublevels t) ; don't inherite tags when searching
 (require 'ido-conf)
 (setq org-completion-use-ido t)
 (setq org-return-follows-link t)
@@ -48,8 +48,8 @@
 ;; Managing org files
 (setq org-directory (file-name-as-directory (expand-file-name "Orga" my-home-dir)))
 
-(defun get-journal-time (&optional wk time)
-  "Return the file name of the current journal file"
+(defun get-journal-time (&optional time)
+  "Return the date of the journal file for date time"
   (let* ((tl  (if (null time) (decode-time) (decode-time time)))
 	 (sec (nth 0 tl))
 	 (min (nth 1 tl))
@@ -59,22 +59,23 @@
 	 (year (nth 5 tl)))
     (week-day-time-from-date 1 +1 (encode-time sec min hour day month year))))
 
-					; (get-journal-time 1 (encode-time 0 0 0 10 5 2011))
-					; (get-journal-time 3)
+					; (get-journal-time (encode-time 0 0 0 10 5 2011))
+					; (get-journal-time)
 
-(defun get-journal-file-name (&optional wk time)
-  (let* ((dt (get-journal-time 1 time))
+(defun get-journal-file-name (&optional time)
+"Return the name of the journal file at time time"
+  (let* ((dt (get-journal-time time))
 	 (year (nth 0 dt))
 	 (month (nth 1 dt)))
     (expand-file-name (format "Orga_Dairy-%4d-%02d.org" year month) org-directory)))
 
 ;;(get-journal-file-name)
 
-(defun get-journal-file-name-if-exists(&optional wk time)
-  (let ((file (get-journal-file-name wk time)))
-    (if (file-exists-p file) file nil)))
+(defun get-journal-file-name-if-exists(&optional time)
+  (let ((file (get-journal-file-name time)))
+    (if (file-exists-p file) file nil))
 
-					;(get-journal-file-name-if-exists)
+;; (get-journal-file-name-if-exists (encode-time 0 0 0 10 12 2013))
 
 
 
@@ -119,16 +120,19 @@
 	(rec-find-filenames-in-list files pattern)))))
 ;;(rec-find-filename-in-dir project-dir)
 
-					; (mapcar (lambda(x) (get-journal-file-name 1 (time-nth-months-back x))) '(0 1 2 3 4 5))
-					; (time-nth-months-back 1)
-					; (decode-time (time-nth-months-back  12))
-
+;; (mapcar (lambda(x) (get-journal-file-name (time-nth-months-back x))) '(0 1 2 3 4 5))
+;;((mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))))
+;; (time-nth-months-back 1)
+;; (decode-time (time-nth-months-back  -2))
+(
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (when (not (null x)) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists 1 (time-nth-months-back x))) '(0 1 2 3)))
+(mapc (lambda(x) (unless (null x) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3)))
 
+;; (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))
+;;(mapcar (lambda(x) (decode-time (time-nth-months-back x))) '(0 1 2 3))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
 (add-to-list 'org-agenda-files (expand-file-name "Orga_Scheduling.org" org-directory))
@@ -272,7 +276,7 @@
 	("W" "Non Actions Work" tags-todo "Work/!-ACTION-CALL")
 	("P" "Non Actions Perso" tags-todo "Perso/!-ACTION-CALL")
 	("l" "Later" tags-todo "LATER+SOMEDAY_MAYBE")
-	("s" "Scheduled things" tags-todo "TODO=\"SCHEDULED\""
+	("X" "Scheduled things" tags-todo "TODO=\"SCHEDULED\""
 	 )))
 
 
@@ -363,7 +367,7 @@
   (interactive "Mdate: ")
   (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (tl  (if (null tme) (decode-time) (decode-time tme))))
-    (nth (- (nth 1 (get-journal-time (apply 'encode-time tl))) 1) mlist)))
+    (nth (- (nth 1 (get-journal-time (apply 'encode-time tl)))) mlist)))
 
 					;(journal-month)
 					;(apply 'encode-time (decode-time))

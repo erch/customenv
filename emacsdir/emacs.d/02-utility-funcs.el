@@ -1,6 +1,6 @@
 ; utility functions
 (load-library "cl-seq")
-
+(require 'calendar)
 (if (memq system-type '(windows-nt))
     (progn
       (setq path-sep "\\")
@@ -149,17 +149,19 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
       (format  format-str prev-year prev-month prev-day)))
 
 (defun time-nth-months-back (n &optional tme)
-  "get the month number for n month back than time"
+  "get the month number for n month back than time tme which is now by default"
   (let* ((tl  (if (null tme) (decode-time) (decode-time tme)))
 	 (sec (nth 0 tl))
 	 (min (nth 1 tl))
 	 (hour (nth 2 tl))
 	 (day (nth 3 tl))
 	 (month (nth 4 tl))
-	 (year (nth 5 tl))
-	 (dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
-	 (dest-year (- year (/ n 12))))
-    (encode-time sec min hour day dest-month dest-year)))
+	 (year (nth 5 tl)))
+	 ;;(dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
+	 ;;(dest-year (- year (/ n 12))))
+    (calendar-increment-month month year (- n))
+    (encode-time sec min hour day month year)))
+
 
 ;;(calendar-nth-named-day -1 1 07 2009 27)
 ;;(decode-time (week-day-time-from-date 3))

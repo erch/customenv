@@ -67,7 +67,8 @@
 (auto-compression-mode 1) ; Use compressed files as if they were normal
 ;(add-hook 'text-mode-hook 'auto-fill-mode)  ;auto-fill
 ;(auto-fill-mode -1)
-;(setq transient-mark-mode t)		;highlights selections
+(setq transient-mark-mode nil)		;highlights selections
+(setq set-mark-command-repeat-pop t)
 (setq comment-style 'plain)
 (setq frame-title-format (list '("emacs ") '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
