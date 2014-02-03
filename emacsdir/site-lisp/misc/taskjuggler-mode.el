@@ -577,7 +577,7 @@ will be inserted.  Otherwise this function asks for the keyword to use
 
 ;; Compile
 (defun taskjuggler-build-compile-command (buffer &optional args)
-  (concat "taskjuggler "
+  (concat "tj3 --check-syntax  "
           (cond 
            ((listp args) (mapconcat 'identity args " "))
            ((stringp args) args))
