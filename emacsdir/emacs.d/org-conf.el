@@ -73,7 +73,7 @@
 
 (defun get-journal-file-name-if-exists(&optional time)
   (let ((file (get-journal-file-name time)))
-    (if (file-exists-p file) file nil))
+    (if (file-exists-p file) file nil)))
 
 ;; (get-journal-file-name-if-exists (encode-time 0 0 0 10 12 2013))
 
@@ -123,15 +123,16 @@
 ;; (mapcar (lambda(x) (get-journal-file-name (time-nth-months-back x))) '(0 1 2 3 4 5))
 ;;((mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))))
 ;; (time-nth-months-back 1)
-;; (decode-time (time-nth-months-back  -2))
-(
+;; (decode-time (time-nth-months-back  2))
+
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (unless (null x) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3)))
+(mapc (lambda(x) (unless (null x) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3 4 5 6)))
 
-;; (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))
+;; (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3 4 5))
+;; (get-journal-file-name-if-exists (time-nth-months-back 2))
 ;;(mapcar (lambda(x) (decode-time (time-nth-months-back x))) '(0 1 2 3))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
