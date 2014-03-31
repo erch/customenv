@@ -73,7 +73,7 @@
 
 (defun get-journal-file-name-if-exists(&optional time)
   (let ((file (get-journal-file-name time)))
-    (if (file-exists-p file) file nil))
+    (if (file-exists-p file) file nil)))
 
 ;; (get-journal-file-name-if-exists (encode-time 0 0 0 10 12 2013))
 
@@ -124,7 +124,7 @@
 ;;((mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))))
 ;; (time-nth-months-back 1)
 ;; (decode-time (time-nth-months-back  -2))
-(
+
 (setq org-agenda-files ())
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_ActionsPlan.org$"))
@@ -195,32 +195,32 @@
 		      ("READ_REVIEW_2" . ?2)	
 		      ("READ_REVIEW_3" . ?3)
 		      ("MEETING" . ?M)
+		      ("REMAINDER" . ?R)
 		      (:endgroup . nil)
 		      ("crypt" . ?Y) 
 		      (:startgroup . nil) ; activity
-		      ("Design" . ?D)
+		      ("Design" . ?d)
 		      ("Communication" . ?c)
-		      ("People_Management" . ?p)
+		      ("People_Management" . ?m)
 		      ("Project_Management" . ?j)
-		      ("Software_Engineering" . ?g)
-		      ("Service_Engineering" . ?E)
+		      ("Software_Engineering" . ?e)
+		      ("Service_Engineering" . ?s)
 		      (:endgroup . nil)
 		      (:startgroup . nil) ; project type
 		      ("Architecture" . ?a)
-		      ("Platform" . ?f)
-		      ("Infra" . ?i)
-		      ("Properties" . ?s)
-		      ("SEO" . ?o)
-		      ("BuildAndTools" . ?b)
-		      ("Management" . ?m)
-		      ("DevEnv" . ?d)
+		      ("Platform" . ?P)
+		      ("Infra" . ?I)
+		      ("Properties" . ?p)
+		      ("SEO" . ?S)
+		      ("BuildAndTools" . ?B)
+		      ("Management" . ?g)
+		      ("DevEnv" . ?D)
 		      (:endgroup . nil)
 		      (:startgroup . nil) ; type
 		      ("Perso" . ?z)
 		      ("Work" . ?w)
 		      (:endgroup . nil)
 					;(:startgroup . nil)  ; people
-		      ("PATRICK" . nil)
 		      ("CHRISTOPHE" . nil)		       
 		      ("XAVIER" . nil)
 		      ("REDOUANE" . nil)
@@ -230,7 +230,6 @@
 		      ("FE" . nil)
 		      ("SCIENCE" . nil)
 		      ("GUILLAUME" . nil)
-		      ("CYRILLE" . nil)
 		      ("SEVERINE" . nil)
 		      ("FRANCK" . nil)
 					;(:endgroup . nil)
@@ -379,3 +378,4 @@
 ;; enabling fly mode
 (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 (provide 'org-conf)
+(message "org conf loaded.")
