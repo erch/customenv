@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# name: mongo-ssh-tunnel
+# key: mongotunnel
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+ssh -fN -L ${1:27018$(yas-choose-value '("27018" "27028"))}:${2:bom-prex-mongo-01$(yas-choose-value '("bom-prod-backup-O1" "bom-prod-mongo-01" "bom-prod-mongo-02" "bom-prod-mongo-03" "bom-prex-mongo-01" "bom-qa-mongo-01" "bom-prod-mongo-11" "bom-prod-mongo-12" "bom-prod-mongo-13"))}:$1 ${3:bom-prex1.bestofmedia.com$(yas-choose-value '("bom-cron1" "bom-prex1.bestofmedia.com"))}$0
