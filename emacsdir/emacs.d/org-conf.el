@@ -129,9 +129,10 @@
 (add-to-list 'org-agenda-files notes-file)
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_ActionsPlan.org$"))
 (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir business-as-usual-dir "^.+_ActionsPlan.org$"))
-(mapc (lambda(x) (unless (null x) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3)))
+(mapc (lambda(x) (unless (null x) (add-to-list 'org-agenda-files x))) (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3 4 5 6)))
 
-;; (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3))
+;; (mapcar (lambda(x) (get-journal-file-name-if-exists (time-nth-months-back x))) '(0 1 2 3 4 5))
+;; (get-journal-file-name-if-exists (time-nth-months-back 2))
 ;;(mapcar (lambda(x) (decode-time (time-nth-months-back x))) '(0 1 2 3))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (rec-find-filename-in-dir project-dir "^.+_Dairy.*\.org$"))
 ;;  (mapc (lambda(x) (add-to-list 'org-agenda-files x)) (directory-files org-directory t "^.+_Dairy.*\.org$"))
