@@ -367,8 +367,10 @@
   (interactive "Mdate: ")
   (let* ((mlist '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 	 (tl  (if (null tme) (decode-time) (decode-time tme))))
-    (nth (- (nth 1 (get-journal-time (apply 'encode-time tl)))) mlist)))
+    (nth  (- (nth 1 (get-journal-time (apply 'encode-time tl))) 1) mlist)))
 
+;; (journal-month-as-string)
+;; (- (nth 1 (get-journal-time)) 1)
 					;(journal-month)
 					;(apply 'encode-time (decode-time))
 ;;       (title (concat "#+TITLE: Journal for " month "\n#+OPTIONS: toc:2 H:2\n------------------------"))
