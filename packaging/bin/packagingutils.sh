@@ -19,5 +19,5 @@ function createAndPublishDeb () {
     PACK_NAME=$2
     cd ${BASE_DIR}
     fakeroot -- dpkg -b  debian ${PACK_NAME}
-    sudo -s  "mv ${PACK_NAME} /var/apt-repo && cd /var/apt-repo && dpkg-scanpackages . /dev/null > Packages.gz"
+    sudo bash -c  "mv ${PACK_NAME} /var/apt-repo && cd /var/apt-repo && dpkg-scanpackages . /dev/null > Packages.gz"
 }

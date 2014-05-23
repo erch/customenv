@@ -2,24 +2,29 @@
 #  -*- Shell-Script -*-
 
 . /usr/local/sbin/echenv-utils.sh
-. /usr/share/debconf/confmodule
+#. /usr/share/debconf/confmodule
+
+apt-add-repository ppa:jtaylor/keepass
+echo "you can run : apt-get update && apt-get install keeepass2 in order to install keepass"
 
 # get user and group from debconf
-db_get echenv/user
-T_USER=${RET}
-ENV_GROUP=echenv
+#db_get echenv/user
+#T_USER=${RET}
+#ENV_GROUP=echenv
+T_USER=ech
+ENV_GROUP=ech
 
 cat /etc/group | perl -ne '$r=1;/^'${ENV_GROUP}':.*$/ and do {$r=0;last}; END{exit $r}'
 if [ $? -ne 0 ] ; then
     groupadd ${ENV_GROUP}
 fi
 
-id ech
+id ${T_USER}  
 if [ $? -ne 0 ] ; then
     useradd -d /home/${T_USER} -G ${ENV_GROUP} -U -m -s /bin/bash ${T_USER}
 else
-    groupadd ech
-    usermod -g ech -G ${ENV_GROUP} -a -s /bin/bash ${T_USER}
+    groupadd {T_USER}
+    usermod -G ${ENV_GROUP} -a -s /bin/bash ${T_USER}
 fi
 
 ROOT_DIR=/var/cache/echenv-setup
@@ -29,7 +34,7 @@ addtoprofiled /home/${T_USER} ${ROOT_DIR}/profiled/*.sh
 SHORT_HOSTNAME=`hostname -s`
 HOST_PROFILE=/home/${T_USER}/.${SHORT_HOSTNAME}_profile.sh
 if [ -e "$HOST_PROFILE" ] ; then
-    cp "${HOST_PROFILE}" "${HOST_PROFILE}.orig"
+     backupf "${HOST_PROFILE}"
 fi
 cp  ${ROOT_DIR}/templates/host_profile.template ${HOST_PROFILE}
 chown ${T_USER}.${T_USER} ${HOST_PROFILE}
@@ -37,11 +42,11 @@ chmod u+x ${HOST_PROFILE}
 
 USER_PROFILE=/home/${T_USER}/.bash_profile
 if [ -e ${USER_PROFILE} ] ; then
-    mv  ${USER_PROFILE} ${USER_PROFILE}.orig
+    backupf  ${USER_PROFILE}
 fi
-cp $ROOT_DIR/templates/bash_profile.template ${USER_PROFILE}
-chown ${T_USER}.${T_USER} ${HOST_PROFILE}
-chmod u+x ${HOST_PROFILE}
+cat $ROOT_DIR/templates/bash_profile_extension.template >> ${USER_PROFILE}
+chown ${T_USER}.${T_USER} ${USER_PROFILE}
+chmod u+x ${USER_PROFILE}
 
 
 rm -rf ${ROOT_DIR}
