@@ -1,0 +1,41 @@
+# echenv part
+function pathmunge () {
+        if ! echo $PATH | /bin/egrep -q "(^|:)$1($|:)" ; then
+           if [ "$2" = "after" ] ; then
+              PATH=$PATH:"$1"
+           else
+              PATH="$1":$PATH
+           fi
+        fi
+}
+export -f pathmunge
+
+function convertenvvar ()
+{
+    if [ "$OSTYPE" = "cygwin" ] ; then
+	for VR in $* ; do
+    	    VRV=`eval echo '$'$VR`
+    	    VRC=`/bin/cygpath -pau "$VRV"`
+    	    eval "export $VR=\"$VRC\""
+	done
+    fi
+}
+export -f convertenvvar
+
+SHORT_HOSTNAME=`hostname -s`
+HOST_PROFILE=.${SHORT_HOSTNAME}_profile.sh
+if [ -x "$HOST_PROFILE" ] ; then
+    . $HOST_PROFILE
+fi
+
+if [ -n "$DEV_HOME" ] && [ -z "$PROFILE_D_DIR" ] ; then
+    convertenvvar HOME
+    PROFILE_D_DIR="$HOME/.profile.d"
+    while read f; do
+	if [ -f "${f}" ]; then
+	    . "${f}"
+	fi
+    done <<- EOF
+	`/usr/bin/find -L "$PROFILE_D_DIR" -type f -iname '*.sh' -or -iname '*.zsh' | LC_ALL=C sort`
+	EOF
+fi

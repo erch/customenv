@@ -7,5 +7,5 @@ read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basenam
 
 
 . ${MY_DIR}/../../bin/packagingutils.sh
-createAndPublishDeb  "${MY_DIR}/.." echenv-setup_1.0.0_all.deb
+createAndPublishDeb  "${MY_DIR}/.." echenv-setup_1.0.2_all.deb
 

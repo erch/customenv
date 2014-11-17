@@ -15,9 +15,14 @@ function mountonce () {
 }
 
 function createAndPublishDeb () {
+    set -x
     BASE_DIR=$1
     PACK_NAME=$2
+    DIST_DIR=/var/apt-repo
+    if [ ! -e ${DIST_DIR} ] ; then
+	mkdir -p ${DIST_DIR} 
+    fi
     cd ${BASE_DIR}
     fakeroot -- dpkg -b  debian ${PACK_NAME}
-    sudo -s  "mv ${PACK_NAME} /var/apt-repo && cd /var/apt-repo && dpkg-scanpackages . /dev/null > Packages.gz"
+    sudo bash -c "mv ${PACK_NAME} ${DIST_DIR} && cd ${DIST_DIR} && dpkg-scanpackages . /dev/null > Packages.gz"
 }
