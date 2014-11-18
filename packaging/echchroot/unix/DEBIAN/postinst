@@ -4,8 +4,8 @@
 . /usr/share/debconf/confmodule
 
 # get user and group from debconf
-db_get echenv/user
-T_USER=${RET}
+#db_get echenv/user
+T_USER=ech
  set -x
 FILE=/var/chroots/echchroot
 MOUNT_DIR=/tmp/chroot-dir
