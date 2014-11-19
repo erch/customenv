@@ -1,45 +1,139 @@
 #!/bin/bash
 #  -*- Shell-Script -*-
 
-function installfiles ()
+declare CP="cp -p"
+declare M4="m4"
+declare MKDIR="mkdir"
+declare CHOWN="chown"
+declare CHMOD="chmod"
+declare SUDO="sudo"
+
+declare CP_CMD
+declare M4_CMD
+declare HMOD_CMD
+declare CHOWN_CMD
+declare MKDIR_CMD
+        
+function installfromdir()
 {
     set -x
-    local SOURCE_DIR=$1
-    local DEST_DIR=$(perl -e 'use Cwd;;print Cwd::abs_path("'$2'") . "\n";')
+    local SOURCE_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'$1'") . "\n";')
+    local DEST_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'$2'") . "\n";')
+    if [[ -z "$SOURCE_DIR" || -z "$DEST_DIR" ]] ; then
+            return 1
+    fi
+    
+    local USER
+    local GROUP
+    local M4_INCLUDE_DIR
+    
     shift 2
     if [[ $# -gt 0 ]] ; then
-        local M4_INCLUDE_DIRECTIVE="-I $1"
+        USER=$1
+    else
+        USER=$(id -un)
     fi
-    local USER_HOME=${HOME}
-    local USER=$(id -un)
-    local GROUP=$(id -gn)
-    (
-        cd ${SOURCE_DIR}
-        find .  -type f | while read F ; do
-            local DIR=$(dirname $F)
-            local RAW_TARGET_DIR=${DEST_DIR}/${DIR}
-            local TARGET_DIR=${RAW_TARGET_DIR/\/_user-home_/${HOME}}
-            local INIT_TARGET_FILE=${TARGET_DIR}/$(basename $F)
-            local TARGET_FILE=${INIT_TARGET_FILE%._template_}
+    shift
+    if [[ $# -gt 0 ]] ; then
+        GROUP=$1
+    else
+        GROUP=$(id -gn)
+    fi
+    shift
+    if [[ $# -gt 0 ]] ; then
+        local M4_INCLUDE_DIR=$1
+    fi
+    
+    if [[ "$USER" != $(id -un) ]] ; then        
+        CP_CMD="$SUDO $CP"
+        M4_CMD="$SUDO $M4"
+        CHMOD_CMD="$SUDO $CHMOD"
+        CHOWN_CMD="$SUDO $CHOWN"
+        MKDIR_CMD="$SUDO $MKDIR"
+    else
+        CP_CMD="$CP"
+        M4_CMD="$M4"
+        CHMOD_CMD="$CHMOD"
+        CHOWN_CMD=": " # does nothing
+        MKDIR_CMD="$MKDIR"
+    fi
+    
+     if [[ -e "$SOURCE_DIR/_owner_" ]] ; then
+        USER=$(cat "$NODE/_owner_" | cut -d' ' -f1)
+        GROUP=$(cat "$NODE/_owner_" | cut -d' ' -f2)
+    fi
+    
+    if [[ -z "${USER}" ||  -z "${GROUP}" ]] ; then
+        return 1
+    fi
+    
+    local DIR=$(basename ${DEST_DIR} )
+    if [[ $DIR = '_user-home_' ]] ; then
+        DEST_DIR=$(eval echo ~$USER)
+    fi
+    
+    if [ ! -e ${DEST_DIR} ] ; then
+        ${MKDIR_CMD} ${DEST_DIR}
+        ${CHOWN_CMD} ${USER}.${GROUP} ${DEST_DIR}
+    fi
             
-            if [[ ! -e ${TARGET_DIR} ]] ; then
-                mkdir -p ${TARGET_DIR}
-            fi
-            
-            if [[ -e ${TARGET_FILE} ]] ; then
-                backupf ${TARGET_FILE}
-            fi
-            
-            if [[ ${TARGET_FILE} != ${INIT_TARGET_FILE} ]] ; then
-                m4 ${M4_INCLUDE_DIRECTIVE} ${F} > {TARGET_FILE}
-            else
-                cp $F ${TARGET_DIR}
-            fi
-            chown ${USER}.${GROUP} ${TARGET_FILE}
-        done
-    )
+    for N in $(ls -A ${SOURCE_DIR}) ; do
+        NODE=$(perl -e 'use Cwd;print Cwd::abs_path("'${SOURCE_DIR}/$N'") . "\n";')
+        if [[ -d "$NODE" ]] ; then
+            installfromdir ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+        elif  [[ $N != '_owner_' ]] ; then
+            installfile ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+        fi
+    done
 }
-export -f installfiles
+export -f installfromdir
+
+function installfile()
+{
+    local SOURCE_FILE=$1
+    local DEST_FILE=$2
+    if [[ -z "$SOURCE_FILE" || -z "$DEST_FILE" ]] ; then
+            return 1
+    fi
+    local USER=$3
+    local GROUP=$4
+    shift 4
+    local M4_INCLUDE_DIRECTIVE
+    if [[ $# -gt 0 ]] ; then
+        M4_INCLUDE_DIRECTIVE="-I $1"
+    fi
+    
+    if [[ -e ${DEST_FILE} ]] ; then
+        backupf ${DEST_FILE}
+    fi
+    
+    local TARGET_FILE=${DEST_FILE%._template_}
+    if [[ ${TARGET_FILE} != ${DEST_FILE} ]] ; then
+        ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} ${SOURCE_FILE} > ${TARGET_FILE}
+    else
+       copyfile ${SOURCE_FILE} ${TARGET_FILE} ${USER} ${GROUP}
+    fi
+}
+export -f installfile
+
+function copyfile()
+{
+    local SOURCE_FILE=$1
+    local DEST_FILE=$2
+    local USER=$3
+    local GROUP=$4
+    if [[ -z "$SOURCE_FILE" || -z "$DEST_FILE" || -z "$USER" || -z "$GROUP" ]] ; then
+            return 1
+    fi
+   
+    $CP_CMD ${SOURCE_FILE} ${DEST_FILE}
+    if [[ -e ${SOURCE_FILE}._mod_ ]] ; then
+        local MOD
+        cat ${SOURCE_FILE}._mod_ | read MOD
+        $CHMOD_CMD $MOD ${DEST_FILE}
+    fi
+    $CHOWN_CMD ${USER}.${GROUP} ${DEST_FILE}
+}
 
 function backupf ()
 {
@@ -56,7 +150,7 @@ function backupf ()
     done
     
     if [[ ${ITER} -lt ${MAX} ]]; then
-        cp ${FILE} ${BCK_FILE}
+        $CP ${FILE} ${BCK_FILE}
         return 1
     fi
     return 0
