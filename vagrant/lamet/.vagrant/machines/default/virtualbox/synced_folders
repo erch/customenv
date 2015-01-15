@@ -1,0 +1,1 @@
+{"virtualbox":{"/home/ech":{"guestpath":"/home/ech","hostpath":"C:/homes/vagrant/lamet/ech","disabled":false},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/homes/cyghome/ech/vagrant/test","disabled":false}}}
