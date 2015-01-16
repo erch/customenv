@@ -1,0 +1,12 @@
+Cygwin init:
+
+- in a cygwin terminal window:
+  * run shell/bin/init-cygwin.sh:
+    + it creates windows env variables VM_HOMES en MY_HOME
+    + these variables are also exported to the shell env.
+  * run cygwin-monts.sh:
+    + this will mount:
+       . /cygdrive/c on /c
+       . $VM_HOMES/cyghome on /home , the directory is created if it not already exists
+  * stop the shell, now it's possible to run an XWindow env
+- in a shell from the cyg terminal or an XWindows env:

@@ -1,9 +1,0 @@
-Package: customenv-setup
-Version: 1.0.2
-Section: base
-Priority: optional
-Architecture: all
-Depends: aspell-en, aspell-fr, bash-completion,build-essential, apache2,cdargs, cdparanoia, chromium-browser,chromium-browser-l10n, chromium-codecs-ffmpeg,curl, fakeroot, git, graphviz, grep, groovy, imagemagick, libreoffice,  libreoffice-kde, libwww-mechanize-perl, libxml-libxml-perl, libxml-sax-expat-perl, libxml-xpath-perl, lynx, lzma, m4, manpages-dev, mysql-server, nano, ncurses-base, ntp, openssh-server, p7zip, perl-doc, python-appindicator, python-avogadro, python-enchant, python-gobject-cairo, python-indicate, python-iniparse, python-levenshtein, python-lxml, python-numpy, python-pam, python-serial, python-urwid, python-utidylib, python-vobject, subversion, tcpdump, tree, visualvm, w3m, wireshark, xmldiff, dchroot,debootstrap, python-software-properties,debconf, lvm2,xml2,html-xml-utils, xmlstarlet,devscripts,termninator,nautilus-dropbox
-Maintainer: Eric Chastan
-Description: Setup custom environment.
-
