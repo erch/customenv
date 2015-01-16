@@ -1,7 +1,0 @@
-export ORGA_HOME=${HOME}/Orga
-export DEV_HOME=${HOME}/dev
-export UMLGRAPH_HOME=
-export WEB_HOME=/var/www	
-export BACKUPS_HOME=${HOME}/.Backups
-
-export ECLIPSE_HOME=/usr/lib/eclipse/

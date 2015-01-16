@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- mode:Python -*-
 
-import sys, getopt
+import sys, getopt,os
 import simplejson as json
 from Cheetah.Template import Template
 
@@ -47,22 +47,20 @@ def readEnv(env_input):
     decoded = {}
     for line in f:
         if not(line.startswith("#")) and not(len(line.strip()) == 0):
-            tokens = line.split("=", 2)
-            decoded[tokens[0]] = tokens[1]
+            tokens = line.strip().split("=", 2)
+            decoded[tokens[0]] =  tokens[1]
     f.close()
     return decoded
 
 def main(argv):
     template, output, env_input, json_input = parse_options(argv)
-    decoded = []
-    if env_input == None and json_input == None:
-        print "ERROR: Specify at least at one input."
-        sys.exit()
-    elif env_input != None and json_input != None:
+    decoded = {}
+    decoded.update(os.environ)
+    if env_input != None and json_input != None:
         print "ERROR: Specify only one input."
         sys.exit()
     elif env_input != None:
-        decoded.append(readEnv(env_input))
+        decoded.update(readEnv(env_input))
     elif json_input != None:
         for i in json_input.split(","):
             f = open(i, 'r')

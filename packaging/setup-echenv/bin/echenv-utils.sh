@@ -2,7 +2,7 @@
 #  -*- Shell-Script -*-
 
 declare CP="cp -p"
-declare M4="m4"
+declare M4="$MY_DIR/filltemplate.py"
 declare MKDIR="mkdir"
 declare CHOWN="chown"
 declare CHMOD="chmod"
@@ -17,8 +17,9 @@ declare MKDIR_CMD
 function installfromdir()
 {
     set -x
-    local SOURCE_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'$1'") . "\n";')
-    local DEST_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'$2'") . "\n";')
+    local SOURCE_DIR=$1
+    local DEST_DIR=$2
+    
     if [[ -z "$SOURCE_DIR" || -z "$DEST_DIR" ]] ; then
             return 1
     fi
@@ -44,7 +45,7 @@ function installfromdir()
         local M4_INCLUDE_DIR=$1
     fi
     
-    if [[ "$USER" != $(id -un) ]] ; then        
+    if [[ ${OSTYPE} != 'cygwin' && "$USER" != $(id -un) ]] ; then        
         CP_CMD="$SUDO $CP"
         M4_CMD="$SUDO $M4"
         CHMOD_CMD="$SUDO $CHMOD"
@@ -61,6 +62,10 @@ function installfromdir()
      if [[ -e "$SOURCE_DIR/_owner_" ]] ; then
         USER=$(cat "$NODE/_owner_" | cut -d' ' -f1)
         GROUP=$(cat "$NODE/_owner_" | cut -d' ' -f2)
+     fi
+
+     if [[ -e "$SOURCE_DIR/_dataenv_" ]] ; then
+        M4_INCLUDE_DIR="$SOURCE_DIR/_dataenv_"
     fi
     
     if [[ -z "${USER}" ||  -z "${GROUP}" ]] ; then
@@ -76,12 +81,14 @@ function installfromdir()
         ${MKDIR_CMD} ${DEST_DIR}
         ${CHOWN_CMD} ${USER}.${GROUP} ${DEST_DIR}
     fi
-            
+
+    SOURCE_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'${SOURCE_DIR}'") . "\n";')
+    DEST_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'${DEST_DIR}'") . "\n";')
     for N in $(ls -A ${SOURCE_DIR}) ; do
         NODE=$(perl -e 'use Cwd;print Cwd::abs_path("'${SOURCE_DIR}/$N'") . "\n";')
         if [[ -d "$NODE" ]] ; then
             installfromdir ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
-        elif  [[ $N != '_owner_' ]] ; then
+        elif  [[ $N != '_owner_' && $N != '_dataenv_' ]] ; then
             installfile ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
         fi
     done
@@ -100,23 +107,35 @@ function installfile()
     shift 4
     local M4_INCLUDE_DIRECTIVE
     if [[ $# -gt 0 ]] ; then
-        M4_INCLUDE_DIRECTIVE="-I $1"
+        M4_INCLUDE_DIRECTIVE="-e $1"
     fi
     
     if [[ -e ${DEST_FILE} ]] ; then
         backupf ${DEST_FILE}
     fi
     
-    local TARGET_FILE=${DEST_FILE%._template_}
-    if [[ ${TARGET_FILE} != ${DEST_FILE} ]] ; then
-        ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} ${SOURCE_FILE} > ${TARGET_FILE}
-    else
-       copyfile ${SOURCE_FILE} ${TARGET_FILE} ${USER} ${GROUP}
+    local EXCLUDED_OS=$(perl -e '($r)="'${DEST_FILE}'"=~ /^.*?,!_([^_]+)_,.*$/;print "$r\n";')
+    local ONLY_OS=$(perl -e '($r)="'${DEST_FILE}'"=~ /^.*?,=_([^_]+)_,.*$/;print "$r\n";')
+    if [[ -n ${ONLY_OS} && ${OSTYPE} != ${ONLY_OS} ]] ; then
+	return 0
     fi
+
+    if [[ -n ${EXCLUDED_OS} && ${OSTYPE} == ${EXCLUDED_OS} ]] ; then
+	return 0
+    fi
+    DEST_FILE=$(echo ${DEST_FILE} | perl -ne '/^(.*),[!=]_.*_,(.*)$/ and print "$1$2\n" or print "$_";')
+    
+    if [[ ${DEST_FILE} != ${DEST_FILE%._template_} ]] ; then
+	DEST_FILE=${DEST_FILE%._template_}
+        ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} -t ${SOURCE_FILE} -o ${DEST_FILE}
+    else
+       $CP_CMD ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
+    fi
+    chattr ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
 }
 export -f installfile
 
-function copyfile()
+function chattr()
 {
     local SOURCE_FILE=$1
     local DEST_FILE=$2
@@ -125,13 +144,13 @@ function copyfile()
     if [[ -z "$SOURCE_FILE" || -z "$DEST_FILE" || -z "$USER" || -z "$GROUP" ]] ; then
             return 1
     fi
-   
-    $CP_CMD ${SOURCE_FILE} ${DEST_FILE}
-    if [[ -e ${SOURCE_FILE}._mod_ ]] ; then
-        local MOD
-        cat ${SOURCE_FILE}._mod_ | read MOD
-        $CHMOD_CMD $MOD ${DEST_FILE}
+    local MOD
+    if [[ -e ${SOURCE_FILE}._mod_ ]] ; then        
+        cat ${SOURCE_FILE}._mod_ | read MOD        
+    else
+	MOD=$(stat -c %a ${SOURCE_FILE})
     fi
+    $CHMOD_CMD $MOD ${DEST_FILE}
     $CHOWN_CMD ${USER}.${GROUP} ${DEST_FILE}
 }
 
