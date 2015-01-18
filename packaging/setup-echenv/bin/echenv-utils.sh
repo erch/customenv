@@ -60,8 +60,8 @@ function installfromdir()
     fi
     
      if [[ -e "$SOURCE_DIR/_owner_" ]] ; then
-        USER=$(cat "$NODE/_owner_" | cut -d' ' -f1)
-        GROUP=$(cat "$NODE/_owner_" | cut -d' ' -f2)
+        USER=$(cat "$SOURCE_DIR/_owner_" | cut -d' ' -f1)
+        GROUP=$(cat "$SOURCE_DIR/_owner_" | cut -d' ' -f2)
      fi
 
      if [[ -e "$SOURCE_DIR/_dataenv_" ]] ; then
@@ -82,14 +82,16 @@ function installfromdir()
         ${CHOWN_CMD} ${USER}.${GROUP} ${DEST_DIR}
     fi
 
-    SOURCE_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'${SOURCE_DIR}'") . "\n";')
-    DEST_DIR=$(perl -e 'use Cwd;print Cwd::abs_path("'${DEST_DIR}'") . "\n";')
     for N in $(ls -A ${SOURCE_DIR}) ; do
-        NODE=$(perl -e 'use Cwd;print Cwd::abs_path("'${SOURCE_DIR}/$N'") . "\n";')
-        if [[ -d "$NODE" ]] ; then
-            installfromdir ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+        local SRC_NODE=$(perl -e 'use File::Spec::Functions;print canonpath("'${SOURCE_DIR}/$N'") . "\n";')
+	local DST_NODE=$(perl -e 'use File::Spec::Functions;print canonpath("'${DEST_DIR}/$N'") . "\n";')
+        if [[ -d "$SRC_NODE" ]] ; then
+            installfromdir ${SRC_NODE} ${DST_NODE} ${USER} ${GROUP} ${M4_INCLUDE_DIR}
         elif  [[ $N != '_owner_' && $N != '_dataenv_' ]] ; then
-            installfile ${NODE} ${DEST_DIR}/$N ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+	    echo $N | perl -ne '/^.*~$/ and exit 1 or exit 0;'
+	    if [[ $? -eq 0 ]] ; then
+		installfile ${SRC_NODE} ${DST_NODE} ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+	    fi
         fi
     done
 }
@@ -129,7 +131,7 @@ function installfile()
 	DEST_FILE=${DEST_FILE%._template_}
         ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} -t ${SOURCE_FILE} -o ${DEST_FILE}
     else
-       $CP_CMD ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
+       $CP_CMD ${SOURCE_FILE} ${DEST_FILE}
     fi
     chattr ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
 }

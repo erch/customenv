@@ -1,0 +1,18 @@
+#echo -n "."
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+
+PATH=/usr/local/bin:/usr/bin:${HOME}/bin/
+
+
+#if $OS_TYPE = 'cygwin'
+    pathmunge /usr/X11R6/bin
+#end if
+
+if [ `expr "$TERM" : "emacs*"` -ne 0 ] || [ `expr "$TERM" : "eterm*"` -ne 0 ] ; then
+    export PS1="$ "
+fi
+
+export ENV=$HOME/.bashrc
+export PATH
