@@ -1,8 +1,0 @@
-Package: echchroot
-Version: 1.0.1
-Section: base
-Priority: optional
-Architecture: all
-Depends: debootstrap,schroot,aufs-tools
-Maintainer: eric
-Description: ECH schroot, create an union chroot on a file through a loopback device

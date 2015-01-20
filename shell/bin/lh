@@ -1,4 +1,0 @@
-#! /bin/bash
-#  -*- Shell-Script -*-
-
-cat /home/ech/.ssh/config | perl -ne '/^\s*Host\s+(.*?)\s*$/ and $n=$1; /^\s*Hostname\s+(.*?)\s*$/ and print "$n\t\t=>\t$1\n";' | sort

@@ -1,8 +1,0 @@
-Package: echenv-emacs
-Version: 1.0.0
-Section: base
-Priority: optional
-Architecture: all
-Depends:  emacs23,echenv-setup
-Maintainer: Eric Chastan
-Description: install and configure emacs.

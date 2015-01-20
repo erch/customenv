@@ -1,8 +1,0 @@
-#
-# SConstruct file.
-#
-
-env = Environment()
-SConscript('./SConsScript', exports='env')
-
-

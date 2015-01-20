@@ -1,1 +1,0 @@
-C:\cygwin\bin\run.exe "%ECLIPSE_HOME%\eclipse.exe" -vm "%JAVA_HOME%"\bin\javaw.exe -vmargs -Xmx1024M -XX:MaxPermSize=512M

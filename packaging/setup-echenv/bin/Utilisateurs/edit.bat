@@ -1,1 +1,0 @@
-"%EMACS_HOME%\bin\emacsclient.exe"  -n -a "%DEV_HOME%\shell\bin\emacs.bat" %*  

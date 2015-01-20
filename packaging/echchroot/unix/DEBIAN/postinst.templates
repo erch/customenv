@@ -1,3 +1,0 @@
-Template: echenv/user
-Type: string
-Description: user name for which echenv is to be installed

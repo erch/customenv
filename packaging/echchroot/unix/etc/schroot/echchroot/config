@@ -1,6 +1,0 @@
-# Filesystems to mount inside the chroot.
-FSTAB="/etc/schroot/echchroot/fstab"
-# Files to copy from the host system into the chroot.
-COPYFILES="/etc/schroot/echchroot/copyfiles"
-# System NSS databases to copy into the chroot.
-NSSDATABASES="/etc/schroot/echchroot/nssdatabases"

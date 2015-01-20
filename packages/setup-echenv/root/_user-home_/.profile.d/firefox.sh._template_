@@ -1,0 +1,38 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+#if @OS_TYPE == 'cygwin'
+FIREFOX="$PROGRAMFILES/Mozilla Firefox/firefox"
+if [ ! -x "$FIREFOX" ] ; then
+    FIREFOX="$PROGRAMFILESX86/Mozilla Firefox/firefox"
+fi
+if [ ! -x "$FIREFOX" ] ; then
+    unset FIREFOX
+else
+    export FIREFOX
+fi
+#else
+export FIREFOX=/usr/bin/firefox
+#end if
+
+
+function browse 
+{
+    if [[ -n $FIREFOX ]] ; then
+#if @OS_TYPE == 'cygwin'    
+	if [ `expr "$1" :  "^http[s]*://.*"` -eq 0 ] ; then
+	    P=`cygpath -aw "$*"`
+	else
+	    P=$1
+	fi
+#else
+	P="$*"
+#end if
+	"$FIREFOX" -remote 'openURL('$P', new-tab)'
+   fi
+}
+
+if [[ -n $FIREFOX ]] ; then
+    export -f browse
+fi
