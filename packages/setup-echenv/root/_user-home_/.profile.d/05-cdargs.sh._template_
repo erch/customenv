@@ -1,0 +1,15 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+#if @OS_TYPE == 'cygwin'
+CDARGS_SCRIPT=${CDARGS_SCRIPT:-/usr/share/cdargs/cdargs-lib.sh}
+#else
+CDARGS_SCRIPT=${CDARGS_SCRIPT:-${HOME}/bin/cdargs-bash.sh}
+#end if
+if [ -x "${CDARGS_SCRIPT}" ] ; then
+    . ${CDARGS_SCRIPT}
+fi
+unset CDARGS_SCRIPT
+

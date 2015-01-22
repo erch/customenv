@@ -1,4 +1,4 @@
-## -*- Shell-script -*-
+## -*- shell-script -*-
 #compiler-settings
 cheetahVarStartToken = @
 #end compiler-settings
@@ -9,9 +9,25 @@ export LANG="en_US.UTF-8"
 
 PATH=/usr/local/bin:/usr/bin:${HOME}/bin/
 
+export OS_TYPE=@OS_TYPE
+#if self.varExists('DIST')
+export DIST=@DIST
+#end if
+#if self.varExists('DISTDistroBasedOn')
+export DistroBasedOn=@DistroBasedOn
+#end if
+#if self.varExists('DISTPSEUDONAME')
+export PSEUDONAME=@PSEUDONAME
+#end if
 #if @OS_TYPE == 'cygwin'
 convertenvvar MY_ENV VM_HOMES WIN_OPT
-pathmunge /usr/X11R6/bin
+pathmunge /usr/X11R6/bin after
+pathmunge /usr/sbin after
+PROGF=$(env | perl -ne '/^ProgramFiles\(x86\)=(.*)$/ and print $1;')
+PROGF=$(cygpath -au "$PROGF")
+export PROGRAMFILESX86=${PROGRAMFILESX86:-${PROGF}}
+convertenvvar PROGRAMFILES
+export PROGRAMFILES=${PROGRAMFILES:-${PROGF}}
 #end if
 
 export ENV=$HOME/.bashrc

@@ -1,0 +1,40 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+if [[ -z "$ECH_ENV_SET" ]] ; then
+    function pathmunge () {
+        if ! echo $PATH | /bin/egrep -q "(^|:)$1($|:)" ; then
+            if [ "$2" = "after" ] ; then
+		PATH=$PATH:"$1"
+            else
+		PATH="$1":$PATH
+            fi
+        fi
+    }
+    export -f pathmunge
+
+#if @OS_TYPE == 'cygwin'
+    function convertenvvar ()
+    {
+	for VR in $* ; do
+    	    VRV=`eval echo '$'$VR`
+	    if [[ -n "$VRV" ]] ; then
+    		VRC=`/bin/cygpath -pau "$VRV"`
+    		eval "export $VR=\"$VRC\""
+	    fi
+	done
+    }
+    export -f convertenvvar
+#end if
+
+    localprofiled() {
+	for file in ~/.profile.d/*.sh; do
+	    [ -e "${file}" ] && . "${file}" ~/.profile.d
+	done
+    }
+    . ~/.$(hostname).env
+    localprofiled
+    export ECH_ENV_SET=1
+fi

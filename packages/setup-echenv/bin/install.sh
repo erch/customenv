@@ -8,9 +8,6 @@ read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basenam
 
 export BIN_DIR=${MY_DIR}/../../bin
 
-# need to do that for cheetah
-export OS_TYPE=$OSTYPE
-
 # to not be disturb by windows programs
 export PATH=$BIN_DIR:/usr/local/bin:/usr/bin:/usr/bin:.:
 
@@ -27,8 +24,27 @@ pip install Cheetah
 . ${BIN_DIR}/echenv-utils.sh
 
 SOURCE_ROOT_DIR=${MY_DIR}/../root
+
+. ${BIN_DIR}/osprofile
+setOsProfile
+
 installfromdir ${SOURCE_ROOT_DIR} /
 #installfromdir ${MY_DIR}/../tests/source ${MY_DIR}/../tests/dest
+
+OLD_HOST_ENV_FILE=~/.hostname.env
+export HOST_ENV_FILE=~/.$(hostname).env
+if [[ -e ${OLD_HOST_ENV_FILE} ]] ; then
+    echo >> ${OLD_HOST_ENV_FILE}
+    echo "# helper var for other installers" >> ${OLD_HOST_ENV_FILE}
+    echo "HOST_ENV_FILE=${NEW_HOST_ENV_FILE}" >> ${OLD_HOST_ENV_FILE}
+    mv ${OLD_HOST_ENV_FILE} ${HOST_ENV_FILE}
+fi
+
+${BIN_DIR}/insertfif  ~/.bashrc ~/bashrc-extension "ech_env" '#'
+chmod a+x ~/.bashrc
+
+${BIN_DIR}/insertfif ~/.bash_profile ~/.bash_profile-extension "ech_env" '#'
+chmod a+x ~/.bash_profile
 
 #apt-add-repository ppa:jtaylor/keepass
 #apt-get update 

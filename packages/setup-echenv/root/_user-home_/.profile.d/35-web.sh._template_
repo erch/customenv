@@ -1,0 +1,12 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+#if @OS_TYPE == "cygwin"
+convertenvvar WEB_HOME
+DEF=$(cygpath -au "C:\www")
+export WEB_HOME=${WEB_HOME:-${DEF}}
+#else
+export WEB_HOME=/var/www
+#end if

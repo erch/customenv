@@ -1,0 +1,15 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+#if @OS_TYPE == "cygwin"
+DEF=$(cygpath -au "C:\wamp\bin\mysql\mysql5.6.17\bin")
+export MYSQL_HOME=${MYSQL_HOME:-${DEF}}
+#else
+export MYSQL_HOME=${MYSQL_HOME:-/usr/bin}
+#end if
+${MYSQL_HOME}/mysql -V >/dev/null 2>&1
+if [[ $? -eq 0 ]] ; then
+    pathmunge "$MYSQL_HOME" after
+fi

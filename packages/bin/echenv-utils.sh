@@ -13,14 +13,14 @@ declare M4_CMD
 declare HMOD_CMD
 declare CHOWN_CMD
 declare MKDIR_CMD
-        
+
 function installfromdir()
 {
     local SOURCE_DIR=$1
     local DEST_DIR=$2
     
     if [[ -z "$SOURCE_DIR" || -z "$DEST_DIR" ]] ; then
-            return 1
+        return 1
     fi
     
     local USER
@@ -58,12 +58,12 @@ function installfromdir()
         MKDIR_CMD="$MKDIR"
     fi
     
-     if [[ -e "$SOURCE_DIR/_owner_" ]] ; then
+    if [[ -e "$SOURCE_DIR/_owner_" ]] ; then
         USER=$(cat "$SOURCE_DIR/_owner_" | cut -d' ' -f1)
         GROUP=$(cat "$SOURCE_DIR/_owner_" | cut -d' ' -f2)
-     fi
+    fi
 
-     if [[ -e "$SOURCE_DIR/_dataenv_" ]] ; then
+    if [[ -e "$SOURCE_DIR/_dataenv_" ]] ; then
         M4_INCLUDE_DIR="$SOURCE_DIR/_dataenv_"
     fi
     
@@ -105,7 +105,7 @@ function installfile()
     local SOURCE_FILE=$1
     local DEST_FILE=$2
     if [[ -z "$SOURCE_FILE" || -z "$DEST_FILE" ]] ; then
-            return 1
+        return 1
     fi
     local USER=$3
     local GROUP=$4
@@ -134,7 +134,7 @@ function installfile()
 	DEST_FILE=${DEST_FILE%._template_}
         ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} -t ${SOURCE_FILE} -o ${DEST_FILE}
     else
-       $CP_CMD ${SOURCE_FILE} ${DEST_FILE}
+	$CP_CMD ${SOURCE_FILE} ${DEST_FILE}
     fi
     chattr ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
 }
@@ -147,7 +147,7 @@ function chattr()
     local USER=$3
     local GROUP=$4
     if [[ -z "$SOURCE_FILE" || -z "$DEST_FILE" || -z "$USER" || -z "$GROUP" ]] ; then
-            return 1
+        return 1
     fi
     local MOD
     if [[ -e ${SOURCE_FILE}._mod_ ]] ; then        

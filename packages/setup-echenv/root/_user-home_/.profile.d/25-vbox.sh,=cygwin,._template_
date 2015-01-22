@@ -1,0 +1,15 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+#if @OS_TYPE == "cygwin"
+convertenvvar VBOX_MSI_INSTALL_PATH
+if [[ -z ${VBOX_MSI_INSTALL_PATH} ]] ; then
+   convertenvvar VBOX_INSTALL_PATH
+fi
+export VBOX_INSTALL_PATH=${VBOX_INSTALL_PATH:-${VBOX_MSI_INSTALL_PATH}}
+if [[ -z "${VBOX_INSTALL_PATH}" ]] ; then
+   pathmunge "$VBOX_INSTALL_PATH" after
+fi
+#end if

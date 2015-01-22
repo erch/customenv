@@ -1,0 +1,25 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+function browse 
+{
+#if @OS_TYPE == 'cygwin'
+    BE=$(cygpath -au 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
+    export BROWSER_EXE=${BROWSER_EXE:-${BE}}
+    if [ $# -eq 1 ] ; then
+	cygstart --hide $1
+    elif [[ -n "${BROWSER_EXE}" ]] ; then
+	cygstart --hide "$BROWSER_EXE"
+    fi
+#else
+	if [[ -n "${BROWSER_EXE}" ]] ; then
+	    "$BROWSER_EXE" $1
+	fi
+#end if
+}
+
+if [[ -n $BROWSER_EXE ]] ; then
+    export -f browse
+fi

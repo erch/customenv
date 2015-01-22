@@ -1,0 +1,48 @@
+## -*- Shell-script -*-
+#compiler-settings
+cheetahVarStartToken = @
+#end compiler-settings
+
+MY_DIR=$1
+/usr/sbin/alternatives --display emacs > /dev/null 2>&1
+if [[ $? -ne 0 ]] ; then
+    EMACS_HOME=${EMACS_HOME:-/usr/bin}
+    pathmunge "${EMACS_HOME}/bin" after
+    export EMACS_EXE=${EMACS_EXE:-${EMACS_HOME}/runemacs}
+    export EMACS_CLI=${EMACS_CLI:-${EMACS_HOME}/emacsclient}
+else
+    export EMACS_EXE=${EMACS_EXE:-emacs}
+    export EMACS_CLI=${EMACS_CLI:-emacsclient}
+fi
+
+$EMACS_EXE --help >/dev/null 2>&1
+if [[ $? -ne 0 ]] ; then
+    unset EMACS_HOME
+    unset EMACS_EXE
+    unset EMACS_CLI
+else
+    function runemacs
+    {
+	"$EMACS_EXE" --debug-init
+    }
+
+    export -f runemacs
+    alias emacs=runemacs
+
+    function edit
+    {
+#if @OS_TYPE == 'cygwin'
+	FILE=`cygpath -u "$*"`
+#else
+	FILE=$*
+#end if
+	"$EMACS_CLI" -n "$FILE" > /dev/null 2>&1
+	if [ "$?" -ne 0 ] ; then
+	    "$EMACS_EXE" --debug-init "$FILE" &
+	fi
+    }
+    export -f edit
+    export EDITOR="edit"
+
+    . ${MY_DIR}/emacs-tramp.sh
+fi
