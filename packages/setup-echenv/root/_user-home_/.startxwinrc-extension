@@ -1,0 +1,6 @@
+
+/usr/bin/terminator  > /tmp/term.log 2>&1 &
+# _begin sleep_
+sleep inf
+# _end sleep_
+

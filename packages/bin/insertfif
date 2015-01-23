@@ -1,16 +1,16 @@
 #! /bin/bash
 #  -*- Shell-Script -*-
 
-#set -x
+set -x
 PRG="$0"
 # What's my name?
 read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
 #set -x
 
 CONTAINER=$1
-PART=$2
-PART_NAME=$3
-COMMENT=$4
+PART_NAME=$2
+COMMENT=$3
+PART=$4
 
 CONTAINER_TMP=/tmp/$(basename ${CONTAINER})_$$
 if [[ -e "${CONTAINER}" ]] ; then
@@ -18,10 +18,12 @@ if [[ -e "${CONTAINER}" ]] ; then
 else
     :> ${CONTAINER_TMP}
 fi
-echo "${COMMENT}_begin ${PART_NAME}_  ;; do not delete this marker" >> ${CONTAINER_TMP}
-cat ${PART} >> ${CONTAINER_TMP}
-echo "" >> ${CONTAINER_TMP}
-echo "${COMMENT} _end ${PART_NAME}_  ;; do not delete this marker" >> ${CONTAINER_TMP}
 
+if [[ -n ${PART} ]] ; then
+    echo "${COMMENT} _begin ${PART_NAME}_  ;; do not delete this marker" >> ${CONTAINER_TMP}
+    cat ${PART} >> ${CONTAINER_TMP}
+    echo "" >> ${CONTAINER_TMP}
+    echo "${COMMENT} _end ${PART_NAME}_  ;; do not delete this marker" >> ${CONTAINER_TMP}
+    rm -f ${PART}
+fi
 mv  ${CONTAINER_TMP} ${CONTAINER}
-rm -f ${PART}

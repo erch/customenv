@@ -46,7 +46,7 @@
 (setq org-agenda-prefix-format "%t %s")
 (setq odd-weeks '(1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51))
 ;; Managing org files
-(setq org-directory (file-name-as-directory (expand-file-name "Orga" my-home-dir)))
+(setq org-directory (file-name-as-directory (expand-file-name "Orga" (getenv "MY_ENV"))))
 
 (defun get-journal-time (&optional time)
   "Return the date of the journal file for date time"
@@ -85,9 +85,9 @@
  journal-backup-dir (file-name-as-directory (expand-file-name "journal" backup-dir))
  project-dir (file-name-as-directory (expand-file-name "ActiveProjects" org-directory))
  business-as-usual-dir (file-name-as-directory (expand-file-name "BusinessAsUsual" org-directory))
- notes-file (expand-file-name "Orga_Inbox.org" org-directory)  
+ notes-file (expand-file-name "Orga_Inbox.org" org-directory)
  project-file (expand-file-name "projects.mm" project-dir)
- org-default-notes-file notes-file  
+ org-default-notes-file notes-file
  google-cal-ical-export (expand-file-name "google-cal-ical.org" org-directory)
  todos-file-name-patterns (list "^.+_ActionsPlan.org$" "^.+_Dairy.*\.org$"))
 
@@ -101,9 +101,9 @@
 	   (end (cdr list))
 	   (fn (or (and (null first) nil) (file-name-nondirectory (directory-file-name first)))))
       ;;(message "\t --> first is %s, end is %s, fn is %s" first end fn)
-      (cond 
-       ((and (file-regular-p first) (string-match-p pattern fn)) 
-	(cons first (rec-find-filenames-in-list end pattern))) 
+      (cond
+       ((and (file-regular-p first) (string-match-p pattern fn))
+	(cons first (rec-find-filenames-in-list end pattern)))
        ((and (file-directory-p first) (not (or (string= ".backup" fn) (string= ".archive" fn))))
 	(append (rec-find-filename-in-dir first pattern) (rec-find-filenames-in-list end pattern)))
        (t (rec-find-filenames-in-list end pattern))))))
@@ -111,7 +111,7 @@
 ;;  (string-match-p action-plan-file-pattern "working on the grid_AP.org")
 
 (defun rec-find-filename-in-dir (root pattern)
-  "find todos files in  a directory, 
+  "find todos files in  a directory,
      return the list of full path files."
   (when (file-directory-p root)
     (let ((files (non-dot-directory-files root)))
@@ -157,7 +157,7 @@
  	 (fmonth (or (and (null match) 0) (match-string 2 fn)))
  	 (ftime (or (and (null match) 0) (encode-time 0 0 0 day (string-to-number fmonth) (string-to-number fyear))))
  	 (overdueday (or (and (null match) 0) (time-add ftime (seconds-to-time (* 24 30.5 3600 maxmonth))))))
-    (progn 
+    (progn
       (decode-time tl)
       (decode-time ftime)
       (decode-time overdueday)
@@ -174,7 +174,7 @@
 	(rename-file file-path (expand-file-name ff journal-backup-dir)))))
 
 ; (string-to-number "09")
-;; (find-old-journal "Orga_Dairy-2013-08.org" 3)   
+;; (find-old-journal "Orga_Dairy-2013-08.org" 3)
 ;; (decode-time (time-subtract (decode-time) (encode-time 0 0 0 0 3 0)))
 ;; ;(find-old-journal "Orga_Dairy-2013-12.org" 3)
 (mapc (lambda (x) (archive-file-if-old-journal x)) (rec-find-filename-in-dir org-directory "^Orga_Dairy-.+\.org$"))
@@ -193,12 +193,12 @@
 		      ("AGENDA" . ?G)
 		      ("CALL" . ?C)
 		      ("READ_REVIEW_1" . ?1)
-		      ("READ_REVIEW_2" . ?2)	
+		      ("READ_REVIEW_2" . ?2)
 		      ("READ_REVIEW_3" . ?3)
 		      ("MEETING" . ?M)
 		      ("REMAINDER" . ?R)
 		      (:endgroup . nil)
-		      ("crypt" . ?Y) 
+		      ("crypt" . ?Y)
 		      (:startgroup . nil) ; activity
 		      ("Design" . ?d)
 		      ("Communication" . ?c)
@@ -222,7 +222,7 @@
 		      ("Work" . ?w)
 		      (:endgroup . nil)
 					;(:startgroup . nil)  ; people
-		      ("CHRISTOPHE" . nil)		       
+		      ("CHRISTOPHE" . nil)
 		      ("XAVIER" . nil)
 		      ("REDOUANE" . nil)
 		      ("TEAM" . nil)
@@ -316,7 +316,7 @@
      of entries in agenda listings. Useful to unclutter listings."
   (interactive)
   (if my-org-agenda-list-category
-      (progn 
+      (progn
 	(setq my-org-agenda-list-category nil)
 	(setq org-agenda-prefix-format
 	      '((agenda  . "  %-12:c%?-12t% s")
@@ -335,14 +335,14 @@
     )
   (org-agenda-redo))
 
-(add-hook 
+(add-hook
  'org-mode-hook
  (lambda ()
    (define-key org-agenda-keymap   "L" 'my-org-agenda-toggle-list-category)
    (define-key org-agenda-mode-map "L" 'my-org-agenda-toggle-list-category)
    ))
 
-;;   (add-hook 
+;;   (add-hook
 ;;    'org-agenda-mode-hook
 ;;    (lambda ()
 ;;      (setq split-height-threshold nil)
@@ -353,7 +353,7 @@
 (defun gtd (c)
   "Brings directly to a gtd file"
   (interactive "c (p)=project (i)=todo (n)=notes (j)=journal")
-  (cond 
+  (cond
    ((char-equal c ?p) (progn (browse-url project-file) t))
    ((char-equal c ?n) (progn (find-file notes-file) t))
    ((char-equal c ?j) (progn (find-file (get-journal-file-name) t)))

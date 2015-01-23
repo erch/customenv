@@ -19,6 +19,15 @@ SOURCE_ROOT_DIR=${MY_DIR}/../root
 installfromdir ${SOURCE_ROOT_DIR} /
 
 HOST_ENV_FILE=${HOST_ENV_FILE:-${HOME}/.$(hostname).env}
-${BIN_DIR}/insertfif  ${HOST_ENV_FILE} ~/host.env "ech_emacs" '#'
+${BIN_DIR}/insertfif  ${HOST_ENV_FILE}  "ech_emacs" '#' ~/host.env
 
-${BIN_DIR}/insertfif  ~/.bashrc ~/.bashrc-extension "ech_emacs" '#'
+${BIN_DIR}/insertfif  ~/.bashrc  "ech_emacs" '#' ~/.bashrc-extension
+
+if [[ ${OS_TYPE} = 'cygwin' ]] ; then
+    # suppress the sleep line
+    ${BIN_DIR}/insertfif ~/.startxwinrc  "sleep" '#'
+
+    # add the start of emacs
+    ${BIN_DIR}/insertfif ~/.startxwinrc  "ech_emacs" '#' ~/.startxwinrc-extension
+    chmod a+x ~/.startxwinrc
+fi

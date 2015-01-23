@@ -9,24 +9,12 @@
 ;; highlights matching pairs
 (show-smartparens-global-mode t)
 
-;(setq show-paren-delay 0)           ; how long to wait?
-;(show-paren-mode nil)                 ; turn paren-mode off
-;;(setq show-paren-style 'expression) ; alternatives are 'parenthesis' and 'mixed'
-
-;; (defun match-paren (arg)
-;;   "Go to the matching parenthesis if on parenthesis otherwise insert %."
-;;   (interactive "p")
-;;   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
-;; 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
-;; 	(t (self-insert-command (or arg 1))))) 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; configuration from: https://github.com/Fuco1/smartparens/wiki/Example-configuration
 
 (define-key sp-keymap (kbd "C-M-f") 'sp-forward-sexp)
 (define-key sp-keymap (kbd "C-M-b") 'sp-backward-sexp)
-  
+
 (define-key sp-keymap (kbd "C-M-d") 'sp-down-sexp)
 (define-key sp-keymap (kbd "C-M-a") 'sp-backward-down-sexp)
 
@@ -48,7 +36,7 @@
 ;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
 ;; (define-key sp-keymap (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
 ;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
-;; 
+;;
 ;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
 ;; (define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
 ;; (define-key sp-keymap (kbd "C-M-]") 'sp-select-next-thing)
@@ -85,4 +73,3 @@
   (execute-kbd-macro (kbd "(")))
 (define-key sp-keymap (kbd "C-(") 'my-wrap-with-paren)
 (provide 'parens-conf)
-

@@ -1,11 +1,11 @@
- (message "loading autocomplete-conf ...")
+(message "loading autocomplete-conf ...")
 (unless (require 'auto-complete nil t)
-  (progn 
+  (progn
     (package-install 'auto-complete)
     (require 'auto-complete)))
 
 ;; (unless (require 'company  nil t)
-;;   (progn 
+;;   (progn
 ;;     (package-install 'company)
 ;;     (load-library "company"))
 
@@ -26,6 +26,6 @@
 ;; `ac-auto-show-menu' to show help for the first entry as well.
 (setq ac-quick-help-delay 0.5)
 
-
+(setq tab-always-indent t) ;tab only indent
 (message "autocomplete-conf loaded")
 (provide 'completion-conf)

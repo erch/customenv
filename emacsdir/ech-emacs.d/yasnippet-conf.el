@@ -7,9 +7,8 @@
 
 (setq yas-snippet-dirs (list (expand-file-name "snippets" (file-name-directory (locate-library "yasnippet")))))
 
-(require 'dropdown-list)
-(setq yas-prompt-functions '(yas-dropdown-prompt
-			     yas-ido-prompt
+;;(require 'dropdown-list)
+(setq yas-prompt-functions '(yas-ido-prompt
 			     yas-completing-prompt))
 
 (defun my-yasfallback (&optional from-trigger-key-p)
@@ -28,15 +27,15 @@
 				 ;(global-unset-key  (kbd "TAB"))
 				 (setq-local yas-fallback-behavior `my-yasfallback)
 				 (define-key yas-minor-mode-map (kbd "S-SPC") 'yas-expand)))
-       
+
 (defun members (elems list)
   "test if all elements of list elemes are in list list, returns true in this case. Returns false if at least one element of elems is not in list"
-  (cond 
+  (cond
    ((eq nil elems) t)
    ((member (car elems) list) (members (cdr elems) list))
    (t nil)
-)) 
-    
+))
+
 ; (members '("a" "b") '("c"))
 ; (members '("a" "b") '())
 ; (members '("a" "b") nil)
@@ -45,17 +44,10 @@
 
 (defun activate-yasnippet-buffer-local-with-dirs(dirs)
   (let ((not-reload-snipets (members dirs yas-snippet-dirs)))
-    (mapc (lambda(x) 
+    (mapc (lambda(x)
 	    (add-to-list 'yas-snippet-dirs x)) dirs)
     (unless not-reload-snipets (yas-reload-all)))
   (yas-minor-mode 1))
- 
+
 (message "yasnippet-conf loaded")
 (provide 'yasnippet-conf)
-
-
-
-
-
-
-

@@ -40,13 +40,20 @@ if [[ -e ${OLD_HOST_ENV_FILE} ]] ; then
     mv ${OLD_HOST_ENV_FILE} ${HOST_ENV_FILE}
 fi
 
-${BIN_DIR}/insertfif  ~/.bashrc ~/bashrc-extension "ech_env" '#'
+${BIN_DIR}/insertfif  ~/.bashrc "ech_env" '#'  ~/bashrc-extension
 chmod a+x ~/.bashrc
 
-${BIN_DIR}/insertfif ~/.bash_profile ~/.bash_profile-extension "ech_env" '#'
+${BIN_DIR}/insertfif ~/.bash_profile  "ech_env" '#' ~/.bash_profile-extension
 chmod a+x ~/.bash_profile
 
-#apt-add-repository ppa:jtaylor/keepass
-#apt-get update 
-#apt-get install keeepass2
+if [[ ${OS_TYPE} = 'cygwin' ]] ; then
+    # suppress the sleep line
+    ${BIN_DIR}/insertfif ~/.startxwinrc  "sleep" '#'
 
+    ${BIN_DIR}/insertfif ~/.startxwinrc  "ech_env" '#' ~/.startxwinrc-extension
+    chmod a+x ~/.startxwinrc
+fi
+
+#apt-add-repository ppa:jtaylor/keepass
+#apt-get update
+#apt-get install keeepass2

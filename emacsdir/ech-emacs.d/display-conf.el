@@ -1,5 +1,5 @@
 (message "loadind display-conf ...")
-(require 'ibuffer) 
+(require 'ibuffer)
 (setq ibuffer-saved-filter-groups
       (quote (("default"
 	       ("dired" (mode . dired-mode))
@@ -9,12 +9,13 @@
                ("xml" (mode . nxml-mode))
 	       ("python"  (mode . python-mode))
 	      ("perl" (mode . perl-mode))
-	      ))))    
+	      ))))
 
 (setq ibuffer-show-empty-filter-groups nil)
-
-(add-hook 'ibuffer-mode-hook 
- (lambda () 
+(enable-theme 'leuven)
+(menu-bar-mode 1)
+(add-hook 'ibuffer-mode-hook
+ (lambda ()
   (ibuffer-switch-to-saved-filter-groups "default")
   (ibuffer-filter-by-name "^[^*]")
   (ibuffer-filter-by-filename "."))) ;; to show only dired and files buffers
@@ -74,19 +75,19 @@
 ;;   "call framemove function with ignore errors to avoid jumping in debug windows that debug-on-error is toggled"
 ;;   (ignore-errors
 ;;     (fm-next-frame dir)))
-;; 
+;;
 ;; (defun myframe-right()
 ;;   (interactive)
 ;;   (myframe-next 'right))
-;; 
+;;
 ;; (defun myframe-left()
 ;;   (interactive)
 ;;   (myframe-next 'left))
-;; 
+;;
 ;; (defun myframe-up()
 ;;   (interactive)
 ;;   (myframe-next 'up))
-;; 
+;;
 ;; (defun myframe-dow()
 ;;   (interactive)
 ;;   (myframe-next 'down))

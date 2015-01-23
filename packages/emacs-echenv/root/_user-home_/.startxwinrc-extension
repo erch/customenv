@@ -1,0 +1,6 @@
+
+runemacs &
+# _begin sleep_
+sleep inf
+# _end sleep_
+
