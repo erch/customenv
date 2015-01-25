@@ -2,3 +2,5 @@
 if [ `expr "$TERM" : "emacs*"` -ne 0 ] || [ `expr "$TERM" : "eterm*"` -ne 0 ] ; then
     export PS1="$ "
 fi
+
+alias emacs=runemacs

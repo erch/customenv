@@ -27,7 +27,6 @@ else
     }
 
     export -f runemacs
-    alias emacs=runemacs
 
     function edit
     {
