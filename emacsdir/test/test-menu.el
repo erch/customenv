@@ -51,6 +51,13 @@
   (print-debug "Keymap" (gethash "Keymap" parsed-map))
   (print-debug "CharTable" (gethash "CharTable" parsed-map))
   (print-debug "MenuKeyBindings" (gethash "MenuKeyBindings" parsed-map))
-  (print-debug "MenuStrings" (gethash "MenuStrings" parsed-map)))
+  (print-debug "MenuStrings" (gethash "MenuStrings" parsed-map))
+  (print-debug (print-analysed-keymap parsed-map 0))
 
+;; (mapc (lambda(x) (print-debug x)) (gethash "MenuKeyBindings" parsed-map))
+;; (length (gethash "MenuKeyBindings" (nth 4 (car (gethash "MenuKeyBindings" parsed-map)))))
 ;; (test-parsing-keymap)
+;; (setq parsed-map (parse-keymap global-map))
+;; (print-debug global-map)
+;; (command-remapping 'find-file-other-window)
+;; 

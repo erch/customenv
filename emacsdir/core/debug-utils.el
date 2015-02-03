@@ -6,15 +6,15 @@
 	(progn
 	  (set-buffer buffer)
 	  (goto-char (point-max))	  
-	  (mapc (lambda(x)
-		  (insert (format "%S\n" x)))
-		    objs)))))	    
+	  (mapc (lambda(x)		  
+		  (insert
+		   (if (stringp x)
+		       x
+		     (format "%S\n" x))))
+		objs)))))	    
 
 (defun truncate-string (string maxchar)
   (substring string  0 (min maxchar (- 1 (length string)))))
-
-(defun analyse-keymap(keymap)
-  (list (do-analyse-keymap keymap nil)))
 
 
 ;; keymap-struct := (("KeyBindings" . (key-binding*)) ("DefaultKeyBindings" . (binding*)) ("Keymap" . (keymap-struct*)) ("CharTable" . char-table) ("MenuKeyBindings" . (menu-binding*)) ("MenuStrings" . (menu-string*)))
@@ -26,7 +26,7 @@
   (let ((innerlist (gethash list-name keymap-struct)))
     (if (null innerlist)
 	(puthash  list-name (list elem) keymap-struct)
-      (puthash  list-name (push  elem  innerlist) keymap-struct)))
+      (puthash  list-name (push elem  innerlist) keymap-struct)))
       ;;(setcdr innerlist elem)))
   keymap-struct)
 
@@ -58,6 +58,8 @@
 
 (defun parse-keydef (keydef keymap-struct)
   (cond
+   ((arrayp keydef)
+    nil)
    ((stringp keydef)
     (add-to-alist keymap-struct "MenuStrings" (parse-menu-string keydef)))
    ((char-table-p keydef)
@@ -66,25 +68,32 @@
     (add-to-alist keymap-struct "DefaultKeyBindings" (parse-binding-def (car keydef) (cdr keydef))))
    ((and (listp keydef) (symbolp (car keydef)) (string= "keymap" (symbol-name (car keydef))))
     (add-to-alist keymap-struct "Keymap" (parse-keymap keydef)))
+   ((and (listp keydef) (symbolp (car keydef)) (string= "remap" (symbol-name (car keydef))))
+    (add-to-alist keymap-struct "Remaping" (parse-remaping keydef)))
    ((consp keydef)
     (parse-keybinding keydef keymap-struct))
    (t (error (truncate-string (concat "Not a keydef: " (format "%S" keydef)) 80)))))
 
+(defun parse-remaping (keydef)
+  (cdr (cdr keydef)))
+
 (defun parse-keybinding (keydef keymap-struct)
   (cond
+   ((and (consp (cdr keydef)) (symbolp (nth 1 keydef)) (string= "menu-item" (symbol-name (nth 1 keydef))))
+    (add-to-alist keymap-struct "MenuKeyBindings" (parse-menu-item-keydef keydef keymap-struct)))
+   ((or (atom (cdr keydef)) (and (symbolp (nth 1 keydef)) (string= "keymap" (symbol-name (nth 1 keydef)))))
+    (add-to-alist keymap-struct "KeyBindings" (parse-simple-keydef keydef keymap-struct)))
    ((and (stringp (nth 1 keydef))
 	 (or (atom (cdr (cdr keydef))) ;; how to deal with pure cons cells ?
-	      (consp (cdr (cdr keydef)))))	  	
+	     (not (stringp (nth 2 keydef)))))	  	
     (add-to-alist keymap-struct "MenuKeyBindings" (parse-simple-menu-keydef keydef keymap-struct)))
    ((stringp (nth 1 keydef))
     (add-to-alist keymap-struct "MenuKeyBindings" (parse-simple-menu-with-help-keydef keydef keymap-struct)))
-   ((and (symbolp (nth 1 keydef)) (string= "menu-item" (symbol-name (nth 1 keydef))))
-    (add-to-alist keymap-struct "MenuKeyBindings" (parse-menu-item-keydef keydef keymap-struct)))
-   (t (add-to-alist keymap-struct "KeyBindings" (parse-simple-keydef keydef keymap-struct)))))
+   (t (error (truncate-string (concat "Not a keybinding: " (format "%S" keydef)) 80)))))
 
 (defun parse-simple-keydef(keydef keymap-struct)
   (let ((evt (car keydef))
-	(binding (car (cdr keydef))))	
+	(binding (cdr keydef)))	
     (parse-binding-def evt binding)))
 
 (defun parse-simple-menu-with-help-keydef (keydef keymap-struct)
@@ -132,27 +141,69 @@
   chartable)
    
 (defun print-analysed-keymap (keymap-struct indent)
-  (let ((indentStr (make-string indent ?\s))
-	(keymaps-assoc (assoc "Keymap" keymap-struct))
-	(tbindings-assoc (assoc "TrueBindings" keymap-struct))
-	(bindings-assoc (assoc "Bindings" keymap-struct))
-	(menustr-assoc (assoc "MenuString" keymap-struct))
-	(chartable-assoc (assoc "CharTable" keymap-struct)))
-    (concat
-     (unless (null menustr-assoc)
-       (concat "\n" indentStr "Menu String: " (mapconcat (lambda(x) x) (cdr menustr-assoc) " | ")))
-     (unless (null bindings-assoc)
-       (let ((indentStr (make-string (+ 2 indent) ?\s)))
-	 (concat "\n" indentStr "Bindings:\n  " indentStr (mapconcat (lambda(x) (format "%S" x)) (cdr bindings-assoc) (concat "\n  " indentStr)))))
-     (unless (null tbindings-assoc)
-       (let ((indentStr (make-string (+ 2 indent) ?\s)))
-	 (concat "\n" indentStr "True Bindings:\n  " indentStr (mapconcat (lambda(x) (format "%S" x)) (cdr tbindings-assoc) (concat "\n  " indentStr)))))
-     (unless (null chartable-assoc)
-       (concat "\n" indentStr "Char Table: " (mapconcat (lambda(x) "X ") (cdr chartable-assoc) " ")))
-     (unless (null keymaps-assoc)
-       (concat "\n" indentStr "Keymap:" (print-analysed-keymap (cdr keymaps-assoc) (+ 2 indent))))
-     )))
+  (let* ((indent-str (make-string indent ?\s))
+	(next-indent (+ 2 indent))
+	(next-indent-str (make-string next-indent  ?\s))
+	(keymaps (gethash "Keymap" keymap-struct))
+	(menu-strings (gethash "MenuStrings" keymap-struct))
+	(chartable (gethash "CharTable" keymap-struct))
+	(default-binding (gethash "DefaultKeyBindings" keymap-struct))
+	(remaping (gethash "Remaping" keymap-struct))
+	(keybindings (gethash "KeyBindings" keymap-struct))
+	(menubindings (gethash "MenuKeyBindings"keymap-struct)))
+    (concat     
+     "KeyMap:"
+     (unless (null keymaps)
+       (mapconcat (lambda(x) (print-analysed-keymap x next-indent)) keymaps "\n"))
+     (unless (null menu-strings)
+       (print-item menu-strings next-indent "Menu String:"  " | "))       
+     (unless (null chartable)
+       (print-item chartable next-indent "Char Table:"  " " "X"))
+     (unless (null default-binding)
+       (print-bindings default-binding "Default Bindings:" next-indent))
+     (unless (null remaping)
+       (print-item remaping next-indent "Remaping:" nil "%S"))
+     (unless (null keybindings)
+       (print-bindings keybindings "Key Bindings:" next-indent))
+     (unless (null menubindings)
+       (print-bindings menubindings "Menu Bindings:" next-indent)))))
 
-  
-					;(print-debug (print-key-map global-map 0))
+(defun print-item (item-list indent title &optional sep format-str)
+  (let* ((format-string (or format-str "%s"))
+	(indent-str (make-string indent ?\s))	
+	(next-indent-str (make-string (+ 2 indent) ?\s))
+	(sep-str (or sep (concat "\n" next-indent-str))))
+    (concat "\n" indent-str title "\n" next-indent-str (mapconcat (lambda(x) (format format-string x)) item-list sep-str))))
+
+(defun print-bindings (bindings title indent)
+  (let* ((indent-str (make-string indent ?\s))
+	(next-indent  (+ 2 indent))
+	(next-indent-str (make-string next-indent ?\s))
+	(sep (concat "\n" next-indent-str)))	
+    (concat "\n"
+	    indent-str
+	    title
+	    "\n"
+	    next-indent-str
+	    (mapconcat (lambda(x)
+			 (let ((evt (car x))
+			      (name (nth 1 x))
+			      (help (nth 2 x))
+			      (proplist (nth 3 x))
+			      (binding (nth 4 x)))
+			   (mapconcat
+			    (lambda(x) (if (not (string= "nil" x)) x ""))
+			    (list			     
+			     (format "%S" evt)
+			     ;;(format "%S" name)
+			     name
+			     (format "%S" help)
+			     (format "%S" proplist)
+			     (if (hash-table-p binding)
+				 (print-analysed-keymap binding  next-indent)
+			       (format "%S" binding)))
+			    " | ")))
+		       bindings
+		       sep))))
+  					
 (provide 'debug-utils)
