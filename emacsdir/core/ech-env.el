@@ -16,6 +16,12 @@
 (setq package-load-list '(all))
 (package-initialize)
 
+
+(unless (package-installed-p 'menu-bar+)
+  (package-install 'menu-bar+))
+
+(eval-after-load "menu-bar" '(require 'menu-bar+))
+
 ;; load utility functions
 (require 'utility-funcs)
 

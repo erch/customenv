@@ -53,7 +53,7 @@
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(setq transient-mark-mode nil)		;highlights selections
+(setq transient-mark-mode t)		;highlights selections
 (setq set-mark-command-repeat-pop t)
 (setq comment-style 'plain)
 ;; Newline at end of file
@@ -64,7 +64,7 @@
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
-      '("" invocation-name " Prelude - " (:eval (if (buffer-file-name)
+      '("" invocation-name (:eval (if (buffer-file-name)
                                             (abbreviate-file-name (buffer-file-name))
                                           "%b"))))
 ;; diminish keeps the modeline tidy
@@ -163,9 +163,9 @@
 ;;
 ;;
 
-(let ((menu-bar-frames-menu (make-sparse-keymap "Frames")))
+(let ((menu-bar-frames-menu (make-sparse-keymap "MyFrames")))
   (define-key-after global-map [menu-bar frames]
-    (cons "Frames" menu-bar-frames-menu))
+    (cons "MyFrames" menu-bar-frames-menu))
   (define-key menu-bar-frames-menu [set-all-params-from-frame]
     '(menu-item "Set All Frame Parameters from Frame" set-all-frame-alist-parameters-from-frame
 		:help "Set frame parameters of a frame to their current values in frame"))

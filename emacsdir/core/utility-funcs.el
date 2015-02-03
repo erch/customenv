@@ -205,17 +205,6 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 ;;(format-week-day-from-date  "%4d-%02d-%02d" 1 +1 (encode-time 0 0 0 1 7 2011))
 ;;(week-day-from-date 1 +1  (encode-time 0 0 0 1 8 2011))
 
-(defun print-debug(mess)
-  (let* ((buffer (get-buffer-create "*Debug*"))
-	 (window (get-buffer-window buffer)))
-    (with-current-buffer buffer
-      (with-selected-window window
-	(progn
-	  (set-buffer buffer)
-	  (goto-char (point-max))
-	  (insert (format "\n%S\n" mess))
-	  (recenter))))))
-
 (defun  build-menu-and-bindings (menu-map key-map menu-key-spec)
   "the menu key spec is as follow:
 - specs :: spec specs

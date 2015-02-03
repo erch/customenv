@@ -24,3 +24,4 @@
 (requires-files confs-dir)
 
 ;; install the mode at the end so that it overide all key mappings
+(ech-mode +1)
