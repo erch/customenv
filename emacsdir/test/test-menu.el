@@ -2,13 +2,21 @@
 (require 'debug-utils)
 
 ;; menu customization
-(defun test-menu-custom(menu-title)
-  (let ((menu (easy-menu-create-menu "Words"
+(defun make-easy-menu()
+  (easy-menu-create-menu "Words"
 		      '(
 			["Forward word" forward-word]
 			["Backward word" backward-word])))
-	(menu-map (cdr (assoc menu-title ech-menu-maps-alist))))
-    (define-key menu-map  menu)))
+;; (test-menu-custom "test")
+
+(defun test-display-menu()
+  (let ((submenu-keymap (make-easy-menu)))
+    (ech-add-menu "Test")
+    (ech-add-submenu-to-menu "Test" "TOTO" submenu-keymap))
+  (ech-on)
+  (ech-display-or-hide-menus))
+
+;;(test-display-menu)
 
 (defun test-menu-define-key(menu-title)
   (let ((menu-map (cdr (assoc menu-title ech-menu-maps-alist)))
@@ -19,10 +27,12 @@
 (defun create-test-keymap ()
   (let ((test-kmap (make-sparse-keymap))
 	(menu-map (make-sparse-keymap "essai")))
-    (define-key test-kmap [essai] (cons "essai" menu-map))    
-    (define-key menu-map (vector 'continue) '(menu-item "Continue Replace" tags-loop-continue :help "Continue last tags replace operation"))
-    (define-key menu-map (vector 'backward) (cons "Backward word" (cons "goes backward" 'backward-word)))
-    (define-key menu-map (vector 'forward) (cons "Forward word" 'forward-word))
+    (define-key test-kmap [essai] (cons "essai" menu-map))
+       
+    (define-key menu-map (vector 'tag-query) '(menu-item (substitute-command-keys "            Tags... (again: \\[tags-loop-continue])") tags-query-replace :help "Replace a regexp in tagged files, with confirmation"))
+    ;;(define-key menu-map (vector 'continue) '(menu-item "Continue Replace" tags-loop-continue :help "Continue last tags replace operation"))
+    ;;(define-key menu-map (vector 'backward) (cons "Backward word" (cons "goes backward" 'backward-word)))
+    ;;(define-key menu-map (vector 'forward) (cons "Forward word" 'forward-word))
     test-kmap))
 
 ;; (ech-add-menu "titi")
@@ -36,28 +46,28 @@
 ;; (print-debug "toto" '("titi" "tata"))
 ;; (test-menu-custom "titi")
 ;; (test-menu-define-key "titi")
-;; (print-debug menu)
-;; (print-debug ech-mode-map)
-;; (print-debug (format "%s" (cdr (assoc "titi" ech-menu-maps-alist))))
+;; (dbg-print menu)
+;; (dbg-print ech-mode-map)
+;; (dbg-print (format "%s" (cdr (assoc "titi" ech-menu-maps-alist))))
 ;; (force-mode-line-update)
 
 (defun test-parsing-keymap()
   (setq testmap (create-test-keymap))
   (print-debug testmap)
   (setq parsed-map (parse-keymap testmap))
-  (print-debug parsed-map)
-  (print-debug "KeyBindings" (gethash "KeyBindings" parsed-map))
-  (print-debug "DefaultKeyBindings" (gethash "DefaultKeyBindings" parsed-map))
-  (print-debug "Keymap" (gethash "Keymap" parsed-map))
-  (print-debug "CharTable" (gethash "CharTable" parsed-map))
-  (print-debug "MenuKeyBindings" (gethash "MenuKeyBindings" parsed-map))
-  (print-debug "MenuStrings" (gethash "MenuStrings" parsed-map))
-  (print-debug (print-analysed-keymap parsed-map 0))
+  (dbg-print parsed-map)
+  (dbg-print "KeyBindings" (gethash "KeyBindings" parsed-map))
+  (dbg-print "DefaultKeyBindings" (gethash "DefaultKeyBindings" parsed-map))
+  (dbg-print "Keymap" (gethash "Keymap" parsed-map))
+  (dbg-print "CharTable" (gethash "CharTable" parsed-map))
+  (dbg-print "MenuKeyBindings" (gethash "MenuKeyBindings" parsed-map))
+  (dbg-print "MenuStrings" (gethash "MenuStrings" parsed-map))
+  (dbg-print (print-analysed-keymap parsed-map 0)))
 
-;; (mapc (lambda(x) (print-debug x)) (gethash "MenuKeyBindings" parsed-map))
+;; (mapc (lambda(x) (dbg-print x)) (gethash "MenuKeyBindings" parsed-map))
 ;; (length (gethash "MenuKeyBindings" (nth 4 (car (gethash "MenuKeyBindings" parsed-map)))))
 ;; (test-parsing-keymap)
-;; (setq parsed-map (parse-keymap global-map))
-;; (print-debug global-map)
+;; (dbg-print (print-analysed-keymap (parse-keymap ech-mode-map) 0))
+;; (dbg-print global-map)
 ;; (command-remapping 'find-file-other-window)
 ;; 

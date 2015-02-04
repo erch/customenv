@@ -7,7 +7,8 @@
 (defun ech-add-menu (menu-title)
   "add a menu that will be displayed in the menu bar with title menu-title , returns an empty keymap for this menu, the menu is displayed at the next display menu command"
   (let ((menu-map (make-sparse-keymap menu-title)))
-    (push (cons menu-title menu-map) ech-menu-maps-alist)))
+    (push (cons menu-title menu-map) ech-menu-maps-alist)
+    menu-map))
 
 (defun ech-display-or-hide-menus (&optional hide)
   "display or hide all menus added by the call to ech-add-menu toin the menu bar
@@ -21,10 +22,13 @@ shows the menu by defautl or hides if hide is t"
 	      (define-key ech-mode-map (vector 'menu-bar menu-symb) (cons menu-title menu-map)))))
 	ech-menu-maps-alist))
 
+(defun ech-add-submenu-to-menu(menu-title submenu-title sub-menu-keymap)
+  (let ((menu-map (cdr (assoc menu-title ech-menu-maps-alist))))
+    (define-key menu-map (vector (make-symbol submenu-title)) (cons submenu-title sub-menu-keymap))))
+
 ;; define minor mode
 (define-minor-mode ech-mode
   "Minor mode for ech customisations.
-
 \\{ech-mode-map}"
   :lighter " Ech"
   :keymap ech-mode-map
@@ -44,10 +48,7 @@ shows the menu by defautl or hides if hide is t"
   "Turn off `ech-mode'."
   (ech-mode -1))
 
-(setq menu (easy-menu-create-menu "Words"
-		      '(
-			["Forward word" forward-word]
-			["Backward word" backward-word])))
+
 
 
 (provide 'ech-mode)
