@@ -1,5 +1,6 @@
-
+(require 'ech-mode)
 (defun dbg-print(&rest objs)
+  "print all emacs objs in a buffer called *Debug*. Each obj in objs is display with a %S format if it is not a string"
   (let* ((buffer (get-buffer-create "*Debug*"))
 	 (window (get-buffer-window buffer)))
     (with-current-buffer buffer      
@@ -14,15 +15,14 @@
 		objs)))))	    
 
 (defun dbg-truncate-string (string maxchar)
+  "cut a string to maxchar if its length exceeds it"
   (substring string  0 (min maxchar (- 1 (length string)))))
 
 
-;; keymap-struct := (("KeyBindings" . (key-binding*)) ("DefaultKeyBindings" . (binding*)) ("Keymap" . (keymap-struct*)) ("CharTable" . char-table) ("MenuKeyBindings" . (menu-binding*)) ("MenuStrings" . (menu-string*)))
-;; key-binding := (evt binding)
-;; menu-binding := (evt name help-string? prop-list? binding)
-;; binding := command-symb-string | keymap-struct | keymap-ref
-;; keymap-ref := "Keymap:" keymap-symb-string
+
 (defun dbg-add-to-parsed-keymap (keymap-struct list-name elem)
+  "used by dbg-parse-keympap. Add en element to a list insided a hashtable, Create the hashtable entry
+if no list is already associated to the hashtable for this key"
   (let ((innerlist (gethash list-name keymap-struct)))
     (if (null innerlist)
 	(puthash  list-name (list elem) keymap-struct)
@@ -30,19 +30,36 @@
       ;;(setcdr innerlist elem)))
   keymap-struct)
 
-;; keymap := (`keymap key-def*)
-;; key-def := string | char-table | default-key-binding | keymap | key-binding 
-;; default-key-binding := (t binding-def)
-;; key-binding := menu-key-binding |
-;;                (evt binding-def)
-;; menu-key-binding := (evt ('menu-item menu-item-def)) |
-;;                (evt "item-name" "help-string" binding-def) |
-;;                (evt "item-name"  binding-def)
-;; menu-item-def := item-name | item-name binding-def | item-name binding-def properties-list
-;; binding-def := keymap | binding | keymap-ref
-;; binding := *
-;; keymap-ref := <symbol whose function definition satisfies keymapp>
+
 (defun dbg-parse-keymap (keymap)
+  "Parse a keymap and build a more readable structure from it:
+
+ keymap-struct := hastable with following keys
+		KeyBindings => (key-binding*)
+		DefaultKeyBindings => binding*
+		Keymap => keymap-struct
+		CharTable => char-table
+		MenuKeyBindings => menu-binding
+		MenuStrings => menu-string
+ key-binding := (evt binding)
+ menu-binding := (evt name help-string? prop-list? binding)
+ binding := command-symb-string | keymap-struct | keymap-ref.
+
+Assume the following structure for a keymap:
+keymap := (`keymap key-def*)
+key-def := string | char-table | default-key-binding | keymap | key-binding 
+default-key-binding := (t binding-def)
+key-binding := menu-key-binding |
+               (evt binding-def)
+menu-key-binding := (evt ('menu-item menu-item-def)) |
+               (evt \"item-name\" \"help-string\" binding-def) |
+               (evt \"item-name\"  binding-def)
+menu-item-def := item-name | item-name binding-def | item-name binding-def properties-list
+binding-def := keymap | binding | keymap-ref
+binding := *
+keymap-ref := <symbol whose function definition satisfies keymapp>.
+
+One structure of keymap is not recognize when there is an array of keybinding"
   (let ((first (car keymap))
 	(rest (cdr keymap))
 	(keymap-struct (make-hash-table :test 'equal)))
@@ -52,11 +69,15 @@
     keymap-struct))
 
 (defun dbg-parse-key-defs (keydefs keymap-struct)
+  "called by dbg-parse-keymap, to parse a list of key definitions"
   (if (listp keydefs)
       (mapc (lambda(x) (dbg-parse-keydef x keymap-struct)) keydefs)
     (error (dbg-truncate-string (concat "Not a keybinding list: " (format "%S" keydefs)) 80))))  
 
 (defun dbg-parse-keydef (keydef keymap-struct)
+  "called by dbg-parse-key-defs to parse one key definitions.
+
+Sort out the more obvious cases, and delegate to dbg-parse-keybinding the parsing all real key binding def"
   (cond
    ((stringp keydef)
     (dbg-add-to-parsed-keymap keymap-struct "MenuStrings" (dbg-parse-menu-string keydef)))
@@ -76,9 +97,13 @@
    (t (error (dbg-truncate-string (concat "Not a keydef: " (format "%S" keydef)) 80)))))
 
 (defun dbg-parse-remaping (keydef)
+  "parse a remaping"
   (cdr (cdr keydef)))
 
 (defun dbg-parse-keybinding (keydef keymap-struct)
+  "called by dbg-parse-key-def to parse a real key binding.
+
+Sort out the simple, complext keybinding a the simple command key definition"
   (cond
    ((and (consp (cdr keydef)) (symbolp (nth 1 keydef)) (string= "menu-item" (symbol-name (nth 1 keydef))))
     (dbg-add-to-parsed-keymap keymap-struct "MenuKeyBindings" (dbg-parse-menu-item-keydef keydef keymap-struct)))
@@ -93,11 +118,13 @@
    (t (error (dbg-truncate-string (concat "Not a keybinding: " (format "%S" keydef)) 80)))))
 
 (defun dbg-parse-simple-keydef(keydef keymap-struct)
+  "parse a simple command key definition"
   (let ((evt (car keydef))
 	(binding (cdr keydef)))	
     (dbg-parse-binding-def evt binding)))
 
 (defun dbg-parse-simple-menu-with-help-keydef (keydef keymap-struct)
+  "parse a simple menu key definition with an help string"
   (let* ((evt (car keydef))
 	(name (car (cdr keydef)))
 	(help (car (cdr (cdr keydef))))	
@@ -105,12 +132,14 @@
     (dbg-parse-binding-def evt binding name help)))
 
 (defun dbg-parse-simple-menu-keydef (keydef keymap-struct)
+  "parse a simple menu key definition without an help string"
   (let* ((evt (car keydef))
 	 (name (car (cdr keydef)))
 	 (binding (cdr (cdr keydef))))     
     (dbg-parse-binding-def evt binding name)))
 
 (defun dbg-parse-menu-item-keydef (keydef keymap-struct)
+  "parse a menu definition with menu-item"
   (let ((evt (car keydef))
 	(menu-symb (car (cdr keydef)))
 	(name (car (cdr (cdr keydef))))
@@ -121,6 +150,7 @@
       (dbg-parse-binding-def evt binding name nil proplist))))
 
 (defun dbg-parse-binding-def (evt bindingdef &optional name help proplist)
+  "parse a key definition"
   (list
    evt
    name
@@ -142,6 +172,7 @@
   chartable)
    
 (defun dbg-parsed-keymap-to-string (keymap-struct indent)
+  "return a string representing a structure returned by parse-keymap"
   (let* ((indent-str (make-string indent ?\s))
 	(next-indent (+ 2 indent))
 	(next-indent-str (make-string next-indent  ?\s))
@@ -170,6 +201,7 @@
        (print-bindings menubindings "Menu Bindings:" next-indent)))))
 
 (defun print-item (item-list indent title &optional sep format-str)
+  "call by dbg-parsed-keymap-to-string "
   (let* ((format-string (or format-str "%s"))
 	(indent-str (make-string indent ?\s))	
 	(next-indent-str (make-string (+ 2 indent) ?\s))
@@ -177,6 +209,7 @@
     (concat "\n" indent-str title "\n" next-indent-str (mapconcat (lambda(x) (format format-string x)) item-list sep-str))))
 
 (defun print-bindings (bindings title indent)
+  "call by dbg-parsed-keymap-to-string "
   (let* ((indent-str (make-string indent ?\s))
 	(next-indent  (+ 2 indent))
 	(next-indent-str (make-string next-indent ?\s))

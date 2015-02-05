@@ -26,7 +26,7 @@
 (set-keyboard-coding-system 'utf-8-emacs)
 (set-language-environment 'utf-8)
 
-(setq x-select-enable-clipboard t)	;use system clipboard
+;; <ON_HOLD> (setq x-select-enable-clipboard t)	;use system clipboard
 (column-number-mode 1)			;show column number
 (auto-compression-mode 1) ; Use compressed files as if they were normal
 
@@ -59,8 +59,8 @@
 (diminish 'anzu-mode)
 (global-anzu-mode)
 
-(global-set-key (kbd "M-%") 'anzu-query-replace)
-(global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
+(define-key ech-mode-map (kbd "M-%") 'anzu-query-replace)
+(define-key ech-mode-map (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -86,7 +86,7 @@
 ;; smarter kill-ring navigation
 (ech-install-and-load 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
-(global-set-key (kbd "s-y") 'browse-kill-ring)
+(define-key ech-mode-map (kbd "s-y") 'browse-kill-ring)
 
 ;; saner regex syntax
 (require 're-builder)

@@ -4,18 +4,23 @@
 ;; menu customization
 (defun make-easy-menu()
   (easy-menu-create-menu "Words"
-		      '(
-			["Forward word" forward-word]
-			["Backward word" backward-word])))
-;; (test-menu-custom "test")
+		      '(("Display"
+			 ["Forward word" forward-word t])
+			("Org"
+			 ["Capture" org-capture [help:"Quick capture of Anything for post processing" ]]))))
 
+;; (ech-find-string-in-keymap (make-easy-menu))
+;; (ech-find-string-in-keymap (make-easy-menu))
+;(dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-easy-menu)) 0))
 (defun test-display-menu()
   (let ((submenu-keymap (make-easy-menu)))
-    (ech-add-menu "Test")
-    (ech-add-submenu-to-menu "Test" "TOTO" submenu-keymap))
-  (ech-on)
-  (ech-display-or-hide-menus))
+    (ech-add-menu "Test2" submenu-keymap)
+    (ech-add-menu "Test2")
+    (ech-add-menu "Test2" submenu-keymap)
+    (ech-add-submenu-to-menu "Test2" "Words" submenu-keymap)
+    ))
 
+;; (ech-find-string-in-keymap (make-sparse-keymap "titi"))
 ;;(test-display-menu)
 
 (defun test-menu-define-key(menu-title)

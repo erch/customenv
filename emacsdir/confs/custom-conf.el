@@ -1,46 +1,35 @@
 (message "loadind custom-conf ...")
 (require 'ech-env)
-(ech-install-and-load 'nav)
+(require 'ech-mode)
 
-(nav-disable-overeager-window-splitting)
-
-(insert-global-menu-and-key-bindings 
- "Custom"
- '(
-   ("Programming"
-    ["Start Eclim" "Start eclim server" start-eclimd]
-    )
-   ("Display"
-    ["Narrow to defun" "Narrow text to defun" narrow-to-defun]
-    ["Narrow to region" "Narrow text to region" narrow-to-region]
-    ["Widden" "Remove narrowing restriction" widen]
-    )
-   "--"
-   ("Org"
-    ["Capture" "Quick capture of Anything for post processing" org-capture]
-    )
-   ("Movement"
-    ["Page Down" "Go One page down" scroll-down-command]
-    ["Start of Sentence" "Go to the beginning of sentence" forward-sentence]
-    ["End of Sentence" "Go to the end of sentence" backward-sentence]
-    ["Start of paragraph" "Go to the beginning of paragraph" backward-paragraph]
-    ["End of paragraph" "Go to end of paragraph" forward-paragraph]
-    ["Up" "Go Previous Line" previous-line]
-    ["Down" "Go next Line" next-line]
-    ["Left" "Go forward one char" forward-char]
-    ["Right" "Go backward one char" backward-char]
-    ["Page Up" "Go One page up" scroll-up-command]
-    )
-   ("Edit"
-    ["Delete previous word" "Kill word before cursor" backward-kill-word]
-    ["Uper case region" "Change a region to upper case" upcase-region]
-    ["Lower case region" "Change a region to lower case word" downcase-region]
-    ;;["Text completion" "Cycle through possible completions" ]
-    ["New line indent" "Insert CR after cursor and indent" newline-and-indent]
-    ["Undo" "undo" undo]
-    )
-   )
- )
+(ech-add-menu "Custom"
+	      (easy-menu-create-menu "Custom"
+				     '(("Display"
+				      ["Narrow to defun" narrow-to-defun [help:"Narrow text to defun"]]
+				      ["Narrow to region" narrow-to-region   [help:"Narrow text to region"]]
+				      ["Widden"  widen  [help:"Remove narrowing restriction"]])
+				     "--"
+				     ("Org"
+				      ["Capture" org-capture  [help:"Quick capture of Anything for post processing"]])
+				     ("Movement"
+				      ["Page Down" scroll-down-command  [help:"Go One page down" ]]
+				      ["Start of Sentence" forward-sentence  [help:"Go to the beginning of sentence" ]]
+				      ["End of Sentence" backward-sentence  [help:"Go to the end of sentence" ]]
+				      ["Start of paragraph"  backward-paragraph  [help:"Go to the beginning of paragraph"]]
+				      ["End of paragraph"  forward-paragraph  [help:"Go to end of paragraph"]]
+				      ["Up" previous-line   [help:"Go Previous Line"]]
+				      ["Down" next-line   [help:"Go next Line"]]
+				      ["Left" forward-char   [help:"Go forward one char"]]
+				      ["Right" backward-char  [help:"Go backward one char"]]
+				      ["Page Up"  scroll-up-command  [help:"Go One page up"]])
+				     ("Edit"
+				      ["Delete previous word" backward-kill-word  [help:"Kill word before cursor" ]]
+				      ["Uper case region"  upcase-region  [help:"Change a region to upper case"]]
+				      ["Lower case region"  downcase-region  [help:"Change a region to lower case word"]]
+				      ;;["Text completion" "Cycle through possible completions" ]
+				      ["New line indent" newline-and-indent   [help:"Insert CR after cursor and indent" ]]
+				      ["Undo" undo   [help:"undo"]])
+				     )))
 
 (message "custom-conf loaded.")
 (provide 'custom-conf)

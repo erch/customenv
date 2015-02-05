@@ -22,8 +22,7 @@
       browse-url-firefox-new-window-is-tab t)
 
 ;; w3m configuration : w3m enabled per mode when necessary
-(unless (locate-library "w3m")
-    (package-install 'w3m))
+(ech-install-and-load 'w3m)
 (setq browse-url-browser-function 'w3m-browse-url)
 (setq 
  w3m-pop-up-windows t
@@ -31,7 +30,7 @@
  w3m-use-tab t)
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 ;; optional keyboard short-cut
-(global-set-key "\C-xm" 'browse-url-at-point)
+(define-key ech-mode-map "\C-xm" 'browse-url-at-point)
 (setq w3m-use-cookies t)
 (setq w3m-pop-up-frames t)
 

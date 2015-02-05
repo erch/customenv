@@ -4,11 +4,13 @@
 (require 'calendar)
 
 (defun ech-install-and-load(package-symb)
+  "Install melpa package is not yet installed"
   (unless (require package-symb nil t)
     (progn
       (package-install package-symb)
       (require package-symb))))
 
+;; a list manipulation package
 (ech-install-and-load 'dash)
 
 (defun members (elems list)
@@ -32,6 +34,7 @@
 	(byte-compile-file (concat file-name ".el")))))
 
 (defun requires-files(dir)
+  "call require on all *.el file in a directory with their name without the .el extension"
   (mapcar (lambda (x)
 	    (let* ((sym (file-name-sans-extension (file-name-nondirectory x))))
 	      (progn
@@ -206,7 +209,8 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 ;;(week-day-from-date 1 +1  (encode-time 0 0 0 1 8 2011))
 
 (defun  build-menu-and-bindings (menu-map key-map menu-key-spec)
-  "the menu key spec is as follow:
+  " Read a menu spec and fill menu-map with menu key bindings adn key-map with command key bindings.
+the menu key spec is as follow:
 - specs :: spec specs
 - spec :: nil | (string (arrays | specs ))
 - arrays :: array arrays

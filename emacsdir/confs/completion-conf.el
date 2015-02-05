@@ -1,5 +1,6 @@
 (message "loading autocomplete-conf ...")
 (require 'ech-env)
+
 (ech-install-and-load 'auto-complete)
 (require 'auto-complete-config)
 (define-key ac-mode-map (kbd "M-SPC") 'auto-complete)

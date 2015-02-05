@@ -17,11 +17,8 @@
 ;; start emacs server for emacsclient
 (server-start)
 
-;; load the mode
+;; load the minor mode
 (require 'ech-mode)
 
 ;; load configuration files
 (requires-files confs-dir)
-
-;; install the mode at the end so that it overide all key mappings
-(ech-mode +1)

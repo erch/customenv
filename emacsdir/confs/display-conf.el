@@ -1,34 +1,17 @@
 (message "loadind display-conf ...")
 (require 'ech-env)
-(require 'ibuffer)
-(setq ibuffer-saved-filter-groups
-      (quote (("default"
-	       ("dired" (mode . dired-mode))
-               ("java" (mode . java-mode))
-               ("org" (mode . org-mode))
-               ("sql" (mode . sql-mode))
-               ("xml" (mode . nxml-mode))
-	       ("python"  (mode . python-mode))
-	      ("perl" (mode . perl-mode))
-	      ))))
+(require 'ech-mode)
 
-(setq ibuffer-show-empty-filter-groups nil)
-
-(add-hook 'ibuffer-mode-hook
- (lambda ()
-  (ibuffer-switch-to-saved-filter-groups "default")
-  (ibuffer-filter-by-name "^[^*]")
-  (ibuffer-filter-by-filename "."))) ;; to show only dired and files buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(setq mouse-buffer-menu-mode-mult 0)
+(setq mouse-buffer-menu-mode-mult 0) ;; Group the buffers by the major mode groups on <C-down-mouse-1>?, Set to 1 (or even 0!) if you want to group by major mode always
 
 (ech-install-and-load 'leuven-theme)
 (enable-theme 'leuven)
 
 (when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
+  (tool-bar-mode -1))                   ; suppress tool bar 
 (menu-bar-mode 1)                       ; show menu bar
 (scroll-bar-mode 1)			;show scroll-bar
+
 ; Laisser le curseur en place lors d'un défilement par pages.
 ; Par défaut, Emacs place le curseur en début ou fin d'écran
 ; selon le sens du défilement.
@@ -54,8 +37,8 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq transient-mark-mode t)		;highlights selections
-(setq set-mark-command-repeat-pop t)
-(setq comment-style 'plain)
+(setq set-mark-command-repeat-pop t)    ;Non-nil means repeating C-SPC after popping mark pops it again.
+(setq comment-style 'plain)             ; Style to be used for `comment-region'.
 ;; Newline at end of file
 (setq require-final-newline t)
 ;; highlight the current line
@@ -70,15 +53,15 @@
 ;; diminish keeps the modeline tidy
 (ech-install-and-load 'diminish)
 
-(winner-mode 1)
+(winner-mode 1)  ; winner mode , manage window configurations
 
-(ech-install-and-load 'framemove)
+(ech-install-and-load 'framemove) ; move focus between frames using arrow keys
 (framemove-default-keybindings)
 (windmove-default-keybindings)
 (setq framemove-hook-into-windmove t)
 
-(ech-install-and-load 'frame-fns)
-(ech-install-and-load 'frame-cmds)
+(ech-install-and-load 'frame-fns) ; Non-interactive frame and window functions.
+(ech-install-and-load 'frame-cmds) ; frame and window functions.
 
 (defun myenlarge-frame()
   (interactive)
@@ -130,14 +113,14 @@
 ;;   (global-set-key [(meta down)]                  'move-frame-down)
 ;;   (global-set-key [(meta left)]                  'move-frame-left)
 ;;   (global-set-key [(meta right)]                 'move-frame-right)
-(global-set-key [(meta shift ?v)]              'move-frame-to-screen-top)      ; like `M-v'
-(global-set-key [(control shift ?v)]           'move-frame-to-screen-bottom)   ; like `C-v'
-(global-set-key [(control shift prior)]        'move-frame-to-screen-left)     ; like `C-prior'
-(global-set-key [(control shift next)]         'move-frame-to-screen-right)    ; like `C-next'
-(global-set-key [(control meta down)]          'myenlarge-frame)
-(global-set-key [(control meta right)]         'myenlarge-frame-horizontally)
-(global-set-key [(control meta up)]            'myshrink-frame)
-(global-set-key [(control meta left)]          'myshrink-frame-horizontally)
+(define-key ech-mode-map [(meta shift ?v)]              'move-frame-to-screen-top)      ; like `M-v'
+(define-key ech-mode-map [(control shift ?v)]           'move-frame-to-screen-bottom)   ; like `C-v'
+(define-key ech-mode-map [(control shift prior)]        'move-frame-to-screen-left)     ; like `C-prior'
+(define-key ech-mode-map [(control shift next)]         'move-frame-to-screen-right)    ; like `C-next'
+(define-key ech-mode-map [(control meta down)]          'myenlarge-frame)
+(define-key ech-mode-map [(control meta right)]         'myenlarge-frame-horizontally)
+(define-key ech-mode-map [(control meta up)]            'myshrink-frame)
+(define-key ech-mode-map [(control meta left)]          'myshrink-frame-horizontally)
 ;;   (global-set-key [(control ?x) (control ?z)]    'iconify-everything)
 ;;   (global-set-key [vertical-line S-down-mouse-1] 'iconify-everything)
 ;;   (global-set-key [(control ?z)]                 'iconify/map-frame)
@@ -163,9 +146,9 @@
 ;;
 ;;
 
+
+
 (let ((menu-bar-frames-menu (make-sparse-keymap "MyFrames")))
-  (define-key-after global-map [menu-bar frames]
-    (cons "MyFrames" menu-bar-frames-menu))
   (define-key menu-bar-frames-menu [set-all-params-from-frame]
     '(menu-item "Set All Frame Parameters from Frame" set-all-frame-alist-parameters-from-frame
 		:help "Set frame parameters of a frame to their current values in frame"))
@@ -259,7 +242,7 @@
   (define-key menu-bar-frames-menu [other-frame]
     '(menu-item "Switch frame" other-frame
 		:help "Switch to other frame."))
-)
+(ech-add-menu "Frames" menu-bar-frames-menu))
 
 ;; (defvar menu-bar-doremi-menu (make-sparse-keymap "Do Re Mi"))
 ;; (define-key global-map [menu-bar doremi]

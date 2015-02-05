@@ -12,7 +12,7 @@
 ;; Settings
 (setq org-list-indent-offset 2)
 (setq org-tags-match-list-sublevels t) ; don't inherite tags when searching
-(require 'ido-conf)
+(require 'file-dirs-config)
 (setq org-completion-use-ido t)
 (setq org-return-follows-link t)
 (setq org-ellipsis "...")

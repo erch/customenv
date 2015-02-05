@@ -1,5 +1,6 @@
 (require 'ech-env)
 (require 'shell-conf)
+(require 'ech-mode)
 (when (and (or (string= system-type "ms-dos") (string= system-type "windows-nt")) (executable-find "bash"))
   (setq exec-path (append '("C:/cygwin/bin") exec-path))
   (setq binary-process-input t)
