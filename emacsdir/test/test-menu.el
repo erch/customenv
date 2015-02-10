@@ -1,44 +1,65 @@
 (require 'ech-env)
 (require 'debug-utils)
 
+(ech-install-and-load 'mocker)
+
 ;; menu customization
-(defun make-easy-menu()
-  (easy-menu-create-menu "Words"
+(defun make-display-easy-menu(menu-title)
+  (easy-menu-create-menu menu-title			 
 		      '(("Display"
-			 ["Forward word" forward-word t])
-			("Org"
-			 ["Capture" org-capture [help:"Quick capture of Anything for post processing" ]]))))
+			 ["Forward word" forward-word]))))
+
+(defun make-org-easy-menu(menu-title)
+  (easy-menu-create-menu menu-title			 
+		      '(("Org"
+			 ["Capture" org-capture :help "Quick capture of Anything for post processing"]))))
 
 ;; (ech-find-string-in-keymap (make-easy-menu))
 ;; (ech-find-string-in-keymap (make-easy-menu))
-;(dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-easy-menu)) 0))
-(defun test-display-menu()
-  (let ((submenu-keymap (make-easy-menu)))
-    (ech-add-menu "Test2" submenu-keymap)
-    (ech-add-menu "Test2")
-    (ech-add-menu "Test2" submenu-keymap)
-    (ech-add-submenu-to-menu "Test2" "Words" submenu-keymap)
+;; (dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-easy-menu)) 0))
+(defun test-display-easy-menu()
+  (let ((display-submenu (make-display-easy-menu "Test4"))
+	(orgmenu (make-org-easy-menu "Test4")))
+    (ech-add-menu display-submenu)
+    (ech-add-menu orgmenu)))
+;;(test-display-easy-menu)
+;;(ech-add-menu "Test3" (make-easy-menu "Test3"))
+;;(ech-add-menu "Test3")
+(defun test-add-easy-menu-submenu()
+  (let ((submenu (easy-menu-create-menu "Submenu"
+		      '(
+			 ["back ward word" backward-word t]))))
+    (ech-add-menu "Test4" (make-easy-menu "Test4"))
+    (ech-add-submenu-to-menu (vector 'menu-bar 'Test4 'Words 'Display) submenu)))
+;; (test-add-easy-menu-submenu)
+;;(lookup-key ech-mode-map  (vector 'menu-bar 'Test2 'Display))
+
+(defun make-menu-define-key(menu-title)
+  (let ((submenumap (make-sparse-keymap menu-title))
+	(displaymap (make-sparse-keymap "Display"))
+	(orgmap (make-sparse-keymap "Org")))
+    (define-key displaymap (vector (make-symbol "Forward word")) (cons "Forward word" 'forward-word))
+    (define-key orgmap (vector 'Capture) (cons "Capture" (cons "Quick capture of Anything for post processing" 'org-capture)))
+    (define-key submenumap (vector 'Display) (cons "Display" displaymap))
+    (define-key submenumap (vector 'Org) (cons "Org" orgmap))
+    submenumap))
+
+(defun test-display-define-key-menu()
+  (let ((submenu-keymap (make-menu-define-key "Test3")))
+    (ech-add-menu "Test3" submenu-keymap)
+    (ech-add-menu "Test3")
+    (ech-add-menu "Test3" submenu-keymap)
     ))
+;; (test-display-define-key-menu)
+;;(dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-easy-menu "Test2")) 0))
+;;(dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-menu-define-key "Test3")) 0))
 
-;; (ech-find-string-in-keymap (make-sparse-keymap "titi"))
-;;(test-display-menu)
-
-(defun test-menu-define-key(menu-title)
-  (let ((menu-map (cdr (assoc menu-title ech-menu-maps-alist)))
-	(submenumap (make-sparse-keymap)))
-    (define-key menu-map (vector 'String) submenumap)
-    (define-key submenumap (vector 'forward) (cons "Forward word" 'forward-word))))
-
-(defun create-test-keymap ()
-  (let ((test-kmap (make-sparse-keymap))
-	(menu-map (make-sparse-keymap "essai")))
-    (define-key test-kmap [essai] (cons "essai" menu-map))
-       
-    (define-key menu-map (vector 'tag-query) '(menu-item (substitute-command-keys "            Tags... (again: \\[tags-loop-continue])") tags-query-replace :help "Replace a regexp in tagged files, with confirmation"))
-    ;;(define-key menu-map (vector 'continue) '(menu-item "Continue Replace" tags-loop-continue :help "Continue last tags replace operation"))
-    ;;(define-key menu-map (vector 'backward) (cons "Backward word" (cons "goes backward" 'backward-word)))
-    ;;(define-key menu-map (vector 'forward) (cons "Forward word" 'forward-word))
-    test-kmap))
+(defun test-add-define-key-menu-submenu()
+  (let ((submenu (easy-menu-create-menu "Submenu"
+		      '(
+			 ["back ward word" backward-word t]))))
+    (ech-add-menu "Test5" (make-menu-define-key "Test5"))
+    (ech-add-submenu-to-menu (vector 'menu-bar 'Test5 'Words 'Display) submenu)))
 
 ;; (ech-add-menu "titi")
 ;; (ech-display-or-hide-menus)

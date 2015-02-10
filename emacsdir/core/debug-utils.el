@@ -18,8 +18,6 @@
   "cut a string to maxchar if its length exceeds it"
   (substring string  0 (min maxchar (- 1 (length string)))))
 
-
-
 (defun dbg-add-to-parsed-keymap (keymap-struct list-name elem)
   "used by dbg-parse-keympap. Add en element to a list insided a hashtable, Create the hashtable entry
 if no list is already associated to the hashtable for this key"
@@ -170,7 +168,8 @@ Sort out the simple, complext keybinding a the simple command key definition"
 
 (defun dbg-parse-chartable (chartable)
   chartable)
-   
+
+
 (defun dbg-parsed-keymap-to-string (keymap-struct indent)
   "return a string representing a structure returned by parse-keymap"
   (let* ((indent-str (make-string indent ?\s))
@@ -239,12 +238,14 @@ Sort out the simple, complext keybinding a the simple command key definition"
 		       bindings
 		       sep))))
 
-(defun dbg-print-keymap(keymap-name)
-  "Print in the *Debug* buffer the keymap whose name is the string keymap-str"
+(defun dbg-print-keymap(keymap-or-keymap-name)
+  "Print in the *Debug* buffer a keymap, keymap is the keymap or a string which is the name of the keymap."
   (interactive (list (read-string "Keymap:")) )
-  (let ((keymap (eval (intern keymap-name))))
-    (dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap keymap) 0))))
+  (let ((keymap (if (stringp keymap-or-keymap-name)
+		    (eval (intern keymap-or-keymap-name))
+		  keymap-or-keymap-name)))
+    (dbg-print (concat (dbg-parsed-keymap-to-string (dbg-parse-keymap keymap) 0) "\n"))))
 
-(define-key ech-mode-map (kbd "C-x C-d k") 'dbg-print-keymap)
+(define-key ech-mode-map (kbd "C-c C-d k") 'dbg-print-keymap)
 
 (provide 'debug-utils)

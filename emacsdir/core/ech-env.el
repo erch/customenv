@@ -24,6 +24,9 @@
   (package-install 'menu-bar+))
 (eval-after-load "menu-bar" '(require 'menu-bar+))
 
+;; load cl-seq once here (no require in it ??)
+(load-library "cl-seq")
+
 ;; load utility functions
 (require 'utility-funcs)
 

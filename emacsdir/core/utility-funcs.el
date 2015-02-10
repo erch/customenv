@@ -1,5 +1,5 @@
-; utility functions
-(load-library "cl-seq")
+;; utility functions
+
 (require 'ido)
 (require 'calendar)
 
@@ -12,6 +12,7 @@
 
 ;; a list manipulation package
 (ech-install-and-load 'dash)
+(eval-after-load "dash" '(dash-enable-font-lock)) ; highliting for dash
 
 (defun members (elems list)
   "test if all elements of list elemes are in list list, returns true in this case. Returns false if at least one element of elems is not in list"
@@ -19,7 +20,7 @@
    ((eq nil elems) t)
    ((member (car elems) list) (members (cdr elems) list))
    (t nil)
-))
+   ))
 
 ;; compile files in emacs.d
 (defun compile-if-newer (file)
@@ -302,5 +303,7 @@ buffer is not visiting a file."
               (not (file-exists-p (file-name-directory buffer-file-name)))
               (file-writable-p buffer-file-name))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+
 
 (provide 'utility-funcs)
