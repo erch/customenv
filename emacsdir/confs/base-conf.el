@@ -1,4 +1,5 @@
 (require 'ech-env)
+(require 'ech-mode)
 (setq max-specpdl-size 20000)
 (setq max-lisp-eval-depth 20000)
 
@@ -26,15 +27,19 @@
 (set-keyboard-coding-system 'utf-8-emacs)
 (set-language-environment 'utf-8)
 
-;; <ON_HOLD> (setq x-select-enable-clipboard t)	;use system clipboard
+;; [ON_HOLD] (setq x-select-enable-clipboard t)	;use system clipboard
 (column-number-mode 1)			;show column number
 (auto-compression-mode 1) ; Use compressed files as if they were normal
 
-;; put backup files in a specific directory
-(setq backup-dir (expand-file-name "~/.ebackup"))
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist `((".*" . ,backup-dir)))
-(setq auto-save-file-name-transforms `((".*" ,backup-dir t)))
+;; bookmarks
+(require 'bookmark)
+(setq bookmark-save-flag 1) ;save bookmarks every time you make or delete a bookmark
+
+;; store all backup, autosave and bookmark files in a specific directory
+(let ((backup-dir (expand-file-name "~/.ebackup")))
+  (setq backup-directory-alist `((".*" . ,backup-dir))
+	auto-save-file-name-transforms `((".*" ,backup-dir t))
+	bookmark-default-file (expand-file-name "bookmarks" backup-dir)))
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
@@ -49,10 +54,7 @@
 (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
 (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
 
-;; bookmarks
-(require 'bookmark)
-(setq bookmark-default-file (expand-file-name "bookmarks" backup-dir)
-      bookmark-save-flag 1)
+
 
 ;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
 (ech-install-and-load 'anzu)
@@ -63,6 +65,7 @@
 (define-key ech-mode-map (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
+(require 'dired)
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; always delete and copy recursively

@@ -58,6 +58,7 @@
 (ech-install-and-load 'framemove) ; move focus between frames using arrow keys
 (framemove-default-keybindings)
 (windmove-default-keybindings)
+(defvar framemove-hook-into-windmove )
 (setq framemove-hook-into-windmove t)
 
 (ech-install-and-load 'frame-fns) ; Non-interactive frame and window functions.
@@ -148,7 +149,7 @@
 
 
 
-(let ((menu-bar-frames-menu (make-sparse-keymap "MyFrames")))
+(let ((menu-bar-frames-menu (make-sparse-keymap "Frames")))
   (define-key menu-bar-frames-menu [set-all-params-from-frame]
     '(menu-item "Set All Frame Parameters from Frame" set-all-frame-alist-parameters-from-frame
 		:help "Set frame parameters of a frame to their current values in frame"))
@@ -242,7 +243,7 @@
   (define-key menu-bar-frames-menu [other-frame]
     '(menu-item "Switch frame" other-frame
 		:help "Switch to other frame."))
-(ech-add-menu "Frames" menu-bar-frames-menu))
+  (ech-add-menu menu-bar-frames-menu))
 
 ;; (defvar menu-bar-doremi-menu (make-sparse-keymap "Do Re Mi"))
 ;; (define-key global-map [menu-bar doremi]

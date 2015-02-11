@@ -1,4 +1,5 @@
-(require 'ech-mode)
+(require 'ech-env)
+
 (defun dbg-print(&rest objs)
   "print all emacs objs in a buffer called *Debug*. Each obj in objs is display with a %S format if it is not a string"
   (let* ((buffer (get-buffer-create "*Debug*"))
@@ -246,6 +247,6 @@ Sort out the simple, complext keybinding a the simple command key definition"
 		  keymap-or-keymap-name)))
     (dbg-print (concat (dbg-parsed-keymap-to-string (dbg-parse-keymap keymap) 0) "\n"))))
 
-(define-key ech-mode-map (kbd "C-c C-d k") 'dbg-print-keymap)
+(define-key ech-mode-map ech-key-dbg-print-keymap 'dbg-print-keymap)
 
 (provide 'debug-utils)

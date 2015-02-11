@@ -3,12 +3,24 @@
 (require 'ido)
 (require 'calendar)
 
-(defun ech-install-and-load(package-symb)
-  "Install melpa package is not yet installed"
-  (unless (require package-symb nil t)
-    (progn
-      (package-install package-symb)
-      (require package-symb))))
+(defun ech-install-and-load(package-symb &optional alternate-repository-list do-not-require)
+  "Install a package if it is not yet installed and requires it.
+
+If an optional package repository list is specified use it: don't abuse of it it's time consuming
+It's usefull for instance for package that are only in Melpa and not in Marmelade
+If do-not-require is not nil than call require on package-symb
+"
+    (unless (locate-library (symbol-name package-symb))
+      (when alternate-repository-list	
+	(unwind-protect
+	    (let ((package-archives alternate-repository-list))
+	      (package-initialize)
+	      (package-install package-symb)
+	      )	    
+	  (package-initialize)))
+      (package-install package-symb))
+      (when (not do-not-require)
+	(require package-symb)))
 
 ;; a list manipulation package
 (ech-install-and-load 'dash)
@@ -53,12 +65,10 @@
 
 (unless (boundp 'setq-local)
   (defmacro setq-local (var value)
+    "create a buffer local variable and set it a value"
     `(progn
-      (make-local-variable ',var)
-      (setq ,var ,value))))
-
-;(setq myvar 1)
-;(setq-local myvar 2)
+       (make-local-variable ',var)
+       (setq ,var ,value))))
 
 (defun flattenlists(res &rest lists)
   "return a list of string with all strings find in any lists inside list and otherlist recursively"
@@ -66,13 +76,13 @@
 	((consp (car lists)) (flattenlists res (car (car lists)) (append (cdr (car lists)) (cdr lists))))
 	(t (flattenlists (cons (car lists) res) (append (car (cdr lists)) (cdr (cdr lists)))))))
 
-; (flattenlists () '("a" "b"))
-; (flattenlists ())
-; (flattenlists () "a")
-; (cons "a" '( "b" "c"))
-; (append nil nil)
+					; (flattenlists () '("a" "b"))
+					; (flattenlists ())
+					; (flattenlists () "a")
+					; (cons "a" '( "b" "c"))
+					; (append nil nil)
 (defun list2string(list)
-"return all strings in list in one string with space as separator"
+  "return all strings in list in one string with space as separator"
   (if (eq (cdr list) nil) (car list)
     (concat (car list) " " (list2string (cdr list)))))
 
@@ -160,25 +170,25 @@
 ;;(non-dot-directory-files project-dir)
 
 (defun week-day-time-from-date (wkday  &optional nth-week time)
-    "time of the nth wkday after/before time - default time is now.
+  "time of the nth wkday after/before time - default time is now.
 A wkday of 0 means Sunday, 1 means Monday, and so on.
 If nth-week > 0, return the Nth DAYNAME after time (inclusive).
 If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
-    (let* ((tl (if (null time) (decode-time) (decode-time time)))
-	   (wk (if (null nth-week) +1 nth-week))
-	   (sec (nth 0 tl))
-	   (min (nth 1 tl))
-	   (hour (nth 2 tl))
-	   (day (nth 3 tl))
-	   (month (nth 4 tl))
-	   (year (nth 5 tl))
-	   (prev-day (calendar-nth-named-day wk wkday month year day))
-	   (prev-year (nth 2 prev-day))
-	   (prev-month (nth 0 prev-day))
-	   (prev-day (nth 1 prev-day)))
-      (list prev-year prev-month prev-day)))
+  (let* ((tl (if (null time) (decode-time) (decode-time time)))
+	 (wk (if (null nth-week) +1 nth-week))
+	 (sec (nth 0 tl))
+	 (min (nth 1 tl))
+	 (hour (nth 2 tl))
+	 (day (nth 3 tl))
+	 (month (nth 4 tl))
+	 (year (nth 5 tl))
+	 (prev-day (calendar-nth-named-day wk wkday month year day))
+	 (prev-year (nth 2 prev-day))
+	 (prev-month (nth 0 prev-day))
+	 (prev-day (nth 1 prev-day)))
+    (list prev-year prev-month prev-day)))
 
-;(week-day-time-from-date 2)
+					;(week-day-time-from-date 2)
 
 (defun format-week-day-from-date (format-str wkday &optional week time)
   "Return the formated date of a week day prior to a date. week days are number from 0 to 6 with 0 being Sunday. By default time is now. The number of weeks before or after is an integer with -1 meaning the day before current week, +1 current week after, by default it's -1"
@@ -186,7 +196,7 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 	 (prev-year (nth 0 prev-day))
 	 (prev-month (nth 1 prev-day))
 	 (prev-day (nth 2 prev-day)))
-      (format  format-str prev-year prev-month prev-day)))
+    (format  format-str prev-year prev-month prev-day)))
 
 (defun time-nth-months-back (n &optional tme)
   "get the month number for n month back than time tme which is now by default"
@@ -197,8 +207,8 @@ If nth-week < 0, return the Nth DAYNAME before time  (inclusive)."
 	 (day (nth 3 tl))
 	 (month (nth 4 tl))
 	 (year (nth 5 tl)))
-	 ;;(dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
-	 ;;(dest-year (- year (/ n 12))))
+    ;;(dest-month (+ 1 (% (- (+ month (* 12 (+ 1 (/ n 12)))) (+ 1 n)) 12)))
+    ;;(dest-year (- year (/ n 12))))
     (calendar-increment-month month year (- n))
     (encode-time sec min hour day month year)))
 
@@ -223,8 +233,8 @@ the menu key spec is as follow:
     (define-key menu-map (vector (make-symbol (format "sep-%d" (random 10000)))) '("--")))
    ((arrayp menu-key-spec)
     (let ((name (elt menu-key-spec 0))
-	   (help (elt menu-key-spec 1))
-	   (func (elt menu-key-spec 2)))
+	  (help (elt menu-key-spec 1))
+	  (func (elt menu-key-spec 2)))
       (progn
 	(define-key menu-map (vector (intern (format "%s-%s" name "symb"))) (list 'menu-item name func ':help help))
 	(unless (or (< (length menu-key-spec) 4) (null (elt menu-key-spec 3)))  (define-key key-map  (eval (elt menu-key-spec 3)) func)))))
@@ -304,6 +314,15 @@ buffer is not visiting a file."
               (file-writable-p buffer-file-name))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-
+(defun prelude-start-or-switch-to (function buffer-name)
+  "Invoke FUNCTION if there is no buffer with BUFFER-NAME.
+Otherwise switch to the buffer named BUFFER-NAME.  Don't clobber
+the current buffer."
+  (if (not (get-buffer buffer-name))
+      (progn
+        (split-window-sensibly (selected-window))
+        (other-window 1)
+        (funcall function))
+    (switch-to-buffer-other-window buffer-name)))
 
 (provide 'utility-funcs)

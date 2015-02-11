@@ -29,7 +29,7 @@
   (let ((submenu (easy-menu-create-menu "Submenu"
 		      '(
 			 ["back ward word" backward-word t]))))
-    (ech-add-menu "Test4" (make-easy-menu "Test4"))
+    (ech-add-menu (make-easy-menu "Test4") "Test4" )
     (ech-add-submenu-to-menu (vector 'menu-bar 'Test4 'Words 'Display) submenu)))
 ;; (test-add-easy-menu-submenu)
 ;;(lookup-key ech-mode-map  (vector 'menu-bar 'Test2 'Display))
@@ -46,9 +46,9 @@
 
 (defun test-display-define-key-menu()
   (let ((submenu-keymap (make-menu-define-key "Test3")))
-    (ech-add-menu "Test3" submenu-keymap)
-    (ech-add-menu "Test3")
-    (ech-add-menu "Test3" submenu-keymap)
+    (ech-add-menu submenu-keymap "Test3")
+    (ech-add-menu nil "Test3")
+    (ech-add-menu submenu-keymap "Test3" )
     ))
 ;; (test-display-define-key-menu)
 ;;(dbg-print (dbg-parsed-keymap-to-string (dbg-parse-keymap (make-easy-menu "Test2")) 0))
@@ -58,7 +58,7 @@
   (let ((submenu (easy-menu-create-menu "Submenu"
 		      '(
 			 ["back ward word" backward-word t]))))
-    (ech-add-menu "Test5" (make-menu-define-key "Test5"))
+    (ech-add-menu  (make-menu-define-key "Test5") "Test5")
     (ech-add-submenu-to-menu (vector 'menu-bar 'Test5 'Words 'Display) submenu)))
 
 ;; (ech-add-menu "titi")

@@ -2,40 +2,50 @@
 ;; C-c C-e for minor mode commands
 ;; C-C C-d for debuging commands
 
-(require 'utility-funcs)
+(require 'ech-env)
 (ech-install-and-load 'dash) ;enhanced list functions
 
 (defvar ech-mode-map (make-sparse-keymap)  "Keymap for ech mode.")
 
 (defvar ech-menu-maps-alist nil "association list of menu keymaps. car is the title of the menu cdr is its keymap")
 
-(defun ech-add-menu (menu-title menu-items-keymap)
-  "add a menu that will be displayed in the menu bar if it not already exists and returns the keymap corresponding to this menu.
+(defun ech-add-menu (&optional menu-items-keymap menu-title)
+  "add a menu that will be displayed in the menu bar and returns the keymap corresponding to this menu.
 
-In both cases (menu already exists or not) adds to the menu the items defined in the provided keymap. 
-See function 'ech-add-items-to-keymap for explanation on how keymap are added knowing that it is called with the
-vector ['menu-bar]
+
+If menu-title is provided it is used as the menu title as well as the event symbol for this menu binding.
+If no menu-title is provided then the menu-items-keymap must contains a menu string that will be used as the menu 
+title as well as the event symbol for this menu binding.
+
+If a menu with the same title already exists then returns its keymap and merge menu-items-keymap into it.
+If no menu already exists with this title then create a key map for it and returns it.
+
+The menu items found in menu-items-keymap are merged into the menu keymap as explain in function 
+'ech-add-items-to-keymap'. 
+
+If  menu-items-keymap is nil , a menu-title must be provided and the keymap corresponding to this menu is returned.
 "
-  (cl-assert (and menu-title menu-items-keymap))
   (let* ((submenu-title (ech-find-string-in-keymap menu-items-keymap))
-	 (registered-keymap (cdr (assoc menu-title ech-menu-maps-alist)))	
-	 (root-keymap (or registered-keymap (make-sparse-keymap menu-title))))	 
+	 (menu-string (or menu-title submenu-title))
+	 (registered-keymap (cdr (assoc menu-string ech-menu-maps-alist)))	 
+	 (root-keymap (or registered-keymap (make-sparse-keymap menu-string)))
+	 (menu-symb (if  menu-title
+			(vector 'menu-bar (intern menu-title))
+		      (vector 'menu-bar (intern menu-string))))
+	 (force-merge (not menu-title)))
+    (cl-assert menu-string)
     (when (null registered-keymap)
-      (push (cons menu-title root-keymap) ech-menu-maps-alist)
-      (define-key ech-mode-map (vector 'menu-bar (intern menu-title)) (cons menu-title root-keymap)))
-    (ech-add-items-to-keymap (vector 'menu-bar (intern menu-title)) menu-items-keymap)
+      (push (cons menu-string root-keymap) ech-menu-maps-alist)
+      (define-key ech-mode-map (vector 'menu-bar (intern menu-string)) (cons menu-string root-keymap)))
+    (when menu-items-keymap (ech-add-items-to-keymap (vector 'menu-bar (intern menu-string)) menu-items-keymap nil force-merge))
     root-keymap)) 
 
-(defun ech-add-items-to-keymap(symbs-vector items-keymap &optional keymap-to-modify)
+(defun ech-add-items-to-keymap(symbs-vector items-keymap &optional keymap-to-modify force-merge)
   "Add a key definitions to the mode map or to the keymap given par parameter keymap-to-modify if not nil.
 
 The items to add are to be put in the keymap items-keymap which can be build with 'easy-menu-create-menu' or with 'define-key'
 The  items are added to the keymap defined by the key sequence specified by the symbol vector symbs-vector (which is passed to 'lookup-key').
-If the provided keymap has a menu string it makes the assumption that it defines a submenu 
-and thus uses this menu string as the title of the submenu as well as the the binding event of the submenu. 
-BE CAREFUL: if a submenu already exists with the same event binding it replaces it. 
-If no string is found just add the elements of the provided keymap to the keymap bounded to the events. BE CAREFUL: in this case the call CAN REPLACE EXISTING keys descructively, ie if an event is already bouded to a key definition in the original keymap then it is removed and the one found in items-keymap replaces it.
-keymap-to-modify must not be null
+See function 'ech-merge-keymaps' for explanation on how the item-keymap is merged into the mode-map.
 It is very important to note that for menu definition the menu string is used as the key definition event in order to keep things coherent between calls.
 
 Advice for sub keyamp creation:
@@ -53,15 +63,27 @@ Advice for sub keyamp creation:
   (let* ((map (or keymap-to-modify ech-mode-map))
 	(root-keymap (lookup-key map  symbs-vector))
 	(submenu-title (ech-find-string-in-keymap items-keymap)))
-    (if (null submenu-title)	
-	(define-key map symbs-vector (ech-merge-keymaps root-keymap items-keymap))
+    (if (or force-merge (null submenu-title))	
+	(define-key map symbs-vector
+	  (if submenu-title
+	      (cons submenu-title (ech-merge-keymaps root-keymap items-keymap force-merge))
+	    (ech-merge-keymaps root-keymap items-keymap force-merge)))
       (define-key root-keymap (vector (intern submenu-title)) (cons submenu-title items-keymap)))
     root-keymap))
 
-(defun ech-merge-keymaps (container mergee)
+(defun ech-merge-keymaps (container mergee &optional force-merge)
+  "Merge two keymaps by inserting mergee into container
+
+If container already contains one mergee's key the key definition is overiden by the one provided by mergee.
+When the mergee keymap has a menu string the assumption that it means that it defines a submenu. In this case menu string is used
+as the title of the submenu as well as the the binding event of the submenu. 
+BE CAREFUL: if a submenu already exists with the same event binding the mergee's one replace the original one. 
+If no string is found in mergee just adds its elements to the container keymap. BE CAREFUL: if a mergee's event is already bouded to a key definition in the original keymap then it replaced by the mergee's definition.
+keymap-to-modify must not be null
+"
   (cl-assert (and container mergee))
   (let ((submenu-title (ech-find-string-in-keymap mergee)))
-    (if (null submenu-title)
+    (if (or force-merge (null submenu-title))
 	(--each
 	    (cdr mergee)
 	  (let* ((elem it)
@@ -90,8 +112,6 @@ shows the menu by defautl or hides if hide is t"
 	      (define-key ech-mode-map (vector 'menu-bar menu-symb) (cons menu-title menu-map)))))
 	ech-menu-maps-alist))
 
-
-
 ;; define minor mode
 (define-minor-mode ech-mode
   "Minor mode for ech customisations.
@@ -106,8 +126,6 @@ shows the menu by defautl or hides if hide is t"
     ;; on stop
     (ech-display-or-hide-menus t)))
 
-;(define-globalized-minor-mode ech-global-mode ech-mode ech-on)
-
 (defun ech-on ()
   "Turn on `ech-mode'."
   (ech-mode +1))
@@ -115,9 +133,6 @@ shows the menu by defautl or hides if hide is t"
 (defun ech-off ()
   "Turn off `ech-mode'."
   (ech-mode -1))
-
-
-
 
 (provide 'ech-mode)
 

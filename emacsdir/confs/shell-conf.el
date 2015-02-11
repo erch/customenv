@@ -1,6 +1,5 @@
 (message "loading shell-conf ...")
 (require 'ech-env)
-;(load-file (expand-file-name "misc/term.el" ech-site-lisp-dir))
 (require 'term)
 (ech-install-and-load 'isend-mode)
 

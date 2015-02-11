@@ -5,7 +5,8 @@
 
 ;; highlights matching pairs
 (show-smartparens-global-mode t)
-(setq sp-autoskip-closing-pair 'always)
+;; call `sp-up-sexp whenever the closing delimiter is typed inside a sexp of the same type
+(setq sp-autoskip-closing-pair 'always) 
 (setq sp-hybrid-kill-entire-symbol nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;

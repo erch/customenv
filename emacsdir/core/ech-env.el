@@ -27,6 +27,8 @@
 ;; load cl-seq once here (no require in it ??)
 (load-library "cl-seq")
 
+;; load key definitions
+(require 'ech-keydefs)
 ;; load utility functions
 (require 'utility-funcs)
 

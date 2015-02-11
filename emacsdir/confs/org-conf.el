@@ -2,12 +2,13 @@
 
 (ech-install-and-load 'org)
 (require 'ech-env)
+(require 'ech-mode)
 (require 'org-install)
 (require 'org-crypt)
 (require 'org-agenda)
 ;; Standard org stuff
-					;(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(define-key global-map "\C-ca" 'org-agenda)
+
+(define-key ech-mode-map "\C-ca" 'org-agenda)
 
 ;; Settings
 (setq org-list-indent-offset 2)

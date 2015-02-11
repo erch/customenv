@@ -48,8 +48,9 @@ symbol bindings.
 			    (equal binding key))
 		   (throw 'incorrect t))))))))
 
-(ert-deftest test-ech-add-menu-same-menu-string ()
-  "add a menu, one key is overiden"
+(ert-deftest test-ech-add-menu-same-menu-string-menu-title-parameter ()
+  "test ech-add-menu with a menu that already exists with  one key overiden. use the menu-title parameter
+and the mergee key map has no menu string"
   (let ((ech-mode-map (make-sparse-keymap))
 	(test-keymap (make-keymap-test nil))
 	(ech-menu-maps-alist nil)
@@ -58,7 +59,26 @@ symbol bindings.
     (define-key ech-mode-map (vector 'menu-bar (intern "Test")) (cons "Test" test-keymap))
     (dbg-print-keymap ech-mode-map)
     (dbg-print-keymap mergee)
-    (ech-add-menu "Test" mergee)
+    (ech-add-menu mergee "Test" )
+    (dbg-print-keymap ech-mode-map)
+    (should (keymap-correct-p ech-mode-map
+			      `(				
+				([menu-bar Test ,(make-symbol "Forward word")] forward-char)
+				([menu-bar Test ,(make-symbol "Backward word")] backward-word)
+				([menu-bar Test ,(make-symbol "Find File")] find-file))
+			      `(([menu-bar Test ,(make-symbol "Forward word")] forward-word))))))
+
+(ert-deftest test-ech-add-menu-same-menu-string-no-menu-string-parameter ()
+  "test ech-add-menu with a menu that already exists with  one key overiden. use a mergee key map with a menu string and don't pass a menu-title parameter"
+  (let ((ech-mode-map (make-sparse-keymap))
+	(test-keymap (make-keymap-test nil))
+	(ech-menu-maps-alist nil)
+	(mergee (make-keymap-mergee "Test")))
+    (push (cons "Test" test-keymap) ech-menu-maps-alist)
+    (define-key ech-mode-map (vector 'menu-bar (intern "Test")) (cons "Test" test-keymap))
+    (dbg-print-keymap ech-mode-map)
+    (dbg-print-keymap mergee)
+    (ech-add-menu mergee)
     (dbg-print-keymap ech-mode-map)
     (should (keymap-correct-p ech-mode-map
 			      `(				
@@ -68,9 +88,8 @@ symbol bindings.
 			      `(([menu-bar Test ,(make-symbol "Forward word")] forward-word))))))
 
 
-
 (ert-deftest test-ech-add-items-to-keymap-no-menu-string ()
-  "add keys to a keymap, one key is overiden"
+  "test  ech-add-items-to-keymap to a keymap, one key is overiden"
   (let ((ech-mode-map (make-sparse-keymap))
 	(test-keymap (make-keymap-test "Test"))
 	(mergee (make-keymap-mergee nil)))    
