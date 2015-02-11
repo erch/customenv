@@ -3,7 +3,6 @@
 ;; C-C C-d for debuging commands
 
 (require 'ech-env)
-(ech-install-and-load 'dash) ;enhanced list functions
 
 (defvar ech-mode-map (make-sparse-keymap)  "Keymap for ech mode.")
 

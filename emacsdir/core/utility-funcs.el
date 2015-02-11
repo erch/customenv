@@ -3,28 +3,33 @@
 (require 'ido)
 (require 'calendar)
 
-(defun ech-install-and-load(package-symb &optional alternate-repository-list do-not-require)
-  "Install a package if it is not yet installed and requires it.
+;; load cl-seq once here (no require in it ??), no need to require it if utility is loaded.
+(load-library "cl-seq")
 
-If an optional package repository list is specified use it: don't abuse of it it's time consuming
-It's usefull for instance for package that are only in Melpa and not in Marmelade
+;; load dash once here, no need to require it if utility is loaded.
+(unless (package-installed-p 'dash)
+  (package-install 'dash))
+(require 'dash)
+(eval-after-load "dash" '(dash-enable-font-lock)) ; highliting for dash
+
+;; load s once here, no need to require it if utility is loaded.
+(unless (package-installed-p 's)
+  (package-install 's))
+(require 's)
+
+(defun ech-install-and-load(package-symb &optional do-not-require)
+  "Install packages if they are not yet installed and requires them if do-not-require is nil.
+
+package-symb-or-list can be a symbol or a list of symbols.
+If an optional package repository list is specified use it: don't abuse of it it's time consuming because it calls 
+`package-initialize' twice, but it's usefull for instance for packages that are only in Melpa and not in Marmelade.
 If do-not-require is not nil than call require on package-symb
 "
-    (unless (locate-library (symbol-name package-symb))
-      (when alternate-repository-list	
-	(unwind-protect
-	    (let ((package-archives alternate-repository-list))
-	      (package-initialize)
-	      (package-install package-symb)
-	      )	    
-	  (package-initialize)))
-      (package-install package-symb))
-      (when (not do-not-require)
-	(require package-symb)))
+  (unless (package-installed-p package-symb)
+    (package-install package-symb))
+  (when (not do-not-require)
+    (require package-symb)))
 
-;; a list manipulation package
-(ech-install-and-load 'dash)
-(eval-after-load "dash" '(dash-enable-font-lock)) ; highliting for dash
 
 (defun members (elems list)
   "test if all elements of list elemes are in list list, returns true in this case. Returns false if at least one element of elems is not in list"
@@ -244,8 +249,8 @@ the menu key spec is as follow:
 	       (submenu-map (make-sparse-keymap submenu)))
 	  (progn
 	    (define-key menu-map  (vector (intern submenu)) (cons submenu submenu-map))
-	    (mapc '(lambda(x) (build-menu-and-bindings submenu-map key-map x)) (nreverse (cdr menu-key-spec)))))
-      (mapc '(lambda(x) (build-menu-and-bindings menu-map key-map x)) (nreverse menu-key-spec))))))
+	    (mapc #'(lambda(x) (build-menu-and-bindings submenu-map key-map x)) (nreverse (cdr menu-key-spec)))))
+      (mapc #'(lambda(x) (build-menu-and-bindings menu-map key-map x)) (nreverse menu-key-spec))))))
 
 (defun create-menu-and-key-bindings(name menu-key-spec)
   (let ((menu-map (make-sparse-keymap name))

@@ -5,7 +5,7 @@
 (ech-install-and-load 'rainbow-mode)
 (ech-install-and-load 'rainbow-delimiters)
 (ech-install-and-load 'flycheck)
-(ech-install-and-load 'flycheck-pos-tip '(("melpa" . "http://melpa.org/packages/")))
+(ech-install-and-load 'flycheck-pos-tip)
 
 (defun prog-mode-defaults ()
   "Default coding hook, useful with any programming language."

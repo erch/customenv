@@ -6,6 +6,6 @@
 (defconst ech-key-mode-prefix "C-c C-e " "key prefix for ech mode commands")
 
 (defconst ech-key-mode-prefix (kbd (concat ech-key-mode-prefix "s")) "key for starting sunrise commander")
-
+(defconst ech-key-completion (kbd "C-<space>"))
 
 (provide 'ech-keydefs)

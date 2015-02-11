@@ -1,11 +1,12 @@
 (require 'ech-env)
 (require 'ech-mode)
-(setq max-specpdl-size 20000)
-(setq max-lisp-eval-depth 20000)
+
+(setq max-specpdl-size 2000)
+(setq max-lisp-eval-depth 2000)
 
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;;(setq gc-cons-threshold 50000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -48,13 +49,13 @@
 (setq tab-always-indent t)
 
 ;; meaningful names for buffers with the same name
-(ech-install-and-load 'uniquify)
+(require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 (setq uniquify-separator "/")
 (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
 (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
 
-
+(ech-install-and-load 'diminish)
 
 ;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
 (ech-install-and-load 'anzu)

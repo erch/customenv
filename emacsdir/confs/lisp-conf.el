@@ -1,4 +1,3 @@
-
 (require 'ech-env)
 (require 'programming-conf)
 (require 'yasnippet-conf)
@@ -9,16 +8,17 @@
 ;; remove annoying pair with single quote
 (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
 
-;; stolen from prelude
-(defun prelude-recompile-elc-on-save ()
-  "Recompile your elc when saving an elisp file."
-  (add-hook 'after-save-hook
-            (lambda ()
-              (when (file-exists-p (byte-compile-dest-file buffer-file-name))
-                (emacs-lisp-byte-compile)))
-            nil
-            t))
+;; took from http://ergoemacs.org/emacs/emacs_byte_compile.html
+(defun byte-compile-current-buffer ()
+  "`byte-compile' current buffer if it's emacs-lisp-mode and compiled file exists."
+  (interactive)
+  (when (and (eq major-mode 'emacs-lisp-mode)
+             (file-exists-p (byte-compile-dest-file buffer-file-name)))
+    (with-no-warnings
+      (byte-compile-file buffer-file-name))))
 
+(add-hook 'after-save-hook 'byte-compile-current-buffer)
+         
 (defun prelude-visit-ielm ()
   "Switch to default `ielm' buffer.
 Start `ielm' if it's not already running."
@@ -34,7 +34,6 @@ Start `ielm' if it's not already running."
   "Customization hook for elisp buffers."
   (setq-local flycheck-checkers '(emacs-lisp))
   (eldoc-mode +1)
-  (prelude-recompile-elc-on-save)
   (rainbow-mode +1)
   (activate-yasnippet-buffer-local-with-dirs
    (list (expand-file-name "snippets" (file-name-directory emacs-dir)))))

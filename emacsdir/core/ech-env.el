@@ -9,10 +9,11 @@
 
 ;; initialized package
 (require 'package)
-;;(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t ) ;; avoid duplication with marmelade
+
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t )
+;;(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
+;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives '("sunrise" . "http://joseito.republika.pl/sunrise-commander/") t)
 ;;(add-to-list 'package-archives '("tromey" . "http://tromey.com/elpa/") t)
 (setq package-load-list '(all))
@@ -21,11 +22,8 @@
 
 ;; menu bar+ requires to be loaded before all other module that can change th menu bar
 (unless (package-installed-p 'menu-bar+)
-  (package-install 'menu-bar+))
+  (package-install (make-symbol "menu-bar+")))
 (eval-after-load "menu-bar" '(require 'menu-bar+))
-
-;; load cl-seq once here (no require in it ??)
-(load-library "cl-seq")
 
 ;; load key definitions
 (require 'ech-keydefs)
