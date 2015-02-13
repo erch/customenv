@@ -6,19 +6,4 @@
 (let ((core-d (expand-file-name "customenv/emacsdir/core" (getenv "MY_ENV"))))
   (add-to-list 'load-path core-d))
 
-(require 'ech-env)
-
-;; load utility functions
-(require 'utility-funcs)
-
-;; compile configuration files if not yet done
-(mapcar 'compile-if-newer (sort (directory-files confs-dir t ".*\\.el$") 'string<))
-
-;; start emacs server for emacsclient
-(server-start)
-
-;; load the minor mode
-(require 'ech-mode)
-
-;; load configuration files
-(requires-files confs-dir)
+(require 'load-ech-env)

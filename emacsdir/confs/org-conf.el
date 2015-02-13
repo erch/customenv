@@ -298,7 +298,7 @@
 	    (define-key org-mode-map (kbd "C-c D") 'org-decrypt-entries)
 	    (define-key org-mode-map (kbd "C-c d") 'org-decrypt-entry)
 	    (setq buffer-auto-save-file-name nil) ;; recommended for buffer with crypted parts
-	    (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory ech-emacs-d-dir))))
+	    (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-dir))))
 	    )
 	  )
 ;; enabling clocking

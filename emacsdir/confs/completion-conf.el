@@ -11,8 +11,9 @@
 ;; is displayed on top (happens near the bottom of windows)
 (setq company-tooltip-flip-when-above t)
 
-(global-company-mode 1)
 (define-key ech-mode-map ech-key-completion 'company-complete-common)
+;; start company 
+(global-company-mode 1)
 
 (message "completion-conf loaded")
 (provide 'completion-conf)

@@ -5,9 +5,9 @@
 	(firefoxprog
 	 (locate-file "firefox" (mapcar (lambda(x) (concat x "/Mozilla Firefox/")) (list (getenv "PROGRAMFILES")(getenv "PROGRAMFILESX86")))  exec-suffixes)))
     (progn
-     (setq   browse-url-firefox-program firefoxprog)
-    ;; (setq exec-path (append exec-path '(file-name-os (file-name-directory firefoxprog))))
-    )))
+      (setq   browse-url-firefox-program firefoxprog)
+      ;; (setq exec-path (append exec-path '(file-name-os (file-name-directory firefoxprog))))
+      )))
 
 (defun ech-browse-file(file &rest args)
   "add file:// to file for browsing with firefox"

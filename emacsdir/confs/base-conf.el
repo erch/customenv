@@ -1,5 +1,4 @@
 (require 'ech-env)
-(require 'ech-mode)
 
 (setq max-specpdl-size 2000)
 (setq max-lisp-eval-depth 2000)
@@ -41,7 +40,7 @@
   (setq backup-directory-alist `((".*" . ,backup-dir))
 	auto-save-file-name-transforms `((".*" ,backup-dir t))
 	bookmark-default-file (expand-file-name "bookmarks" backup-dir)))
-
+(setq create-lockfiles nil)  ;; stop creation of .#files
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 

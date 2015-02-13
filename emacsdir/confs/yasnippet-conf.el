@@ -1,5 +1,5 @@
 (require 'ech-env)
-(require 'file-dirs-config) ; for ido
+(require 'ido)
 (ech-install-and-load 'yasnippet)
 
 (setq yas-snippet-dirs (list (expand-file-name "snippets" (file-name-directory (locate-library "yasnippet")))))

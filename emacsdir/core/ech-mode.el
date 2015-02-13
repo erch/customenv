@@ -1,8 +1,7 @@
-;; key prefix for the mode is :
-;; C-c C-e for minor mode commands
-;; C-C C-d for debuging commands
-
 (require 'ech-env)
+
+;; load key definitions
+(require 'ech-keydefs)
 
 (defvar ech-mode-map (make-sparse-keymap)  "Keymap for ech mode.")
 

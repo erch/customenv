@@ -3,6 +3,11 @@
 (defvar emacs-dir (file-name-directory (directory-file-name core-dir)) "directory that holds all emacs configuration")
 (defvar site-lisp-dir (expand-file-name "site-lisp" emacs-dir) "directory with elisp file")
 (defvar confs-dir (expand-file-name "confs" emacs-dir) "directory with all configuration files")
+
+(when (and (or (string= system-type "ms-dos") (string= system-type "windows-nt") (string= system-type "cygwin")) (getenv "CYGWIN_ROOT"))
+  (defvar cygwin-root-directory (getenv "CYGWIN_ROOT") "Root directory of cygwin installation")
+  (defvar ech-use-cygwin t "use cygwin in ech-env"))
+
 (add-to-list 'load-path confs-dir)
 (add-to-list 'load-path core-dir)
 (add-to-list 'load-path (expand-file-name "misc" site-lisp-dir))
@@ -19,14 +24,6 @@
 (setq package-load-list '(all))
 (package-initialize)
 
-
-;; menu bar+ requires to be loaded before all other module that can change th menu bar
-(unless (package-installed-p 'menu-bar+)
-  (package-install (make-symbol "menu-bar+")))
-(eval-after-load "menu-bar" '(require 'menu-bar+))
-
-;; load key definitions
-(require 'ech-keydefs)
 ;; load utility functions
 (require 'utility-funcs)
 

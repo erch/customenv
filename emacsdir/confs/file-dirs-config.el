@@ -19,7 +19,8 @@
 )   
 
 ;; remote access to file
-(load "tramp")
+(require 'tramp)
+
 (eval-and-compile
 (if (or (string= system-type "ms-dos") (string= system-type "windows-nt"))
   (setq tramp-default-method "sshx")

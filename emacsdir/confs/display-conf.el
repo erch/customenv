@@ -15,7 +15,7 @@
 ; Laisser le curseur en place lors d'un défilement par pages.
 ; Par défaut, Emacs place le curseur en début ou fin d'écran
 ; selon le sens du défilement.
-(setq scroll-preserve-screen-position t)
+;(setq scroll-preserve-screen-position t)
 
 (setq inhibit-startup-message t)        ;no splash screen
 

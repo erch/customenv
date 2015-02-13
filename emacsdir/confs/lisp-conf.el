@@ -30,6 +30,7 @@ Start `ielm' if it's not already running."
 (define-key emacs-lisp-mode-map (kbd "C-c C-b") 'eval-buffer)
 
 (setq flycheck-emacs-lisp-load-path `inherit)
+
 (defun emacs-lisp-mode-hook ()
   "Customization hook for elisp buffers."
   (setq-local flycheck-checkers '(emacs-lisp))
