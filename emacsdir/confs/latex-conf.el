@@ -33,6 +33,17 @@
           ("PDF Viewer" "open %o")
           ("HTML Viewer" "open %o"))))
 
+(when ech-use-cygwin
+  (setq TeX-view-program-selection
+        '((output-dvi "DVI Viewer")
+          (output-pdf "PDF Viewer")
+          (output-html "HTML Viewer")))
+
+  (setq TeX-view-program-list
+        '(("DVI Viewer" "cygstart -o %o")
+          ("PDF Viewer" "open  -o %o")
+          ("HTML Viewer" "open  -o %o"))))
+
 (defun latex-mode-hook ()
   "hook for `LaTeX-mode'."
   (turn-on-auto-fill)

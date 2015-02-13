@@ -1,6 +1,10 @@
 (require 'ech-env)
 (require 'ech-mode)
 
+;; Nav not so much cool because it opens a window anywhere, not just on frame boarder.
+;(ech-install-and-load 'nav)
+;(define-key ech-mode-map ech-key-run-nav 'nav)
+
 ;; Ido :  “Interactively DO things” enhances Emacs’s completion engine for file and buffers , the “Ido-powered” completion engine matches anywhere in a name, instead of just the beginning
 ;; use helm instead of ido
 ;;(ech-install-and-load 'ido-ubiquitous)
@@ -55,5 +59,5 @@
 (ech-install-and-load 'sunrise-x-tree)
 (ech-install-and-load 'sunrise-x-tabs)
 (setq sr-terminal-program 'ansi-term) ; use ansi term instead of eshell
-(define-key ech-mode-map (kbd "C-c C-e s") 'sunrise)
+(define-key ech-mode-map (kbd ech-key-run-sunrise) 'sunrise)
 (provide 'file-dirs-config)
