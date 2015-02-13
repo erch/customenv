@@ -1,5 +1,5 @@
 
-#'emacs' &
+'emacs-w32' &
 # _begin sleep_
 sleep inf
 # _end sleep_

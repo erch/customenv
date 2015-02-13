@@ -69,46 +69,46 @@ or start a new one while killing a defunt one"
   (interactive)
   (message "at %d" (point)))
 
-;; (defun myterm-clear-process-input()
-;;   "clear all char send to the sub process for a non yet executed line"         
-;;   (interactive)
-;;   (save-excursion
-;;     (let* (
-;; 	   (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
-;; 	   (end (progn (end-of-line) (point)))
-;; 	   (nbdel (- end beg))
-;; 	   (input (if (> nbdel 0) (buffer-substring-no-properties beg end) "")))
-;;       (when (> nbdel 0)	        
-;; 	(message "beg : %d, end : %d , input %s - going to delete %d char" beg end input nbdel)
-;; 	;(term-send-raw-string (make-string nbdel ?\C-? )))
-;; 	(term-send-invisible (make-string nbdel ?\C-? )))
-;;       input)))
+ (defun myterm-clear-process-input()
+   "clear all char send to the sub process for a non yet executed line"         
+   (interactive)
+   (save-excursion
+     (let* (
+ 	   (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+ 	   (end (progn (end-of-line) (point)))
+ 	   (nbdel (- end beg))
+ 	   (input (if (> nbdel 0) (buffer-substring-no-properties beg end) "")))
+       (when (> nbdel 0)	        
+ 	(message "beg : %d, end : %d , input %s - going to delete %d char" beg end input nbdel)
+ 	;(term-send-raw-string (make-string nbdel ?\C-? )))
+ 	(term-send-invisible (make-string nbdel ?\C-? )))
+       input)))
 
 
-;;(defadvice term-line-mode (around clean-process-input-before-line-mode disable)
-;;  (interactive)
-;;  (let* (
-;;	 (pos (point))
-;;	 (proc (get-buffer-process (current-buffer)))
-;;	 (end (progn (end-of-line) (point)))
-;;	 (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
-;;	 (input-before (buffer-substring-no-properties beg pos))
-;;	 (input-after (buffer-substring-no-properties pos end)))
-;;    (message "switching to line mode: %s->%s" input-before input-after)
-;;    ;;(insert (myterm-clear-process-input))
-;;    ;(goto-char pos)
-;;    (term-send-string proc "\C-a\C-k")
-;;    ;(goto-char (+ 2 beg))
-;;    ;(set-marker (process-mark proc) (point))
-;;    ad-do-it
-;;    ;(save-excursion
-;;      ;; Insert the text, advancing the process marker.
-;;     ;(goto-char (process-mark proc))
-;;    (let ((markpos (point)))
-;;     (insert (concat input-before input-after)))
-;;     ;(set-marker (process-mark proc) markpos))
-;;    ;(goto-char pos)
-;;))
+(defadvice term-line-mode (around clean-process-input-before-line-mode disable)
+  (interactive)
+  (let* (
+	 (pos (point))
+	 (proc (get-buffer-process (current-buffer)))
+	 (end (progn (end-of-line) (point)))
+	 (beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+	 (input-before (buffer-substring-no-properties beg pos))
+	 (input-after (buffer-substring-no-properties pos end)))
+    (message "switching to line mode: %s->%s" input-before input-after)
+    ;;(insert (myterm-clear-process-input))
+    ;(goto-char pos)
+    (term-send-string proc "\C-a\C-k")
+    ;(goto-char (+ 2 beg))
+    ;(set-marker (process-mark proc) (point))
+    ad-do-it
+    ;(save-excursion
+      ;; Insert the text, advancing the process marker.
+     ;(goto-char (process-mark proc))
+    (let ((markpos (point)))
+     (insert (concat input-before input-after)))
+     ;(set-marker (process-mark proc) markpos))
+    ;(goto-char pos)
+))
  
 ;; -------------- from mutli-term.el
 
@@ -191,45 +191,46 @@ and binds some keystroke with `term-raw-map'."
 
 ;------------------------------------
 
-;; (defun term-myget-new-input ()
-;;   "Return new input Take chars from beginning of line to the point, and discard any initial text matching term-prompt-regexp."
-;;   (save-excursion
-;;     (let* ((beg (progn (beginning-of-line) (term-skip-prompt) (point)))
-;; 	   (end (progn (end-of-line) (point)))	   
-;; 	   (text (buffer-substring-no-properties beg end)))
-;; 	   (message (concat "input is : " text))
-;; 	   text)))
-;; 
-;; ;(progn (setq term-mode-hook ())(setq yas-after-exit-snippet-hook ())(setq yas-before-expand-snippet-hook ()))
+ (defun term-myget-new-input ()
+   "Return new input Take chars from beginning of line to the point, and discard any initial text matching term-prompt-regexp."
+   (save-excursion
+     (let* ((beg (progn (beginning-of-line) (term-skip-prompt) (point)))
+ 	   (end (progn (end-of-line) (point)))	   
+ 	   (text (buffer-substring-no-properties beg end)))
+ 	   (message (concat "input is : " text))
+ 	   text)))
+ 
+(progn (setq term-mode-hook ())(setq yas-after-exit-snippet-hook ())(setq yas-before-expand-snippet-hook ()))
+
 (add-hook 'term-mode-hook
 	  '(lambda ()	  
-	     ;;(myterm-keystroke-setup)
-	     ;;(setq-local overflow-newline-into-fringe t)
-	     ;;(define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
+	     (myterm-keystroke-setup)
+	     (setq-local overflow-newline-into-fringe t)
+	     (define-key term-raw-map (kbd "C-c C-j") 'term-line-mode)
 	     (setq-local  autopair-dont-activate t)
-	     ;;(activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-dir))))
-	     ;;(ansi-color-for-comint-mode-on) 
+	     (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-dir))))
+	     (ansi-color-for-comint-mode-on) 
 	     (toggle-truncate-lines -1)
-	     ;;(setq-local comint-scroll-to-bottom-on-input t)  ; always insert at the bottom
-	     ;;(setq-local comint-scroll-to-bottom-on-output nil) ; always add output at the bottom
-	     ;;(setq-local comint-scroll-show-maximum-output t) ; scroll to show max possible output
-	     ;;(setq-local  comint-completion-autolist t)     ; show completion list when ambiguous
-	     ;;(setq-local comint-input-ignoredups t)           ; no duplicates in command history
-	     ;;(setq-local comint-completion-addsuffix t)       ; insert space/slash after file completion
-	     ;;(setq-local comint-buffer-maximum-size 50000)    ; max length of the buffer in lines
-	     ;;(setq-local comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
-	     ;;(setq-local comint-get-old-input 'term-myget-new-input) ; what to run when i press enter on a	  
-	     ;;(setq-local comint-input-ring-size 5000)         ; max shell history size
-	     ;;(setq-local  mouse-yank-at-point t)
-	     ;;(setq-local transient-mark-mode nil)	     
-	     ;;(add-hook 'yas-after-exit-snippet-hook 'restore-line-or-char-mode nil t)
-	     ;;(add-hook 'yas-before-expand-snippet-hook 'mode-line-record-prev-mode nil t)
-	     ;;(auto-fill-mode -1)
+	     (setq-local comint-scroll-to-bottom-on-input t)  ; always insert at the bottom
+	     (setq-local comint-scroll-to-bottom-on-output nil) ; always add output at the bottom
+	     (setq-local comint-scroll-show-maximum-output t) ; scroll to show max possible output
+	     (setq-local  comint-completion-autolist t)     ; show completion list when ambiguous
+	     (setq-local comint-input-ignoredups t)           ; no duplicates in command history
+	     (setq-local comint-completion-addsuffix t)       ; insert space/slash after file completion
+	     (setq-local comint-buffer-maximum-size 50000)    ; max length of the buffer in lines
+	     (setq-local comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
+	     (setq-local comint-get-old-input 'term-myget-new-input) ; what to run when i press enter on a	  
+	     (setq-local comint-input-ring-size 5000)         ; max shell history size
+	     (setq-local  mouse-yank-at-point t)
+	     (setq-local transient-mark-mode nil)	     
+	     (add-hook 'yas-after-exit-snippet-hook 'restore-line-or-char-mode nil t)
+	     (add-hook 'yas-before-expand-snippet-hook 'mode-line-record-prev-mode nil t)
+	     (auto-fill-mode -1)
 	     (setq-local tab-width 8 )
 ))
 
 ;; truncate buffers continuously
-;(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
+(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
 
 ; interpret and use ansi color codes in shell output windows
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
@@ -237,8 +238,8 @@ and binds some keystroke with `term-raw-map'."
 (defun set-scroll-conservatively ()
   "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell buffers."
   (set (make-local-variable 'scroll-conservatively) 10))
-;(add-hook 'shell-mode-hook 'set-scroll-conservatively)
 
+(add-hook 'shell-mode-hook 'set-scroll-conservatively)
 
 )			       
 (message "shell-conf loaded")    

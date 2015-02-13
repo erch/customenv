@@ -6,11 +6,15 @@ cheetahVarStartToken = @
 MY_DIR=$1
 /usr/sbin/alternatives --display emacs > /dev/null 2>&1
 if [[ $? -ne 0 ]] ; then
+    # no alternatives for emacs
     EMACS_HOME=${EMACS_HOME:-/usr/bin}
     pathmunge "${EMACS_HOME}/bin" after
     export EMACS_EXE=${EMACS_EXE:-${EMACS_HOME}/runemacs}
     export EMACS_CLI=${EMACS_CLI:-${EMACS_HOME}/emacsclient}
 else
+#if @OS_TYPE == 'cygwin'
+    /usr/sbin/alternatives --set emacs $(alternatives  --display emacs | perl -ne '/(^\S+-w32.exe)/ and print $1')
+#end if
     export EMACS_EXE=${EMACS_EXE:-emacs}
     export EMACS_CLI=${EMACS_CLI:-emacsclient}
 fi

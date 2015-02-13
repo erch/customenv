@@ -4,8 +4,14 @@
 (defvar site-lisp-dir (expand-file-name "site-lisp" emacs-dir) "directory with elisp file")
 (defvar confs-dir (expand-file-name "confs" emacs-dir) "directory with all configuration files")
 
-(when (and (or (string= system-type "ms-dos") (string= system-type "windows-nt") (string= system-type "cygwin")) (getenv "CYGWIN_ROOT"))
-  (defvar cygwin-root-directory (getenv "CYGWIN_ROOT") "Root directory of cygwin installation")
+
+(defvar cygwin-root-directory
+  (if (and (or (string= system-type "ms-dos") (string= system-type "windows-nt")) (getenv "CYGWIN_ROOT"))
+      (getenv "CYGWIN_ROOT")
+    "/")
+  "Root directory of cygwin installation")
+
+(when (or (string= system-type "ms-dos") (string= system-type "windows-nt") (string= system-type "cygwin")) 
   (defvar ech-use-cygwin t "use cygwin in ech-env"))
 
 (add-to-list 'load-path confs-dir)
