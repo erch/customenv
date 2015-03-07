@@ -1,0 +1,49 @@
+# -*- snippet -*-
+# -*- coding: utf-8 -*-
+# name: anki-header
+# key: akheader
+# group: Anki
+# expand-env: ((yas-indent-line 'fixed) (yas-also-auto-indent-first-line t) (yas/wrap-around-region 'nil))
+# --
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xspace}
+\usepackage[francais]{babel}
+
+\makeatletter
+% LATEX PREAMBLE --- needs to be imported manually
+\special{papersize=3in,5in}
+\newcommand{\detail}[1]{{\scriptsize(#1)\par}~}
+\newcommand{\refs}[1]{{\scriptsize\textit{Refs: }#1\par}\hfill.}
+\newcommand*{\abs}[1]{\left\vert#1\right\vert}
+\newcommand*{\NN}{\mathbb{N}}
+\newcommand*{\ZZ}{\mathbb{Z}}
+\newcommand*{\QQ}{\mathbb{Q}}
+\newcommand*{\FF}{\mathbb{F}}
+\newcommand*{\PP}{\mathbb{P}}
+\newcommand*{\units}{\times}
+\newcommand*{\xsp}{\xspace}
+\newcommand*{\english} {{\footnotesize{(in english)}}}
+\newcommand*{\eh}[1] {\textbf{#1}}
+
+%%% commands that do not need to imported into Anki:
+\newcommand*{\tags}[1]{\paragraph{tags:}#1}
+\newcommand*{\xfield}[1]{\paragraph{field:} #1}
+\newcommand*{\xplain}[1]{\paragraph{field:} #1}
+\newenvironment{note}{
+\paragraph{}\rule{\textwidth}{1pt}
+}{}
+\newenvironment{field}{\paragraph{field:}}{}
+\newenvironment{plain}{\paragraph{field:}}{}
+\newenvironment{texfield}{\paragraph{field:}\[}{\]}
+% END OF THE PREAMBLE
+\makeatother
+
+\begin{document}
+\tags{$0}
+\end{document}

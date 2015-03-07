@@ -51,6 +51,7 @@
   (smartparens-mode +1)
   (LaTeX-math-mode 1)
   (turn-on-cdlatex)
+  (activate-yasnippet-buffer-local-with-dirs (list (expand-file-name "snippets" (file-name-directory emacs-dir))))
   (setq-local company-backends
               (append
 	       '(company-math-symbols-latex company-latex-commands company-math-symbols-unicode)

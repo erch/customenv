@@ -1,0 +1,8 @@
+# -*- snippet -*-
+# -*- coding: utf-8 -*-
+# name: anki-xplain
+# key: akxp
+# group: Anki
+# expand-env: ((yas-also-auto-indent-first-line t) (yas-indent-line 'auto) (yas-wrap-around-region 'nil))
+# --
+\xplain{$0}

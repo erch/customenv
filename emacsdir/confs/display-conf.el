@@ -279,5 +279,5 @@
 ;; Load Windows or Console settings
 (when (string= window-system "w32") (windows-only-settings))
 (when (eq window-system nil) (console-only-settings))
-
+(message "... display-conf done")
 (provide 'display-conf)

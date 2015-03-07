@@ -15,7 +15,7 @@
 	(setenv "USER" (getenv "USERNAME")))
        ((getenv "LOGNAME")
 	(setenv "USER" (getenv "LOGNAME")))))
-    (if (and (getenv "USER") (null (getenv "LOGNAME")))
+    (when (and (getenv "USER") (null (getenv "LOGNAME")))
 	(setenv "LOGNAME" (getenv "USER")))
 
     (unless (string= system-type "cygwin")

@@ -1,0 +1,10 @@
+# -*- snippet -*-
+# -*- coding: utf-8 -*-
+# name: anki-field
+# key: akfd
+# group: Anki
+# expand-env: ((yas-also-auto-indent-first-line 't) (yas-indent-line 'auto) (yas-wrap-around-region 'nil))
+# --
+\begin{field}
+$0
+\end{field}

@@ -1,0 +1,10 @@
+(message "loadind uml-conf ...")
+(require 'ech-env)
+(let ((plantuml-home (getenv "PLANTUML_HOME")))
+  (when (not (null plantuml-home))
+    (defvar plantuml-jar-path (expand-file-name "tools/plantuml.jar" plantuml-home))
+    (when (file-exists-p plantuml-jar-path)
+      (ech-install-and-load 'plantuml-mode))))
+
+(message "... uml-conf done")
+(provide 'uml-conf)
