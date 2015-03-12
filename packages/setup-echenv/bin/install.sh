@@ -13,7 +13,7 @@ export PATH=$BIN_DIR:/usr/local/bin:/usr/bin:/usr/bin:.:
 
 # install pip
 pip -v >/dev/null 2>&1
-if [[  ! $? ]]  ; then
+if [[ $? -ne 0 ]]  ; then
     wget -nd -P /tmp https://bootstrap.pypa.io/get-pip.py
     python /tmp/get-pip.py
 fi

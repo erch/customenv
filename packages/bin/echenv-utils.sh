@@ -81,19 +81,19 @@ function installfromdir()
     DEST_DIR=${DEST_DIR%/}
 
     if [ ! -e ${DEST_DIR} ] ; then
-        ${MKDIR_CMD} ${DEST_DIR}
-        ${CHOWN_CMD} ${USER}.${GROUP} ${DEST_DIR}
+        ${MKDIR_CMD} "${DEST_DIR}"
+        ${CHOWN_CMD} "${USER}":"${GROUP}" "${DEST_DIR}"
     fi
 
     for N in $(ls -A ${SOURCE_DIR}) ; do
         local SRC_NODE=$(perl -e 'use File::Spec::Functions;print canonpath("'${SOURCE_DIR}/$N'") . "\n";')
 	local DST_NODE=$(perl -e 'use File::Spec::Functions;print canonpath("'${DEST_DIR}/$N'") . "\n";')
         if [[ -d "$SRC_NODE" ]] ; then
-            installfromdir ${SRC_NODE} ${DST_NODE} ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+            installfromdir "${SRC_NODE}" "${DST_NODE}" "${USER}" "${GROUP}" "${M4_INCLUDE_DIR}"
 	else
 	    echo $N | perl -ne '(/^.*~$/ or /^_owner_$/ or /^_dataenv_$/) and exit 1 or exit 0;'
 	    if [[ $? -eq 0 ]] ; then
-		installfile ${SRC_NODE} ${DST_NODE} ${USER} ${GROUP} ${M4_INCLUDE_DIR}
+		installfile "${SRC_NODE}" "${DST_NODE}" "${USER}" "${GROUP}" "${M4_INCLUDE_DIR}"
             fi
 	fi
     done
@@ -111,12 +111,13 @@ function installfile()
     local GROUP=$4
     shift 4
     local M4_INCLUDE_DIRECTIVE
-    if [[ $# -gt 0 ]] ; then
+    # as we pass the parameter wih quotes even when empty it is present
+    if [[ $# -gt 0 && -n "$1" ]] ; then
         M4_INCLUDE_DIRECTIVE="-e $1"
     fi
     
     if [[ -e ${DEST_FILE} ]] ; then
-        backupf ${DEST_FILE}
+        backupf "${DEST_FILE}"
     fi
     
     local EXCLUDED_OS=$(perl -e '($r)="'${DEST_FILE}'"=~ /^.*?,!([^,]+),.*$/;print "$r\n";')
@@ -132,11 +133,11 @@ function installfile()
     
     if [[ ${DEST_FILE} != ${DEST_FILE%._template_} ]] ; then
 	DEST_FILE=${DEST_FILE%._template_}
-        ${M4_CMD} ${M4_INCLUDE_DIRECTIVE} -t ${SOURCE_FILE} -o ${DEST_FILE}
+        ${M4_CMD} "${M4_INCLUDE_DIRECTIVE}" -t "${SOURCE_FILE}" -o "${DEST_FILE}"
     else
-	$CP_CMD ${SOURCE_FILE} ${DEST_FILE}
+	$CP_CMD "${SOURCE_FILE}" "${DEST_FILE}"
     fi
-    chattr ${SOURCE_FILE} ${DEST_FILE} ${USER} ${GROUP}
+    chattr "${SOURCE_FILE}" "${DEST_FILE}" "${USER}" "${GROUP}"
 }
 export -f installfile
 
@@ -151,12 +152,12 @@ function chattr()
     fi
     local MOD
     if [[ -e ${SOURCE_FILE}._mod_ ]] ; then        
-        cat ${SOURCE_FILE}._mod_ | read MOD        
+        cat "${SOURCE_FILE}._mod_" | read MOD        
     else
-	MOD=$(stat -c %a ${SOURCE_FILE})
+	MOD=$(stat -c %a "${SOURCE_FILE}")
     fi
-    $CHMOD_CMD $MOD ${DEST_FILE}
-    $CHOWN_CMD ${USER}.${GROUP} ${DEST_FILE}
+    $CHMOD_CMD $MOD "${DEST_FILE}"
+    $CHOWN_CMD "${USER}":"${GROUP}" "${DEST_FILE}"
 }
 
 function backupf ()
@@ -174,7 +175,7 @@ function backupf ()
     done
     
     if [[ ${ITER} -lt ${MAX} ]]; then
-        $CP ${FILE} ${BCK_FILE}
+        $CP "${FILE}" "${BCK_FILE}"
         return 1
     fi
     return 0
