@@ -113,7 +113,7 @@ function installfile()
     local M4_INCLUDE_DIRECTIVE
     # as we pass the parameter wih quotes even when empty it is present
     if [[ $# -gt 0 && -n "$1" ]] ; then
-        M4_INCLUDE_DIRECTIVE="-e $1"
+        M4_INCLUDE_DIRECTIVE=$1
     fi
     
     if [[ -e ${DEST_FILE} ]] ; then
@@ -133,7 +133,11 @@ function installfile()
     
     if [[ ${DEST_FILE} != ${DEST_FILE%._template_} ]] ; then
 	DEST_FILE=${DEST_FILE%._template_}
-        ${M4_CMD} "${M4_INCLUDE_DIRECTIVE}" -t "${SOURCE_FILE}" -o "${DEST_FILE}"
+	if [[ -n "${M4_INCLUDE_DIRECTIVE}" ]] ; then
+            ${M4_CMD} -e "${M4_INCLUDE_DIRECTIVE}" -t "${SOURCE_FILE}" -o "${DEST_FILE}"
+	else
+	    ${M4_CMD} -t "${SOURCE_FILE}" -o "${DEST_FILE}"
+	fi
     else
 	$CP_CMD "${SOURCE_FILE}" "${DEST_FILE}"
     fi

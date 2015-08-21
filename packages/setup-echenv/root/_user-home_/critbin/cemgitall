@@ -1,0 +1,98 @@
+#! /bin/bash
+#  -*- Shell-Script -*-
+
+PRG="$0"
+# What's my name?
+read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
+
+GIT_REPO_URL='http://review.criteois.lan/criteo-email'
+
+usage() {
+    [ ! -z "$DEBUG" ] && set -x
+    echo $1
+    cat 1>&2 <<[]
+    get all cem git module: either by doing a clone or a pull if it is already present
+    in the directory
+    $MY_NAME [-D] [-h] [-l listf] [-n (git|mvn)] [dir]
+       -h: print this help
+       -D: Debug mode.
+       -n: no git call or no mvn call
+       -l: listf is a file with the list of git project to get (by default dir/module.lst)
+       dir: the directory to where to get the git projects (by default .)
+[]
+    exit 1
+}
+
+#------------------------------------------------------------------------------
+#                              SHELL SCRIPT BEGINNING
+#------------------------------------------------------------------------------
+
+unset SKIP DEBUG DEBUG_OPT SKIP_GIT SKIP_MVN PROJ_FILE
+DIR=`pwd`
+while getopts "hDn:l:" OPT ; do
+    case "$OPT" in
+        h) usage ""
+	   ;;
+	l) PROJ_FILE="$OPTARG"
+	   if [[ ! -r "$PROJ_FILE" ]]; then
+	       usage "$PROJ_FILE not readable"
+	   fi
+	n) SKIP="$OPTARG"
+	   case "$SKIP" in
+	       "git")
+		   SKIP_GIT=1
+	       ;;
+	       "mvn")
+		   SKIP_MVN=1
+	       ;;
+	       *)
+		   usage "wrong parameter for n option: $SKIP"
+	   esac
+	    ;;
+        D) DEBUG=OK
+	    DEBUG_OPT=-D
+            set -x
+            ;;
+ 	*)
+ 	    usage "unknown parameter"
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+if [[ $# -eq 1 ]] ; then
+    DIR=$1
+    shift 1
+fi
+
+[ $OPTIND -gt 0 ] && usage "unknown parameters"
+
+if [[ -z "PROJ_FILE"]] ; then
+    PROJ_FILE="$DIR/modules.lst"
+fi
+
+cd $DIR
+
+if [[ -z "$SKIP_GIT" ]]; then
+    cat ./modules.lst | while read M ; do
+	if [[ -e "$M" ]] ; then
+	    (
+		cd "$M"
+		git pull
+	    )
+	else
+	    MODULE="$GIT_REPO_URL"/"$M"
+	    git clone "$MODULE"
+	fi
+    done
+fi
+
+if [[ -z "$SKIP_MVN" ]]; then
+    find . -name 'pom.xml' | while read F ; do
+	(
+	    cd `dirname "$F"`
+	    mvn install -Dmaven.test.skip=true
+	)
+    done
+fi
+    

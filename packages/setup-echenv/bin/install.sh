@@ -1,7 +1,7 @@
 #! /bin/bash
 #  -*- Shell-Script -*-
 
-#set -x
+set -x
 PRG="$0"
 # What's my name?
 read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
@@ -52,6 +52,33 @@ if [[ ${OS_TYPE} = 'cygwin' ]] ; then
 
     ${BIN_DIR}/insertfif ~/.startxwinrc  "ech_env" '#' ~/.startxwinrc-extension
     chmod a+x ~/.startxwinrc
+fi
+
+# chocolatey config to be move to a specific package
+if [[ ${OS_TYPE} = 'cygwin' ]] ; then
+    CHOCO="/c/ProgramData/chocolatey/bin/choco"
+    $CHOCO feature > /dev/null 2>&1
+    if [[ $? -ne 0 ]] ; then
+	"/c/WINDOWS/system32/WindowsPowerShell/v1.0/powershell" -NoProfile -ExecutionPolicy unrestricted -Command "& {iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))}"
+    else
+	echo '\n' | $CHOCO upgrade -y chocolatey
+    fi
+    # not used anymore , kept as reminders
+    # CURPATH=`regtool get '/machine/SYSTEM/CurrentControlSet/Control/Session Manager/Environment/Path'`
+    # SETX="/cygdrive/c/Windows/system32/setx"
+    export PATH=$PATH:$ChocolateyInstall
+fi
+
+## java config , will be moved to java packaging
+# install java and maven (cygwin only for now)
+if [[ ${OS_TYPE} = 'cygwin' ]] ; then
+    echo '\n' | $CHOCO install -y jdk7
+    echo '\n' | $CHOCO install -y maven
+
+    # Chocolatey set somethe following environment variables: JAVA_HOME, M2_HOME, we need to add JAVA_OPTS and MAVEN_OPTS
+    OPTS="-Duser.home=$(cygpath -wa $HOME) -Xmx1024M -XX:MaxPermSize=512m"
+    /cygdrive/c/Windows/system32/setx JAVA_OPTS "$OPTS"
+    /cygdrive/c/Windows/system32/setx MAVEN_OPTS "$OPTS"
 fi
 
 #apt-add-repository ppa:jtaylor/keepass
