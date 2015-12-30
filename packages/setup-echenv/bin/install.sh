@@ -72,10 +72,10 @@ fi
 ## java config , will be moved to java packaging
 # install java and maven (cygwin only for now)
 if [[ ${OS_TYPE} = 'cygwin' ]] ; then
-    echo '\n' | $CHOCO install -y jdk7
+    echo '\n' | $CHOCO install -y jdk8
     echo '\n' | $CHOCO install -y maven
 
-    # Chocolatey set somethe following environment variables: JAVA_HOME, M2_HOME, we need to add JAVA_OPTS and MAVEN_OPTS
+    # Chocolatey set the following environment variables: JAVA_HOME, M2_HOME, we need to add JAVA_OPTS and MAVEN_OPTS
     OPTS="-Duser.home=$(cygpath -wa $HOME) -Xmx1024M -XX:MaxPermSize=512m"
     /cygdrive/c/Windows/system32/setx JAVA_OPTS "$OPTS"
     /cygdrive/c/Windows/system32/setx MAVEN_OPTS "$OPTS"
