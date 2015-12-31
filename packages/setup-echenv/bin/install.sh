@@ -1,7 +1,7 @@
 #! /bin/bash
 #  -*- Shell-Script -*-
 
-set -x
+#set -x
 PRG="$0"
 # What's my name?
 read MY_NAME MY_DIR <<< `perl -e 'use Cwd;use File::Basename;print File::Basename::basename("'$PRG'") . " " . Cwd::abs_path( File::Basename::dirname("'$PRG'") ) . "\n";'`
@@ -53,6 +53,9 @@ if [[ ${OS_TYPE} = 'cygwin' ]] ; then
     ${BIN_DIR}/insertfif ~/.startxwinrc  "ech_env" '#' ~/.startxwinrc-extension
     chmod a+x ~/.startxwinrc
 fi
+
+# should not be here : .ssh configuration
+${BIN_DIR}/insertfif ~/.ssh/config  "ech_env" '#' ~/.ssh/config-extension
 
 # chocolatey config to be move to a specific package
 if [[ ${OS_TYPE} = 'cygwin' ]] ; then

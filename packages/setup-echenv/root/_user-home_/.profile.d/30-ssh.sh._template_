@@ -6,35 +6,44 @@ cheetahVarStartToken = @
 if [[ -n $(type ssh-agent) ]] ; then
 #if @OS_TYPE == 'cygwin'
     convertenvvar SSH_AUTH_SOCK
-    if [[ -x "/usr/local/sbin/win-ssh-askpass" ]] ; then
-	export SSH_ASKPASS={SSH_ASKPASS:-/usr/local/sbin/win-ssh-askpass}
+    if [[ -x "/usr/local/bin/win-ssh-askpass" ]] ; then
+	     export SSH_ASKPASS=${SSH_ASKPASS:-/usr/local/sbin/win-ssh-askpass}
     fi
+    # could be better to put it in a git configuration file
+    export GIT_SSH=$(which ssh | xargs cygpath -w)
 #end if
     SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-/tmp/.ssh-socket}
     if [[ -z "$SSH_ASKPASS" ]] ; then
-	unset SSH_ASKPASS
+	     unset SSH_ASKPASS
     fi
+
     ssh-add -l > /dev/null 2>&1
-    if [ $? = 2 ]; then
+    if [ $? -eq 2 ]; then
        # Exit status 2 means couldn't connect to ssh-agent; start one now
-       ssh-agent -k > /dev/null 2>&1
+       pkill -9 ssh-agent
        rm -f $SSH_AUTH_SOCK
        rm -f /tmp/.ssh-agent-pid
        ssh-agent -a $SSH_AUTH_SOCK > /tmp/.ssh-script
        . /tmp/.ssh-script > /dev/null
        rm -f /tmp/.ssh-script
-       # echo $SSH_AGENT_PID >/tmp/.ssh-agent-pid
+       echo $SSH_AGENT_PID > /tmp/.ssh-agent-pid
    fi
    #    alias ssh="ssh -F $HOME/.ssh/config"
-   
+
    # add my keys
-   if [ `expr "$-" : ".*i.*"` -ne 0 ] ; then  
-       $HOME/bin/ssh-add-mykeys.sh
-   fi
+   # list files in .ssh to find key files
+   LIST_KEYS=""
+   for N in $(ls -A ~/.ssh/*.pub) ; do
+      KEY_F=$(echo $N | perl -ne '
+        print ($_ =~ /^(.*)\.pub$/) . "\n";
+      ')
+      LIST_KEYS="${LIST_KEYS} ${KEY_F}"
+   done
+   #$HOME/bin/ssh-add-mykeys.sh $LIST_KEYS
+
    function killagent {
        pid=`cat /tmp/.ssh-agent-pid`
        kill $pid
    }
    export -f killagent
 fi
-
