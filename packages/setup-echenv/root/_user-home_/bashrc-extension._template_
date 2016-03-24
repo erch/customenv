@@ -21,7 +21,7 @@ if [[ -z "$ECH_ENV_SET" ]] ; then
 	for VR in $* ; do
     	    VRV=`eval echo '$'$VR`
 	    if [[ -n "$VRV" ]] ; then
-    		VRC=`/bin/cygpath -pau "$VRV"`
+    		VRC=`/bin/cygpath -pau "${VRV}"`
     		eval "export $VR=\"$VRC\""
 	    fi
 	done

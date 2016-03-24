@@ -1,3 +1,5 @@
+
+
 export JAVA_HOME=$(readlink /etc/alternatives/java)/..
 export M2_HOME=/usr/share/maven2
 export JAVA_OPTS="-Duser.home=$HOME -Xmx1024M -XX:MaxPermSize=512m"
