@@ -1,6 +1,6 @@
 # Project specific files
 
-.elc
+*.elc
 
 #################
 ## Eclipse
